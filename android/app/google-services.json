@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "92661859660",
+    "project_id": "kajur-app",
+    "storage_bucket": "kajur-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92661859660:android:bc5962cc7412d540bdbbe9",
+        "android_client_info": {
+          "package_name": "com.example.kajur_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0jpscArD0O7kzBB9j7l8a6Slmo4A6ngs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
