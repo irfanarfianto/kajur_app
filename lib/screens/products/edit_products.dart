@@ -1,7 +1,11 @@
+import 'dart:io';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kajur_app/screens/widget/form_container_widget.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:kajur_app/design/system.dart';
 
 class EditProdukPage extends StatefulWidget {
   final String documentId;
@@ -15,8 +19,10 @@ class EditProdukPage extends StatefulWidget {
 class _EditProdukPageState extends State<EditProdukPage> {
   late TextEditingController _menuController;
   late TextEditingController _hargaController;
+  late TextEditingController _deskripsiController;
 
   late CollectionReference _produkCollection;
+  File? _selectedImage;
 
   @override
   void initState() {
@@ -25,6 +31,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
     _menuController = TextEditingController();
     _hargaController = TextEditingController();
+    _deskripsiController = TextEditingController();
 
     _fetchProductDetails();
   }
@@ -40,6 +47,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
         _menuController.text = data['menu'];
         _hargaController.text = data['harga'].toString();
+        _deskripsiController.text = data['deskripsi'];
       }
     } catch (e) {
       print('Error fetching product details: $e');
@@ -52,9 +60,13 @@ class _EditProdukPageState extends State<EditProdukPage> {
       String? userId = user?.uid;
       String? userName = user?.displayName ?? 'Unknown User';
 
+      String? imageUrl = await _uploadImage();
+
       await _produkCollection.doc(widget.documentId).update({
         'menu': _menuController.text,
         'harga': int.tryParse(_hargaController.text) ?? 0,
+        'deskripsi': _deskripsiController.text,
+        'image': imageUrl,
         'updatedAt': FieldValue.serverTimestamp(),
         'lastEditedBy': userId,
         'lastEditedByName': userName,
@@ -65,6 +77,28 @@ class _EditProdukPageState extends State<EditProdukPage> {
     }
   }
 
+  Future<String?> _uploadImage() async {
+    if (_selectedImage == null) return null;
+
+    Reference ref = FirebaseStorage.instance
+        .ref()
+        .child('kantin')
+        .child('image_${DateTime.now().millisecondsSinceEpoch}.jpg');
+    await ref.putFile(_selectedImage!);
+    return await ref.getDownloadURL();
+  }
+
+  Future<void> _getImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    } else {
+      print('No image selected.');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,15 +111,68 @@ class _EditProdukPageState extends State<EditProdukPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FormContainerWidget(
-              controller: _menuController,
-              hintText: 'Menu',
+            GestureDetector(
+              onTap: () {
+                _getImage();
+              },
+              child: _selectedImage != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 150,
+                        width: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    )
+                  : Container(
+                      height: 100,
+                      width: 100,
+                      color: DesignSystem.greyColor.withOpacity(.20),
+                      child: Icon(Icons.add_a_photo),
+                    ),
             ),
             SizedBox(height: 16.0),
-            FormContainerWidget(
+            TextFormField(
+              controller: _menuController,
+              style: TextStyle(color: DesignSystem.whiteColor),
+              decoration: InputDecoration(
+                labelText: 'Nama Produk',
+                hintStyle: TextStyle(color: DesignSystem.greyColor),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: DesignSystem.whiteColor),
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
               controller: _hargaController,
-              hintText: 'Harga',
-              inputType: TextInputType.number,
+              style: TextStyle(color: DesignSystem.whiteColor),
+              decoration: InputDecoration(
+                labelText: 'Harga',
+                hintStyle: TextStyle(color: DesignSystem.greyColor),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: DesignSystem.whiteColor),
+                ),
+              ),
+              keyboardType: TextInputType.number,
+            ),
+            SizedBox(height: 16.0),
+            TextFormField(
+              controller: _deskripsiController,
+              style: TextStyle(color: DesignSystem.whiteColor),
+              decoration: InputDecoration(
+                labelText: 'Deskripsi',
+                hintStyle: TextStyle(color: DesignSystem.greyColor),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                  borderSide: BorderSide(color: DesignSystem.whiteColor),
+                ),
+              ),
+              keyboardType: TextInputType.multiline,
+              maxLines: 3,
             ),
             SizedBox(height: 24.0),
             ElevatedButton(
@@ -104,6 +191,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
   void dispose() {
     _menuController.dispose();
     _hargaController.dispose();
+    _deskripsiController.dispose();
     super.dispose();
   }
 }

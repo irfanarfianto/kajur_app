@@ -23,79 +23,115 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _getCurrentUser() async {
     _currentUser = FirebaseAuth.instance.currentUser;
-    setState(() {}); // Refresh UI to display user's name
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text("HomePage"),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Center(
-            child: _currentUser != null
-                ? Text(
-                    "Welcome Home ${_currentUser!.displayName}!",
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 19,
-                        color: DesignSystem.whiteColor),
-                  )
-                : CircularProgressIndicator(), // Show loading indicator while fetching user data
-          ),
-          SizedBox(
-            height: 30,
-          ),
-          GestureDetector(
-            onTap: () {
-              _confirmSignOut(); // Show confirmation dialog
-            },
-            child: Container(
-              height: 45,
-              width: 100,
-              decoration: BoxDecoration(
-                color: Colors.blue,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Center(
-                child: Text(
-                  "Sign out",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text("Kantin Kejujuaran"),
+          actions: [
+            Builder(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openEndDrawer(); // Open the drawer
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 20),
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  alignment: Alignment.center,
+                  child: _currentUser != null
+                      ? Text(
+                          "${_currentUser!.displayName}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 15,
+                            color: DesignSystem.whiteColor,
+                          ),
+                        )
+                      : CircularProgressIndicator(), // Show loading indicator while fetching user data
                 ),
               ),
             ),
+          ],
+        ),
+        endDrawer: Drawer(
+          // Define the drawer with user profile details
+          child: _buildDrawer(),
+        ),
+        body: Column());
+  }
+
+  Widget _buildDrawer() {
+    return ListView(
+      padding: EdgeInsets.zero,
+      children: <Widget>[
+        DrawerHeader(
+          decoration: BoxDecoration(
+            color: DesignSystem.primaryColor,
           ),
-          ElevatedButton(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              SizedBox(height: 10),
+              _currentUser != null
+                  ? Text(
+                      "${_currentUser!.displayName}",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    )
+                  : CircularProgressIndicator(), // Show loading indicator while fetching user data
+              SizedBox(height: 5),
+              _currentUser != null
+                  ? Text(
+                      "${_currentUser!.email}",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    )
+                  : CircularProgressIndicator(), // Show loading indicator while fetching user data
+            ],
+          ),
+        ),
+        ListTile(
+          title: Text('Tambah Produk'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => AddDataPage()),
+            );
+          },
+        ),
+        ListTile(
+          title: Text('Daftar Produk'),
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ListProdukPage()),
+            );
+          },
+        ),
+        SizedBox(height: 350),
+        Container(
+          margin: EdgeInsets.only(left: 10, right: 10),
+          child: ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              primary: DesignSystem.redAccent,
+            ),
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddDataPage()),
-              );
+              _confirmSignOut();
             },
-            child: Text("Tambah Data"),
+            label: Text('Keluar'),
+            icon: Icon(Icons.exit_to_app),
           ),
-          SizedBox(
-            height: 8,
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ListProdukPage()),
-              );
-            },
-            child: Text("Daftar Produk"),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -115,7 +151,7 @@ class _HomePageState extends State<HomePage> {
             ),
             TextButton(
               onPressed: () {
-                _signOut(); // Perform sign out action
+                _signOut(); // Perform sign-out action
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: Text("Sign Out"),
@@ -129,7 +165,7 @@ class _HomePageState extends State<HomePage> {
   void _signOut() async {
     try {
       await FirebaseAuth.instance.signOut();
-      Navigator.pushNamed(context, "/login");
+      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
       showToast(message: "Successfully signed out");
     } catch (e) {
       showToast(message: "Error signing out: $e");

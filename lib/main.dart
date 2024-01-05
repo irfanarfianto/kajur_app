@@ -32,14 +32,21 @@ class MyApp extends StatelessWidget {
             color: DesignSystem.blackColor, foregroundColor: Colors.white),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                backgroundColor: DesignSystem.purpleAccent,
                 foregroundColor: Colors.white)),
         inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(),
+          border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide: BorderSide(
+                color: DesignSystem.greyColor.withOpacity(.50),
+              )),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(
-              color: Colors.deepPurple,
-            ),
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: BorderSide(color: Colors.deepPurple),
           ),
         ),
       ),

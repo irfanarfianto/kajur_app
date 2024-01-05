@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:kajur_app/screens/widget/form_container_widget.dart';
+import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AddDataPage extends StatefulWidget {
@@ -14,6 +14,7 @@ class AddDataPage extends StatefulWidget {
 class _AddDataPageState extends State<AddDataPage> {
   final TextEditingController _menuController = TextEditingController();
   final TextEditingController _hargaController = TextEditingController();
+  final TextEditingController _deskripsiController = TextEditingController();
   String _selectedCategory = '';
   File? _selectedImage;
   bool _isLoading = false;
@@ -68,16 +69,17 @@ class _AddDataPageState extends State<AddDataPage> {
         'harga': harga,
         'kategori': _selectedCategory,
         'image': imageUrl,
+        'deskripsi': _deskripsiController.text,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'addedBy': userId,
         'addedByName': userName,
-        'lastEditedBy': userId, 
-        'lastEditedByName':
-            userName, 
+        'lastEditedBy': userId,
+        'lastEditedByName': userName,
       }).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
+            backgroundColor: Colors.green,
             content: Text('Data berhasil ditambahkan'),
           ),
         );
@@ -92,7 +94,10 @@ class _AddDataPageState extends State<AddDataPage> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Mohon isi semua bidang'),
+          backgroundColor: Colors.redAccent,
+          content: Text(
+            'Mohon isi semua bidang',
+          ),
         ),
       );
     }
@@ -108,70 +113,154 @@ class _AddDataPageState extends State<AddDataPage> {
         title: Text('Add Data'),
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            GestureDetector(
-              onTap: () => _getImage(),
-              child: _selectedImage != null
-                  ? Image.file(
-                      _selectedImage!,
-                      height: 150,
-                      width: 150,
-                      fit: BoxFit.cover,
-                    )
-                  : Container(
-                      height: 150,
-                      width: 150,
-                      color: Colors.grey[300],
-                      child: Icon(Icons.add_a_photo),
-                    ),
-            ),
-            SizedBox(height: 16.0),
-            FormContainerWidget(
-              controller: _menuController,
-              hintText: 'Menu',
-            ),
-            SizedBox(height: 16.0),
-            FormContainerWidget(
-              controller: _hargaController,
-              hintText: 'Harga',
-              // number
-              inputType: TextInputType.number,
-            ),
-            SizedBox(height: 16.0),
-            SizedBox(height: 16.0),
-            DropdownButtonFormField<String>(
-              value: _selectedCategory.isNotEmpty ? _selectedCategory : null,
-              decoration: InputDecoration(
-                labelText: 'Kategori',
-                border: OutlineInputBorder(),
-              ),
-              items: [
-                DropdownMenuItem(
-                  value: 'Makanan',
-                  child: Text('Makanan'),
-                ),
-                DropdownMenuItem(
-                  value: 'Minuman',
-                  child: Text('Minuman'),
-                ),
-              ],
-              onChanged: (String? value) {
-                setState(() {
-                  _selectedCategory = value ?? '';
-                });
-              },
-            ),
-            SizedBox(height: 24.0),
-            _isLoading
-                ? Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: _isLoading ? null : () => _submitData(context),
-                    child: Text('Tambah Data'),
+        padding: EdgeInsets.all(10.0),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                height: 150,
+                width: double.infinity,
+                // margin: EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: DesignSystem.greyColor.withOpacity(.50),
                   ),
-          ],
+                ),
+                child: Stack(
+                  children: [
+                    _selectedImage != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              _selectedImage!,
+                              height: 150,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : Container(),
+                    GestureDetector(
+                      onTap: () => _getImage(),
+                      child: Center(
+                        child: _selectedImage != null
+                            ? Container()
+                            : Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.add_a_photo,
+                                    size: 50,
+                                    color: DesignSystem.greyColor,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Upload Foto',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: DesignSystem.greyColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _menuController,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Nama Produk',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: TextFormField(
+                      style: TextStyle(color: DesignSystem.whiteColor),
+                      controller: _hargaController,
+                      decoration: InputDecoration(
+                        labelText: 'Harga',
+                        hintStyle: TextStyle(color: DesignSystem.greyColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              BorderSide(color: DesignSystem.whiteColor),
+                        ),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: DropdownButtonFormField<String>(
+                      value: _selectedCategory.isNotEmpty
+                          ? _selectedCategory
+                          : null,
+                      style: TextStyle(color: DesignSystem.greyColor),
+                      decoration: InputDecoration(
+                        labelText: 'Kategori',
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide:
+                              BorderSide(color: DesignSystem.whiteColor),
+                        ),
+                      ),
+                      items: [
+                        DropdownMenuItem(
+                          value: 'Makanan',
+                          child: Text(
+                            'Makanan',
+                            style: TextStyle(color: DesignSystem.whiteColor),
+                          ),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Minuman',
+                          child: Text(
+                            'Minuman',
+                            style: TextStyle(color: DesignSystem.whiteColor),
+                          ),
+                        ),
+                      ],
+                      onChanged: (String? value) {
+                        setState(() {
+                          _selectedCategory = value ?? '';
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _deskripsiController,
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide(color: DesignSystem.whiteColor),
+                  ),
+                ),
+                style: TextStyle(color: DesignSystem.whiteColor),
+                keyboardType: TextInputType.multiline,
+                maxLines: 3,
+              ),
+              SizedBox(height: 24.0),
+              _isLoading
+                  ? Center(child: CircularProgressIndicator())
+                  : ElevatedButton(
+                      onPressed: _isLoading ? null : () => _submitData(context),
+                      child: Text('Tambah Data'),
+                    ),
+            ],
+          ),
         ),
       ),
     );

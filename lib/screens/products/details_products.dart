@@ -23,7 +23,26 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   }
 
   Future<void> _deleteProduct(String documentId) async {
-    await _produkCollection.doc(documentId).delete();
+    try {
+      await _produkCollection.doc(documentId).delete();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Produk berhasil dihapus'),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Terjadi kesalahan saat menghapus produk'),
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -193,8 +212,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           onPressed: () {
                             _deleteProduct(widget.documentId);
                             Navigator.pop(context);
-                            Navigator.pop(
-                                context); // Kembali ke layar sebelumnya setelah menghapus
+                            Navigator.pop(context);
                           },
                           child: Text('Hapus'),
                         ),
