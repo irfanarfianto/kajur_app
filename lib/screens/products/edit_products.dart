@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/screens/widget/form_container_widget.dart';
@@ -47,17 +48,23 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
   Future<void> _updateProductDetails() async {
     try {
+      User? user = FirebaseAuth.instance.currentUser;
+      String? userId = user?.uid;
+      String? userName = user?.displayName ?? 'Unknown User';
+
       await _produkCollection.doc(widget.documentId).update({
         'menu': _menuController.text,
         'harga': int.tryParse(_hargaController.text) ?? 0,
-        'updatedAt': FieldValue
-            .serverTimestamp(), // Update 'updatedAt' field with current server timestamp
+        'updatedAt': FieldValue.serverTimestamp(),
+        'lastEditedBy': userId,
+        'lastEditedByName': userName,
       });
       Navigator.pop(context);
     } catch (e) {
       print('Error updating product details: $e');
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

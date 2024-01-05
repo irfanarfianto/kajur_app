@@ -1,7 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/screens/auth/login.dart';
-import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:kajur_app/screens/auth/register.dart';
 import 'package:kajur_app/screens/home.dart';

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -42,7 +43,7 @@ class _AddDataPageState extends State<AddDataPage> {
 
   Future<void> _submitData(BuildContext context) async {
     setState(() {
-      _isLoading = true; // set loading to true while submitting data
+      _isLoading = true;
     });
 
     String menu = _menuController.text;
@@ -57,17 +58,27 @@ class _AddDataPageState extends State<AddDataPage> {
       CollectionReference collectionRef =
           FirebaseFirestore.instance.collection('kantin');
 
+      // Get current user ID and name
+      User? user = FirebaseAuth.instance.currentUser;
+      String? userId = user?.uid;
+      String? userName = user?.displayName ?? 'Unknown User';
+
       await collectionRef.add({
         'menu': menu,
         'harga': harga,
-        'kategori': _selectedCategory, // use selected category here
+        'kategori': _selectedCategory,
         'image': imageUrl,
         'createdAt': FieldValue.serverTimestamp(),
-        'updatedAt': FieldValue.serverTimestamp(), 
+        'updatedAt': FieldValue.serverTimestamp(),
+        'addedBy': userId,
+        'addedByName': userName,
+        'lastEditedBy': userId, 
+        'lastEditedByName':
+            userName, 
       }).then((_) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Data berhasil ditambahkan ke Firestore'),
+            content: Text('Data berhasil ditambahkan'),
           ),
         );
         Navigator.pushReplacementNamed(context, '/list_produk');
