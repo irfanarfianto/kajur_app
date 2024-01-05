@@ -52,52 +52,63 @@ class _SignUpPageState extends State<SignUpPage> {
               SizedBox(
                 height: 30,
               ),
-              FormContainerWidget(
+              TextFormField(
                 controller: _usernameController,
-                hintText: "Username",
-                isPasswordField: false,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Username',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                ),
+                keyboardType: TextInputType.name,
+                textInputAction: TextInputAction.next,
               ),
               SizedBox(
                 height: 10,
               ),
-              FormContainerWidget(
+              TextFormField(
                 controller: _emailController,
-                hintText: "Email",
-                isPasswordField: false,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                ),
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
               ),
               SizedBox(
                 height: 10,
               ),
-              FormContainerWidget(
+              TextFormField(
                 controller: _passwordController,
-                hintText: "Password",
-                isPasswordField: true,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                ),
+                keyboardType: TextInputType.visiblePassword,
+                obscureText: true,
+                textInputAction: TextInputAction.done,
               ),
               SizedBox(
                 height: 30,
               ),
-              GestureDetector(
-                onTap: () {
+              ElevatedButton(
+                onPressed: () {
                   _signUp();
                 },
                 child: Container(
-                  width: double.infinity,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                   child: Center(
-                      child: isSigningUp
-                          ? CircularProgressIndicator(
+                    child: isSigningUp
+                        ? CircularProgressIndicator(color: Colors.white)
+                        : Text(
+                            "Sign Up",
+                            style: TextStyle(
                               color: Colors.white,
-                            )
-                          : Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold),
-                            )),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
                 ),
               ),
               SizedBox(
@@ -150,9 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (user != null) {
       try {
-        await user.updateProfile(
-            displayName:
-                username);
+        await user.updateProfile(displayName: username);
         showToast(message: "User is successfully created");
         Navigator.pushNamed(context, "/home");
       } catch (e) {

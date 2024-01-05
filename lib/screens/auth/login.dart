@@ -52,38 +52,42 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 height: 30,
               ),
-              FormContainerWidget(
+              TextFormField(
                 controller: _emailController,
-                hintText: "Email",
-                isPasswordField: false,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Email',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                ),
+                keyboardType: TextInputType.emailAddress,
+                textInputAction: TextInputAction.next,
+                onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
               ),
               SizedBox(
                 height: 10,
               ),
-              FormContainerWidget(
+              TextFormField(
                 controller: _passwordController,
-                hintText: "Password",
-                isPasswordField: true,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Password',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                ),
+                keyboardType: TextInputType.visiblePassword,
+                obscureText: true,
+                textInputAction: TextInputAction.done,
               ),
               SizedBox(
                 height: 30,
               ),
-              GestureDetector(
-                onTap: () {
+              ElevatedButton(
+                onPressed: () {
                   _signIn();
                 },
                 child: Container(
-                  width: double.infinity,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.blue,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                   child: Center(
                     child: _isSigning
-                        ? CircularProgressIndicator(
-                            color: Colors.white,
-                          )
+                        ? CircularProgressIndicator(color: Colors.white)
                         : Text(
                             "Login",
                             style: TextStyle(
@@ -97,24 +101,21 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(
                 height: 10,
               ),
-              GestureDetector(
-                onTap: () {
+              ElevatedButton(
+                onPressed: () {
                   _signInWithGoogle();
                 },
+                style: ElevatedButton.styleFrom(
+                  primary: DesignSystem.whiteColor,
+                ),
                 child: Container(
-                  width: double.infinity,
-                  height: 45,
-                  decoration: BoxDecoration(
-                    color: Colors.red,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
                   child: Center(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           FontAwesomeIcons.google,
-                          color: Colors.white,
+                          color: DesignSystem.blackColor,
                         ),
                         SizedBox(
                           width: 5,
@@ -122,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                         Text(
                           "Sign in with Google",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: DesignSystem.blackColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
