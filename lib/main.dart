@@ -7,13 +7,19 @@ import 'package:kajur_app/screens/home.dart';
 import 'package:kajur_app/screens/splash_screen/splash_screen.dart';
 import 'firebase_options.dart';
 import 'design/system.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
+  timeago.setLocaleMessages('id', timeago.IdMessages());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(MyApp());
+  initializeDateFormatting('id', null).then((_) {
+    // Jalankan aplikasi Flutter
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {

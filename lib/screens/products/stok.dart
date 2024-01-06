@@ -74,7 +74,7 @@ class _EditStockPageState extends State<EditStockPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Nama Produk: ${widget.namaProduk}',
+              '${widget.namaProduk}',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             SizedBox(height: 20),

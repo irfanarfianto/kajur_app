@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AddDataPage extends StatefulWidget {
   @override
@@ -35,11 +37,23 @@ class _AddDataPageState extends State<AddDataPage> {
   Future<String> _uploadImage() async {
     if (_selectedImage == null) return '';
 
+    // Kompressi gambar sebelum mengunggahnya
+    Uint8List? compressedImage = await FlutterImageCompress.compressWithFile(
+      _selectedImage!.path,
+      quality: 70, // Atur kualitas kompresi di sini (0 sampai 100)
+    );
+    File compressedFile = File(_selectedImage!.path)
+      ..writeAsBytesSync(compressedImage!);
+
     Reference ref = FirebaseStorage.instance
         .ref()
         .child('kantin')
         .child('image_${DateTime.now().millisecondsSinceEpoch}.jpg');
-    await ref.putFile(_selectedImage!);
+
+    // Unggah file gambar yang sudah dikompresi
+    await ref.putFile(compressedFile);
+
+    // Dapatkan URL unduhan gambar yang sudah dikompresi
     return await ref.getDownloadURL();
   }
 

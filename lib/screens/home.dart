@@ -311,7 +311,7 @@ class _HomePageState extends State<HomePage> {
                                 return CircularProgressIndicator();
                               default:
                                 if (snapshot.data!.docs.isEmpty) {
-                                  return Text('Tidak ada produk');
+                                  return Text('Belum ada info baru');
                                 }
                                 return Column(
                                   children: snapshot.data!.docs
@@ -354,19 +354,22 @@ class _HomePageState extends State<HomePage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'Produk $namaProduk sudah habis!',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
+                                              Flexible(
+                                                child: Text(
+                                                  'Produk $namaProduk sudah habis!',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
-                                              ),
+                                              )
                                             ],
                                           ),
                                         ),
                                       );
-                                    } else if (stok <= 10 && stok > 5) {
+                                    } else if (stok <= 10 && stok > 4) {
                                       return GestureDetector(
                                         onTap: () {
                                           Navigator.of(context).push(
@@ -399,12 +402,15 @@ class _HomePageState extends State<HomePage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
+                                              Flexible(
+                                                child: Text(
+                                                  'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
                                             ],
@@ -443,12 +449,15 @@ class _HomePageState extends State<HomePage> {
                                             mainAxisAlignment:
                                                 MainAxisAlignment.start,
                                             children: [
-                                              Text(
-                                                'Woy! $namaProduk mau abis, sisa $stok!',
-                                                style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
+                                              Flexible(
+                                                child: Text(
+                                                  'Woy! $namaProduk mau abis, sisa $stok!',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
                                             ],

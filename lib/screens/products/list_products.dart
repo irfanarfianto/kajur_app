@@ -4,6 +4,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
 import 'package:kajur_app/screens/products/history.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:intl/intl.dart';
 
 enum CategoryFilter {
   All,
@@ -211,92 +212,148 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: Stack(
-                          children: [
-                            ListTile(
-                              contentPadding: EdgeInsets.all(12),
-                              title: Text(
-                                data['menu'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20,
-                                  color: DesignSystem.whiteColor,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                transitionDuration: Duration(milliseconds: 200),
+                                pageBuilder: (_, __, ___) =>
+                                    DetailProdukPage(documentId: documentId),
+                                transitionsBuilder: (_, animation, __, child) {
+                                  return SlideTransition(
+                                    position: Tween<Offset>(
+                                      begin: Offset(1.0, 0.0),
+                                      end: Offset.zero,
+                                    ).animate(animation),
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.all(
+                                10), // Memberi ruang di dalam Card
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(6),
+                                  child: Image.network(
+                                    data['image'],
+                                    height: 100,
+                                    width: 100,
+                                    fit: BoxFit
+                                        .cover, // Sesuaikan dengan preferensi tampilan
+                                  ),
                                 ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Harga ${data['harga']}',
-                                    style: TextStyle(
-                                      color: DesignSystem.whiteColor,
-                                    ),
+                                SizedBox(
+                                    width:
+                                        10), // Memberi jarak antara gambar dan teks
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 3, horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              color:
+                                                  data['kategori'] == 'Makanan'
+                                                      ? Colors.green
+                                                          .withOpacity(.50)
+                                                      : data['kategori'] ==
+                                                              'Minuman'
+                                                          ? DesignSystem
+                                                              .primaryColor
+                                                              .withOpacity(.50)
+                                                          : Colors.grey,
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              data['kategori'] == 'Makanan'
+                                                  ? 'Makanan'
+                                                  : data['kategori'] ==
+                                                          'Minuman'
+                                                      ? 'Minuman'
+                                                      : 'Kategori Tidak Diketahui',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: DesignSystem.whiteColor,
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(width: 8),
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 3, horizontal: 12),
+                                            decoration: BoxDecoration(
+                                              color: data['stok'] == 0
+                                                  ? DesignSystem.redAccent
+                                                      .withOpacity(.50)
+                                                  : data['stok'] < 5
+                                                      ? DesignSystem
+                                                          .purpleAccent
+                                                          .withOpacity(.50)
+                                                      : DesignSystem
+                                                          .purpleAccent
+                                                          .withOpacity(.50),
+                                              borderRadius:
+                                                  BorderRadius.circular(50),
+                                            ),
+                                            child: Text(
+                                              data['stok'] == 0
+                                                  ? 'Stok habis'
+                                                  : 'Stok ${data['stok'] ?? 0}',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                color: DesignSystem.whiteColor,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        data['menu'],
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.normal,
+                                          fontSize: 16,
+                                          color: DesignSystem.whiteColor,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                        maxLines: 1,
+                                      ),
+                                      Text(
+                                        NumberFormat.currency(
+                                          locale: 'id',
+                                          symbol: 'Rp',
+                                          decimalDigits: 0,
+                                        ).format(data['harga']),
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          color: DesignSystem.whiteColor,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      Text(
+                                        'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                                        style: TextStyle(
+                                          color: DesignSystem.whiteColor,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  Text(
-                                    'Updated At ${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                                    style: TextStyle(
-                                      color: DesignSystem.whiteColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              leading: ClipRRect(
-                                borderRadius: BorderRadius.circular(8),
-                                child: Image.network(
-                                  data['image'],
-                                  height: 50,
-                                  width: 50,
-                                  fit: BoxFit.cover,
                                 ),
-                              ),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    transitionDuration:
-                                        Duration(milliseconds: 200),
-                                    pageBuilder: (_, __, ___) =>
-                                        DetailProdukPage(
-                                            documentId: documentId),
-                                    transitionsBuilder:
-                                        (_, animation, __, child) {
-                                      return SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: Offset(1.0, 0.0),
-                                          end: Offset.zero,
-                                        ).animate(animation),
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
+                              ],
                             ),
-                            Positioned(
-                              top: 0,
-                              right: 0,
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 8, horizontal: 12),
-                                decoration: BoxDecoration(
-                                  color: data['stok'] < 5
-                                      ? DesignSystem.redAccent.withOpacity(.50)
-                                      : DesignSystem.purpleAccent
-                                          .withOpacity(.20),
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(10),
-                                    bottomLeft: Radius.circular(10),
-                                  ),
-                                ),
-                                child: Text(
-                                  'Stok: ${data['stok']}',
-                                  style: TextStyle(
-                                    color: DesignSystem.whiteColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       );
                     },
