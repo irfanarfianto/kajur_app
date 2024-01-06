@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:kajur_app/design/system.dart';
 
 class ActivityHistoryPage extends StatefulWidget {
@@ -9,14 +10,24 @@ class ActivityHistoryPage extends StatefulWidget {
 
 class _ActivityHistoryPageState extends State<ActivityHistoryPage> {
   late Stream<QuerySnapshot> _activityStream;
+  late User _currentUser;
 
   @override
   void initState() {
     super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser!;
     _activityStream = FirebaseFirestore.instance
         .collection('activity_logs')
         .orderBy('timestamp', descending: true)
         .snapshots();
+  }
+
+  Future<void> _addLog(String action) async {
+    await FirebaseFirestore.instance.collection('activity_logs').add({
+      'action': action,
+      'timestamp': Timestamp.now(),
+      'user': _currentUser.uid,
+    });
   }
 
   @override
@@ -54,6 +65,10 @@ class _ActivityHistoryPageState extends State<ActivityHistoryPage> {
                 ),
                 subtitle: Text(
                   'Timestamp: ${logData['timestamp'].toDate().toString()}',
+                ),
+                trailing: Text(
+                  'By: ${logData['user']}',
+                  // Anda dapat mengganti dengan nama pengguna atau informasi tambahan tentang pengguna yang terlibat
                 ),
               );
             }).toList(),

@@ -39,17 +39,26 @@ class _ListProdukPageState extends State<ListProdukPage> {
   }
 
   Future<void> _refreshData() async {
+    // Set state to indicate refreshing
     setState(() {
       _isRefreshing = true;
     });
 
-    // Perform fetching or refreshing data here
-    // For example, refetch Firestore data
-    await Future.delayed(Duration(seconds: 2)); // Simulating a delay
+    try {
+      // Fetch or refresh data here (e.g., refetch Firestore data)
+      await Future.delayed(Duration(seconds: 2)); // Simulating a delay
 
-    setState(() {
-      _isRefreshing = false;
-    });
+      // Turn off refreshing state after completion
+      setState(() {
+        _isRefreshing = false;
+      });
+    } catch (error) {
+      // Handle error in case of any issues during refresh
+      print('Error refreshing data: $error');
+      setState(() {
+        _isRefreshing = false;
+      });
+    }
   }
 
   Widget buildCategoryButton(CategoryFilter category, String label) {
@@ -93,8 +102,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) =>
-                      ActivityHistoryPage(), 
+                  builder: (context) => ActivityHistoryPage(),
                 ),
               );
             },
@@ -207,7 +215,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Harga: ${data['harga']}',
+                              'Harga ${data['harga']}',
                               style: TextStyle(
                                 color: DesignSystem.whiteColor,
                               ),

@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        brightness: Brightness.dark,
         primarySwatch: Colors.purple,
         scaffoldBackgroundColor: DesignSystem.blackColor,
         primaryColor: DesignSystem.purpleAccent,

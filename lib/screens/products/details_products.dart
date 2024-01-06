@@ -130,7 +130,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               ),
               SizedBox(height: 8),
               Text(
-                'Deskripsi:',
+                'Deskripsi',
                 style: TextStyle(
                   fontSize: 18,
                   color: DesignSystem.whiteColor,
@@ -152,21 +152,21 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                 ),
               if (data.containsKey('addedByName'))
                 Text(
-                  'Dibuat oleh: ${data['addedByName']}',
+                  'Dibuat oleh ${data['addedByName']}',
                   style: TextStyle(
                     color: DesignSystem.whiteColor,
                   ),
                 ),
               SizedBox(height: 8),
               Text(
-                'Created At: ${createdAt.toDate()}',
+                'Created At ${createdAt.toDate()}',
                 style: TextStyle(
                   fontSize: 18,
                   color: DesignSystem.whiteColor,
                 ),
               ),
               Text(
-                'Updated At: ${updatedAt.toDate()}',
+                'Updated At ${updatedAt.toDate()}',
                 style: TextStyle(
                   fontSize: 18,
                   color: DesignSystem.whiteColor,

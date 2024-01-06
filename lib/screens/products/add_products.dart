@@ -201,12 +201,16 @@ class _AddDataPageState extends State<AddDataPage> {
                   SizedBox(width: 16.0),
                   Expanded(
                     child: DropdownButtonFormField<String>(
+                      isExpanded: true,
                       value: _selectedCategory.isNotEmpty
                           ? _selectedCategory
                           : null,
                       style: TextStyle(color: DesignSystem.greyColor),
                       decoration: InputDecoration(
                         labelText: 'Kategori',
+                        filled: true, // Aktifkan pengisian background
+                        fillColor: DesignSystem
+                            .blackColor, // Atur warna latar belakang di sini
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                           borderSide:

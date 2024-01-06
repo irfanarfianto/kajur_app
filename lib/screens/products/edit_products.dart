@@ -23,12 +23,13 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
   late CollectionReference _produkCollection;
   File? _selectedImage;
+  String? _oldImageUrl;
 
   @override
   void initState() {
     super.initState();
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
-
+    _oldImageUrl = '';
     _menuController = TextEditingController();
     _hargaController = TextEditingController();
     _deskripsiController = TextEditingController();
@@ -48,6 +49,10 @@ class _EditProdukPageState extends State<EditProdukPage> {
         _menuController.text = data['menu'];
         _hargaController.text = data['harga'].toString();
         _deskripsiController.text = data['deskripsi'];
+
+        setState(() {
+          _oldImageUrl = data['image'];
+        });
       }
     } catch (e) {
       print('Error fetching product details: $e');
@@ -125,12 +130,22 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         fit: BoxFit.cover,
                       ),
                     )
-                  : Container(
-                      height: 100,
-                      width: 100,
-                      color: DesignSystem.greyColor.withOpacity(.20),
-                      child: Icon(Icons.add_a_photo),
-                    ),
+                  : _oldImageUrl != ''
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            _oldImageUrl!, // Menampilkan gambar lama
+                            height: 150,
+                            width: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        )
+                      : Container(
+                          height: 100,
+                          width: 100,
+                          color: DesignSystem.greyColor.withOpacity(.20),
+                          child: Icon(Icons.add_a_photo),
+                        ),
             ),
             SizedBox(height: 16.0),
             TextFormField(
