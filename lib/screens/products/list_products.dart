@@ -254,6 +254,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         elevation: 3,
                         margin:
                             EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        // warna card
+                        color: DesignSystem.greyColor.withOpacity(0.1),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),

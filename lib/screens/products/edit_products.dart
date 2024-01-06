@@ -123,114 +123,113 @@ class _EditProdukPageState extends State<EditProdukPage> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            GestureDetector(
-              onTap: () {
-                _getImage();
-              },
-              child: _selectedImage != null
-                  ? ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.file(
-                        _selectedImage!,
-                        height: 150,
-                        width: 150,
-                        fit: BoxFit.cover,
-                      ),
-                    )
-                  : (_oldImageUrl != null && _oldImageUrl != '')
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _getImage();
+                },
+                child: Container(
+                  height: 150,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: DesignSystem.greyColor.withOpacity(.20),
+                  ),
+                  child: _selectedImage != null
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(10),
-                          child: Image.network(
-                            _oldImageUrl!, // Menampilkan gambar lama
-                            height: 150,
-                            width: 150,
+                          child: Image.file(
+                            _selectedImage!,
                             fit: BoxFit.cover,
                           ),
                         )
-                      : Container(
-                          height: 100,
-                          width: 100,
-                          color: DesignSystem.greyColor.withOpacity(.20),
-                          child: Icon(Icons.add_a_photo),
+                      : (_oldImageUrl != null && _oldImageUrl != '')
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.network(
+                                _oldImageUrl!, // Menampilkan gambar lama
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : Center(
+                              child: Icon(Icons.add_a_photo),
+                            ),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _menuController,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Nama Produk',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                ),
+              ),
+              SizedBox(height: 16.0),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      controller: _hargaController,
+                      style: TextStyle(color: DesignSystem.whiteColor),
+                      decoration: InputDecoration(
+                        labelText: 'Harga',
+                        hintStyle: TextStyle(color: DesignSystem.greyColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-            ),
-            SizedBox(height: 16.0),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    controller: _menuController,
-                    style: TextStyle(color: DesignSystem.whiteColor),
-                    decoration: InputDecoration(
-                      labelText: 'Nama Produk',
-                      hintStyle: TextStyle(color: DesignSystem.greyColor),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: DesignSystem.whiteColor),
                       ),
+                      keyboardType: TextInputType.number,
                     ),
                   ),
-                ),
-                SizedBox(width: 16.0),
-                Expanded(
-                  child: TextFormField(
-                    controller: _stokController,
-                    style: TextStyle(color: DesignSystem.whiteColor),
-                    decoration: InputDecoration(
-                      labelText: 'Stok',
-                      hintStyle: TextStyle(color: DesignSystem.greyColor),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide(color: DesignSystem.whiteColor),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _stokController,
+                      style: TextStyle(color: DesignSystem.whiteColor),
+                      decoration: InputDecoration(
+                        labelText: 'Stok',
+                        hintStyle: TextStyle(color: DesignSystem.greyColor),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                        ),
                       ),
+                      keyboardType: TextInputType.number,
                     ),
-                    keyboardType: TextInputType.number,
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
+              TextFormField(
+                controller: _deskripsiController,
+                style: TextStyle(color: DesignSystem.whiteColor),
+                decoration: InputDecoration(
+                  labelText: 'Deskripsi',
+                  hintStyle: TextStyle(color: DesignSystem.greyColor),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
                   ),
                 ),
-              ],
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _hargaController,
-              style: TextStyle(color: DesignSystem.whiteColor),
-              decoration: InputDecoration(
-                labelText: 'Harga',
-                hintStyle: TextStyle(color: DesignSystem.greyColor),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: DesignSystem.whiteColor),
-                ),
+                keyboardType: TextInputType.multiline,
+                maxLines: 3,
               ),
-              keyboardType: TextInputType.number,
-            ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _deskripsiController,
-              style: TextStyle(color: DesignSystem.whiteColor),
-              decoration: InputDecoration(
-                labelText: 'Deskripsi',
-                hintStyle: TextStyle(color: DesignSystem.greyColor),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: DesignSystem.whiteColor),
-                ),
+              SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: () {
+                  _updateProductDetails();
+                },
+                child: Text('Update'),
               ),
-              keyboardType: TextInputType.multiline,
-              maxLines: 3,
-            ),
-            SizedBox(height: 24.0),
-            ElevatedButton(
-              onPressed: () {
-                _updateProductDetails();
-              },
-              child: Text('Update'),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

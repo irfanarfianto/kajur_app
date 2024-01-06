@@ -192,6 +192,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      SizedBox(height: 8),
                       if (data.containsKey('addedByName'))
                         Text(
                           'Dibuat oleh ${data['addedByName']}, ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(createdAt.toDate())}',
