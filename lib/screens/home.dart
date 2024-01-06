@@ -6,6 +6,7 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:kajur_app/screens/products/stok.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key});
@@ -249,7 +250,135 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-          )
+          ),
+          Column(
+            children: [
+              Center(
+                child: Container(
+                  padding: EdgeInsets.all(20),
+                  width: 500,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Pemberitahuan',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: DesignSystem.whiteColor,
+                        ),
+                      ),
+                      StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance
+                            .collection('kantin')
+                            .snapshots(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.hasError) {
+                            return Text('Error: ${snapshot.error}');
+                          }
+
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.waiting:
+                              return CircularProgressIndicator();
+                            default:
+                              return Column(
+                                children: snapshot.data!.docs
+                                    .map((DocumentSnapshot document) {
+                                  Map<String, dynamic> data =
+                                      document.data() as Map<String, dynamic>;
+                                  String namaProduk = data['menu'];
+                                  int stok = data['stok'];
+                                  String documentId = document.id;
+
+                                  return GestureDetector(
+                                    onTap: () {
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute(
+                                          builder: (context) => EditStockPage(
+                                            namaProduk: namaProduk,
+                                            stok: stok,
+                                            documentId: documentId,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    child: stok <= 10 && stok > 5
+                                        ? Container(
+                                            padding: EdgeInsets.symmetric(
+                                                vertical: 10, horizontal: 20),
+                                            margin: EdgeInsets.symmetric(
+                                                vertical: 10),
+                                            decoration: BoxDecoration(
+                                              color: Colors.yellow
+                                                  .withOpacity(.10),
+                                              borderRadius:
+                                                  BorderRadius.circular(10),
+                                              border: Border.all(
+                                                color: Colors.yellow
+                                                    .withOpacity(.20),
+                                              ),
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          )
+                                        : stok < 5
+                                            ? Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 10,
+                                                    horizontal: 20),
+                                                margin: EdgeInsets.symmetric(
+                                                    vertical: 10),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red
+                                                      .withOpacity(.10),
+                                                  borderRadius:
+                                                      BorderRadius.circular(10),
+                                                  border: Border.all(
+                                                    color: Colors.red
+                                                        .withOpacity(.20),
+                                                  ),
+                                                ),
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      'Woy! $namaProduk mau abis, sisa $stok!',
+                                                      style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              )
+                                            : SizedBox(), // If stock is not low or medium, return an empty SizedBox
+                                  );
+                                }).toList(),
+                              );
+                          }
+                        },
+                      )
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
         ],
       ),
       floatingActionButton: SpeedDial(

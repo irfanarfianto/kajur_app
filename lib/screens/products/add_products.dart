@@ -115,7 +115,7 @@ class _AddDataPageState extends State<AddDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Data'),
+        title: Text('Tambah Produk'),
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),
