@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -34,10 +35,18 @@ class _EditStockPageState extends State<EditStockPage> {
 
   Future<void> updateStock(int newStock) async {
     try {
+      String userId = FirebaseAuth.instance.currentUser?.uid ?? 'Unknown';
+      String userName =
+          FirebaseAuth.instance.currentUser?.displayName ?? 'Unknown';
+
       await FirebaseFirestore.instance
           .collection('kantin')
           .doc(widget.documentId)
-          .update({'stok': newStock});
+          .update({
+        'stok': newStock,
+        'lastEditedBy': userId,
+        'lastEditedByName': userName,
+      });
 
       // Jika diperlukan, tambahkan logika lain setelah pembaruan berhasil
       // Contoh: menampilkan pesan sukses atau navigasi kembali ke layar sebelumnya

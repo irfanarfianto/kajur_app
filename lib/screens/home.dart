@@ -7,6 +7,7 @@ import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:kajur_app/screens/products/stok.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key});
@@ -52,441 +53,478 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text("Kantin Kejujuaran"),
-        actions: [
-          Builder(
-            builder: (context) => GestureDetector(
-              onTap: () {
-                Scaffold.of(context).openEndDrawer(); // Open the drawer
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 20),
-                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                alignment: Alignment.center,
-                child: _currentUser != null
-                    ? Text(
-                        "${_currentUser!.displayName}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w300,
-                          fontSize: 15,
-                          color: DesignSystem.whiteColor,
-                        ),
-                      )
-                    : CircularProgressIndicator(), // Show loading indicator while fetching user data
+    return WillPopScope(
+      onWillPop: () async {
+        // Tampilkan dialog konfirmasi sebelum keluar dari aplikasi saat tombol kembali ditekan
+        bool exit = await showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Keluar dari aplikasi?'),
+            content: Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('Tidak'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: Text('Ya'),
+              ),
+            ],
+          ),
+        );
+
+        if (exit != null && exit) {
+          SystemNavigator.pop();
+        }
+
+        return false;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: Text("Kantin Kejujuaran"),
+          actions: [
+            Builder(
+              builder: (context) => GestureDetector(
+                onTap: () {
+                  Scaffold.of(context).openEndDrawer(); // Open the drawer
+                },
+                child: Container(
+                  margin: EdgeInsets.only(right: 20),
+                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                  alignment: Alignment.center,
+                  child: _currentUser != null
+                      ? Text(
+                          "${_currentUser!.displayName}",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w300,
+                            fontSize: 15,
+                            color: DesignSystem.whiteColor,
+                          ),
+                        )
+                      : CircularProgressIndicator(), // Show loading indicator while fetching user data
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      endDrawer: Drawer(
-        // Define the drawer with user profile details
-        child: _buildDrawer(),
-      ),
-      body: Column(
-        children: [
-          Center(
-            child: Container(
-              padding: EdgeInsets.all(20),
-              margin: EdgeInsets.all(20),
-              width: 500,
-              decoration: BoxDecoration(
-                  color: DesignSystem.greyColor.withOpacity(.20),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
+          ],
+        ),
+        endDrawer: Drawer(
+          // Define the drawer with user profile details
+          child: _buildDrawer(),
+        ),
+        body: Column(
+          children: [
+            Center(
+              child: Container(
+                padding: EdgeInsets.all(20),
+                margin: EdgeInsets.all(20),
+                width: 500,
+                decoration: BoxDecoration(
                     color: DesignSystem.greyColor.withOpacity(.20),
-                  )),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Container(
-                    width: 150,
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: DesignSystem.purpleAccent.withOpacity(.10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          "Saldo",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: DesignSystem.whiteColor,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: DesignSystem.greyColor.withOpacity(.20),
+                    )),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Container(
+                      width: 150,
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: DesignSystem.purpleAccent.withOpacity(.10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Saldo",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: DesignSystem.whiteColor,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 8),
-                        Container(
-                          width: 150,
-                          padding: EdgeInsets.all(10),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: DesignSystem.purpleAccent,
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Total Saldo",
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                  color: DesignSystem.whiteColor,
-                                ),
-                              ),
-                              Text(
-                                "Rp 5.000.000",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: DesignSystem.whiteColor,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 10),
-                  Container(
-                    width: 150,
-                    padding: EdgeInsets.all(8.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: DesignSystem.orangeAccent.withOpacity(.10),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Text(
-                          "Total Produk",
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                            color: DesignSystem.whiteColor,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation, secondaryAnimation) =>
-                                        ListProdukPage(),
-                                transitionsBuilder: (context, animation,
-                                    secondaryAnimation, child) {
-                                  const begin = Offset(1.0, 0.0);
-                                  const end = Offset.zero;
-                                  const curve = Curves.ease;
-
-                                  var tween =
-                                      Tween(begin: begin, end: end).chain(
-                                    CurveTween(curve: curve),
-                                  );
-
-                                  return SlideTransition(
-                                    position: animation.drive(tween),
-                                    child: child,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Container(
+                          SizedBox(height: 8),
+                          Container(
                             width: 150,
                             padding: EdgeInsets.all(10),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
-                              color: DesignSystem.orangeAccent,
+                              color: DesignSystem.purpleAccent,
                             ),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  "Total Produk",
+                                  "Total Saldo",
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                     color: DesignSystem.whiteColor,
                                   ),
                                 ),
-                                StreamBuilder<QuerySnapshot>(
-                                  stream: FirebaseFirestore.instance
-                                      .collection('kantin')
-                                      .snapshots(),
-                                  builder: (BuildContext context,
-                                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                                    if (snapshot.hasError) {
-                                      return Text('Error: ${snapshot.error}');
-                                    }
-                                    switch (snapshot.connectionState) {
-                                      case ConnectionState.waiting:
-                                        return CircularProgressIndicator();
-                                      default:
-                                        return Text(
-                                          snapshot.data!.size.toString(),
-                                          style: TextStyle(
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            color: DesignSystem.whiteColor,
-                                          ),
-                                        );
-                                    }
-                                  },
+                                Text(
+                                  "Rp 5.000.000",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: DesignSystem.whiteColor,
+                                  ),
                                 ),
                               ],
                             ),
                           ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    Container(
+                      width: 150,
+                      padding: EdgeInsets.all(8.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: DesignSystem.orangeAccent.withOpacity(.10),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            "Total Produk",
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: DesignSystem.whiteColor,
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(
+                                PageRouteBuilder(
+                                  pageBuilder: (context, animation,
+                                          secondaryAnimation) =>
+                                      ListProdukPage(),
+                                  transitionsBuilder: (context, animation,
+                                      secondaryAnimation, child) {
+                                    const begin = Offset(1.0, 0.0);
+                                    const end = Offset.zero;
+                                    const curve = Curves.ease;
+
+                                    var tween =
+                                        Tween(begin: begin, end: end).chain(
+                                      CurveTween(curve: curve),
+                                    );
+
+                                    return SlideTransition(
+                                      position: animation.drive(tween),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Container(
+                              width: 150,
+                              padding: EdgeInsets.all(10),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: DesignSystem.orangeAccent,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Total Produk",
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.bold,
+                                      color: DesignSystem.whiteColor,
+                                    ),
+                                  ),
+                                  StreamBuilder<QuerySnapshot>(
+                                    stream: FirebaseFirestore.instance
+                                        .collection('kantin')
+                                        .snapshots(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                                      if (snapshot.hasError) {
+                                        return Text('Error: ${snapshot.error}');
+                                      }
+                                      switch (snapshot.connectionState) {
+                                        case ConnectionState.waiting:
+                                          return CircularProgressIndicator();
+                                        default:
+                                          return Text(
+                                            snapshot.data!.size.toString(),
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: DesignSystem.whiteColor,
+                                            ),
+                                          );
+                                      }
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            ),
+            Column(
+              children: [
+                Center(
+                  child: Container(
+                    padding: EdgeInsets.all(20),
+                    width: 500,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Pemberitahuan 📢',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                            color: DesignSystem.whiteColor,
+                          ),
+                        ),
+                        StreamBuilder<QuerySnapshot>(
+                          stream: FirebaseFirestore.instance
+                              .collection('kantin')
+                              .snapshots(),
+                          builder: (BuildContext context,
+                              AsyncSnapshot<QuerySnapshot> snapshot) {
+                            if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            }
+
+                            switch (snapshot.connectionState) {
+                              case ConnectionState.waiting:
+                                return CircularProgressIndicator();
+                              default:
+                                if (snapshot.data!.docs.isEmpty) {
+                                  return Text('Tidak ada produk');
+                                }
+                                return Column(
+                                  children: snapshot.data!.docs
+                                      .map((DocumentSnapshot document) {
+                                    Map<String, dynamic> data =
+                                        document.data() as Map<String, dynamic>;
+                                    String namaProduk = data['menu'];
+                                    int stok = data['stok'];
+                                    String documentId = document.id;
+
+                                    if (stok == 0) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditStockPage(
+                                                namaProduk: namaProduk,
+                                                stok: stok,
+                                                documentId: documentId,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 20),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(.10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color:
+                                                  Colors.red.withOpacity(.50),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Produk $namaProduk sudah habis!',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    } else if (stok <= 10 && stok > 5) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditStockPage(
+                                                namaProduk: namaProduk,
+                                                stok: stok,
+                                                documentId: documentId,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 20),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          decoration: BoxDecoration(
+                                            color:
+                                                Colors.yellow.withOpacity(.10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Colors.yellow
+                                                  .withOpacity(.20),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    } else if (stok < 5) {
+                                      return GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).push(
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  EditStockPage(
+                                                namaProduk: namaProduk,
+                                                stok: stok,
+                                                documentId: documentId,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 20),
+                                          margin: EdgeInsets.symmetric(
+                                              vertical: 10),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(.10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color:
+                                                  Colors.red.withOpacity(.20),
+                                            ),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                'Woy! $namaProduk mau abis, sisa $stok!',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    } else {
+                                      return SizedBox(); // Jika stok tidak rendah atau sedang, kembalikan SizedBox kosong
+                                    }
+                                  }).toList(),
+                                );
+                            }
+                          },
                         )
                       ],
                     ),
-                  )
-                ],
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              Center(
-                child: Container(
-                  padding: EdgeInsets.all(20),
-                  width: 500,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Pemberitahuan 📢',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: DesignSystem.whiteColor,
-                        ),
-                      ),
-                      StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance
-                            .collection('kantin')
-                            .snapshots(),
-                        builder: (BuildContext context,
-                            AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.hasError) {
-                            return Text('Error: ${snapshot.error}');
-                          }
-
-                          switch (snapshot.connectionState) {
-                            case ConnectionState.waiting:
-                              return CircularProgressIndicator();
-                            default:
-                              if (snapshot.data!.docs.isEmpty) {
-                                return Text('Tidak ada produk');
-                              }
-                              return Column(
-                                children: snapshot.data!.docs
-                                    .map((DocumentSnapshot document) {
-                                  Map<String, dynamic> data =
-                                      document.data() as Map<String, dynamic>;
-                                  String namaProduk = data['menu'];
-                                  int stok = data['stok'];
-                                  String documentId = document.id;
-
-                                  if (stok == 0) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => EditStockPage(
-                                              namaProduk: namaProduk,
-                                              stok: stok,
-                                              documentId: documentId,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(.10),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: Colors.red.withOpacity(.50),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Produk $namaProduk sudah habis!',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  } else if (stok <= 10 && stok > 5) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => EditStockPage(
-                                              namaProduk: namaProduk,
-                                              stok: stok,
-                                              documentId: documentId,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.yellow.withOpacity(.10),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color:
-                                                Colors.yellow.withOpacity(.20),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  } else if (stok < 5) {
-                                    return GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).push(
-                                          MaterialPageRoute(
-                                            builder: (context) => EditStockPage(
-                                              namaProduk: namaProduk,
-                                              stok: stok,
-                                              documentId: documentId,
-                                            ),
-                                          ),
-                                        );
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 10),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(.10),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: Colors.red.withOpacity(.20),
-                                          ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Woy! $namaProduk mau abis, sisa $stok!',
-                                              style: TextStyle(
-                                                color: Colors.white,
-                                                fontWeight: FontWeight.normal,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  } else {
-                                    return SizedBox(); // Jika stok tidak rendah atau sedang, kembalikan SizedBox kosong
-                                  }
-                                }).toList(),
-                              );
-                          }
-                        },
-                      )
-                    ],
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-      floatingActionButton: SpeedDial(
-        // Both default and active icon can be set separately
-        animatedIcon: AnimatedIcons.menu_close,
-        animatedIconTheme: IconThemeData(size: 22.0),
-        // This is ignored if animatedIcon is non-null
-        icon: Icons.add,
-        activeIcon: Icons.close,
-        buttonSize: Size(56.0, 56.0),
-        visible: true,
-        closeManually: false,
-        curve: Curves.bounceIn,
-        overlayColor: Colors.black,
-        overlayOpacity: 0.5,
-        onOpen: () => print('Opening dial'),
-        onClose: () => print('Dial closed'),
-        tooltip: 'Speed Dial',
-        heroTag: 'speed-dial-hero-tag',
-        backgroundColor: Colors.purpleAccent,
-        foregroundColor: Colors.white,
-        elevation: 8.0,
-        shape: CircleBorder(),
-        children: [
-          SpeedDialChild(
-            child: Icon(Icons.add),
-            // backgroundColor: DesignSystem.whiteColor,
-            label: 'Tambah Produk',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddDataPage()),
-              );
-            },
-            shape: CircleBorder(),
-          ),
-          // SpeedDialChild(
-          //   child: Icon(Icons.arrow_downward_outlined),
-          //   backgroundColor: DesignSystem.whiteColor,
-          //   label: 'Pemasukan',
-          //   labelStyle: TextStyle(fontSize: 18.0),
-          //   onTap: () => print('Second action'),
-          //   shape: CircleBorder(),
-          // ),
-          // SpeedDialChild(
-          //   child: Icon(Icons.arrow_upward_outlined),
-          //   backgroundColor: DesignSystem.whiteColor,
-          //   label: 'Pengeluaran',
-          //   labelStyle: TextStyle(fontSize: 18.0),
-          //   onTap: () => print('Second action'),
-          //   shape: CircleBorder(),
-          // ),
-          // Add more SpeedDialChild widgets for additional actions
-        ],
+              ],
+            ),
+          ],
+        ),
+        floatingActionButton: SpeedDial(
+          // Both default and active icon can be set separately
+          animatedIcon: AnimatedIcons.menu_close,
+          animatedIconTheme: IconThemeData(size: 22.0),
+          // This is ignored if animatedIcon is non-null
+          icon: Icons.add,
+          activeIcon: Icons.close,
+          buttonSize: Size(56.0, 56.0),
+          visible: true,
+          closeManually: false,
+          curve: Curves.bounceIn,
+          overlayColor: Colors.black,
+          overlayOpacity: 0.5,
+          onOpen: () => print('Opening dial'),
+          onClose: () => print('Dial closed'),
+          tooltip: 'Speed Dial',
+          heroTag: 'speed-dial-hero-tag',
+          backgroundColor: Colors.purpleAccent,
+          foregroundColor: Colors.white,
+          elevation: 8.0,
+          shape: CircleBorder(),
+          children: [
+            SpeedDialChild(
+              child: Icon(Icons.add),
+              // backgroundColor: DesignSystem.whiteColor,
+              label: 'Tambah Produk',
+              labelStyle: TextStyle(fontSize: 18.0),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => AddDataPage()),
+                );
+              },
+              shape: CircleBorder(),
+            ),
+            // SpeedDialChild(
+            //   child: Icon(Icons.arrow_downward_outlined),
+            //   backgroundColor: DesignSystem.whiteColor,
+            //   label: 'Pemasukan',
+            //   labelStyle: TextStyle(fontSize: 18.0),
+            //   onTap: () => print('Second action'),
+            //   shape: CircleBorder(),
+            // ),
+            // SpeedDialChild(
+            //   child: Icon(Icons.arrow_upward_outlined),
+            //   backgroundColor: DesignSystem.whiteColor,
+            //   label: 'Pengeluaran',
+            //   labelStyle: TextStyle(fontSize: 18.0),
+            //   onTap: () => print('Second action'),
+            //   shape: CircleBorder(),
+            // ),
+            // Add more SpeedDialChild widgets for additional actions
+          ],
+        ),
       ),
     );
   }

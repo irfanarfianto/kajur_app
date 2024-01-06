@@ -4,7 +4,6 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/auth/firebase_auth_implementation/firebase_auth_services.dart';
 import 'package:kajur_app/screens/auth/login.dart';
-import 'package:kajur_app/screens/widget/form_container_widget.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
