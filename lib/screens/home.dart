@@ -261,7 +261,7 @@ class _HomePageState extends State<HomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Pemberitahuan',
+                        'Pemberitahuan 📢',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
@@ -282,6 +282,9 @@ class _HomePageState extends State<HomePage> {
                             case ConnectionState.waiting:
                               return CircularProgressIndicator();
                             default:
+                              if (snapshot.data!.docs.isEmpty) {
+                                return Text('Tidak ada produk');
+                              }
                               return Column(
                                 children: snapshot.data!.docs
                                     .map((DocumentSnapshot document) {
@@ -291,83 +294,133 @@ class _HomePageState extends State<HomePage> {
                                   int stok = data['stok'];
                                   String documentId = document.id;
 
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute(
-                                          builder: (context) => EditStockPage(
-                                            namaProduk: namaProduk,
-                                            stok: stok,
-                                            documentId: documentId,
+                                  if (stok == 0) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => EditStockPage(
+                                              namaProduk: namaProduk,
+                                              stok: stok,
+                                              documentId: documentId,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(.10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.red.withOpacity(.50),
                                           ),
                                         ),
-                                      );
-                                    },
-                                    child: stok <= 10 && stok > 5
-                                        ? Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 10, horizontal: 20),
-                                            margin: EdgeInsets.symmetric(
-                                                vertical: 10),
-                                            decoration: BoxDecoration(
-                                              color: Colors.yellow
-                                                  .withOpacity(.10),
-                                              borderRadius:
-                                                  BorderRadius.circular(10),
-                                              border: Border.all(
-                                                color: Colors.yellow
-                                                    .withOpacity(.20),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Produk $namaProduk sudah habis!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.normal,
                                               ),
                                             ),
-                                            child: Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                                  style: TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                  ),
-                                                ),
-                                              ],
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  } else if (stok <= 10 && stok > 5) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => EditStockPage(
+                                              namaProduk: namaProduk,
+                                              stok: stok,
+                                              documentId: documentId,
                                             ),
-                                          )
-                                        : stok < 5
-                                            ? Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 10,
-                                                    horizontal: 20),
-                                                margin: EdgeInsets.symmetric(
-                                                    vertical: 10),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red
-                                                      .withOpacity(.10),
-                                                  borderRadius:
-                                                      BorderRadius.circular(10),
-                                                  border: Border.all(
-                                                    color: Colors.red
-                                                        .withOpacity(.20),
-                                                  ),
-                                                ),
-                                                child: Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      'Woy! $namaProduk mau abis, sisa $stok!',
-                                                      style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.normal,
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            : SizedBox(), // If stock is not low or medium, return an empty SizedBox
-                                  );
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.yellow.withOpacity(.10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color:
+                                                Colors.yellow.withOpacity(.20),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  } else if (stok < 5) {
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.of(context).push(
+                                          MaterialPageRoute(
+                                            builder: (context) => EditStockPage(
+                                              namaProduk: namaProduk,
+                                              stok: stok,
+                                              documentId: documentId,
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(.10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.red.withOpacity(.20),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              'Woy! $namaProduk mau abis, sisa $stok!',
+                                              style: TextStyle(
+                                                color: Colors.white,
+                                                fontWeight: FontWeight.normal,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    return SizedBox(); // Jika stok tidak rendah atau sedang, kembalikan SizedBox kosong
+                                  }
                                 }).toList(),
                               );
                           }
@@ -416,22 +469,22 @@ class _HomePageState extends State<HomePage> {
             },
             shape: CircleBorder(),
           ),
-          SpeedDialChild(
-            child: Icon(Icons.arrow_downward_outlined),
-            backgroundColor: DesignSystem.whiteColor,
-            label: 'Pemasukan',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => print('Second action'),
-            shape: CircleBorder(),
-          ),
-          SpeedDialChild(
-            child: Icon(Icons.arrow_upward_outlined),
-            backgroundColor: DesignSystem.whiteColor,
-            label: 'Pengeluaran',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () => print('Second action'),
-            shape: CircleBorder(),
-          ),
+          // SpeedDialChild(
+          //   child: Icon(Icons.arrow_downward_outlined),
+          //   backgroundColor: DesignSystem.whiteColor,
+          //   label: 'Pemasukan',
+          //   labelStyle: TextStyle(fontSize: 18.0),
+          //   onTap: () => print('Second action'),
+          //   shape: CircleBorder(),
+          // ),
+          // SpeedDialChild(
+          //   child: Icon(Icons.arrow_upward_outlined),
+          //   backgroundColor: DesignSystem.whiteColor,
+          //   label: 'Pengeluaran',
+          //   labelStyle: TextStyle(fontSize: 18.0),
+          //   onTap: () => print('Second action'),
+          //   shape: CircleBorder(),
+          // ),
           // Add more SpeedDialChild widgets for additional actions
         ],
       ),
