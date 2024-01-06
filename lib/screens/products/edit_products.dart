@@ -20,6 +20,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
   late TextEditingController _menuController;
   late TextEditingController _hargaController;
   late TextEditingController _deskripsiController;
+  late TextEditingController _stokController;
 
   late CollectionReference _produkCollection;
   File? _selectedImage;
@@ -33,6 +34,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController = TextEditingController();
     _hargaController = TextEditingController();
     _deskripsiController = TextEditingController();
+    _stokController = TextEditingController();
 
     _fetchProductDetails();
   }
@@ -49,6 +51,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
         _menuController.text = data['menu'];
         _hargaController.text = data['harga'].toString();
         _deskripsiController.text = data['deskripsi'];
+        _stokController.text = data['stok']?.toString() ?? '0';
 
         setState(() {
           _oldImageUrl = data['image'];
@@ -65,13 +68,20 @@ class _EditProdukPageState extends State<EditProdukPage> {
       String? userId = user?.uid;
       String? userName = user?.displayName ?? 'Unknown User';
 
-      String? imageUrl = await _uploadImage();
+      String? imageUrl;
+      if (_selectedImage != null) {
+        imageUrl = await _uploadImage();
+      } else {
+        imageUrl =
+            _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
+      }
 
       await _produkCollection.doc(widget.documentId).update({
         'menu': _menuController.text,
         'harga': int.tryParse(_hargaController.text) ?? 0,
         'deskripsi': _deskripsiController.text,
         'image': imageUrl,
+        'stok': int.tryParse(_stokController.text) ?? 0,
         'updatedAt': FieldValue.serverTimestamp(),
         'lastEditedBy': userId,
         'lastEditedByName': userName,
@@ -109,7 +119,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Product'),
+        title: Text('Edit Produk'),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -130,7 +140,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         fit: BoxFit.cover,
                       ),
                     )
-                  : _oldImageUrl != ''
+                  : (_oldImageUrl != null && _oldImageUrl != '')
                       ? ClipRRect(
                           borderRadius: BorderRadius.circular(10),
                           child: Image.network(
@@ -148,17 +158,41 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         ),
             ),
             SizedBox(height: 16.0),
-            TextFormField(
-              controller: _menuController,
-              style: TextStyle(color: DesignSystem.whiteColor),
-              decoration: InputDecoration(
-                labelText: 'Nama Produk',
-                hintStyle: TextStyle(color: DesignSystem.greyColor),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                  borderSide: BorderSide(color: DesignSystem.whiteColor),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  flex: 2,
+                  child: TextFormField(
+                    controller: _menuController,
+                    style: TextStyle(color: DesignSystem.whiteColor),
+                    decoration: InputDecoration(
+                      labelText: 'Nama Produk',
+                      hintStyle: TextStyle(color: DesignSystem.greyColor),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: DesignSystem.whiteColor),
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(width: 16.0),
+                Expanded(
+                  child: TextFormField(
+                    controller: _stokController,
+                    style: TextStyle(color: DesignSystem.whiteColor),
+                    decoration: InputDecoration(
+                      labelText: 'Stok',
+                      hintStyle: TextStyle(color: DesignSystem.greyColor),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide(color: DesignSystem.whiteColor),
+                      ),
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                ),
+              ],
             ),
             SizedBox(height: 16.0),
             TextFormField(
@@ -207,6 +241,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController.dispose();
     _hargaController.dispose();
     _deskripsiController.dispose();
+    _stokController.dispose();
     super.dispose();
   }
 }

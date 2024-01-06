@@ -143,6 +143,21 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   color: DesignSystem.whiteColor,
                 ),
               ),
+              SizedBox(height: 8),
+              Text(
+                'Stok',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: DesignSystem.whiteColor,
+                ),
+              ),
+              Text(
+                '${data['stok'] ?? 0}',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: DesignSystem.whiteColor,
+                ),
+              ),
               if (data.containsKey('lastEditedByName'))
                 Text(
                   'Terakhir diedit: ${data['lastEditedByName']}',

@@ -15,6 +15,7 @@ class _AddDataPageState extends State<AddDataPage> {
   final TextEditingController _menuController = TextEditingController();
   final TextEditingController _hargaController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
+  final TextEditingController _stokController = TextEditingController();
   String _selectedCategory = '';
   File? _selectedImage;
   bool _isLoading = false;
@@ -49,9 +50,12 @@ class _AddDataPageState extends State<AddDataPage> {
 
     String menu = _menuController.text;
     int harga = int.tryParse(_hargaController.text) ?? 0;
+    int stok = int.tryParse(_stokController.text) ??
+        0; // Ambil nilai stok dari TextFormField
 
     if (menu.isNotEmpty &&
         harga > 0 &&
+        stok >= 0 && // Pastikan stok tidak negatif
         _selectedCategory.isNotEmpty &&
         _selectedImage != null) {
       String imageUrl = await _uploadImage();
@@ -70,6 +74,7 @@ class _AddDataPageState extends State<AddDataPage> {
         'kategori': _selectedCategory,
         'image': imageUrl,
         'deskripsi': _deskripsiController.text,
+        'stok': stok, // Simpan nilai stok ke dalam database
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'addedBy': userId,
@@ -170,13 +175,33 @@ class _AddDataPageState extends State<AddDataPage> {
                 ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _menuController,
-                style: TextStyle(color: DesignSystem.whiteColor),
-                decoration: InputDecoration(
-                  labelText: 'Nama Produk',
-                  hintStyle: TextStyle(color: DesignSystem.greyColor),
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: TextFormField(
+                      controller: _menuController,
+                      style: TextStyle(color: DesignSystem.whiteColor),
+                      decoration: InputDecoration(
+                        labelText: 'Nama Produk',
+                        hintStyle: TextStyle(color: DesignSystem.greyColor),
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  Expanded(
+                    child: TextFormField(
+                      controller: _stokController,
+                      style: TextStyle(color: DesignSystem.whiteColor),
+                      decoration: InputDecoration(
+                        labelText: 'Stok',
+                        hintStyle: TextStyle(color: DesignSystem.greyColor),
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                  )
+                ],
               ),
               SizedBox(height: 16.0),
               Row(

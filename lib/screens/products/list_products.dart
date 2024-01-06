@@ -193,8 +193,10 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     }
                   });
 
-                  return ListView(
-                    children: filteredProducts.map((DocumentSnapshot document) {
+                  return ListView.builder(
+                    itemCount: filteredProducts.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      DocumentSnapshot document = filteredProducts[index];
                       Map<String, dynamic> data =
                           document.data() as Map<String, dynamic>;
                       String documentId = document.id;
@@ -202,59 +204,102 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       Timestamp updatedAt =
                           data['updatedAt'] ?? Timestamp.now();
 
-                      return ListTile(
-                        title: Text(
-                          data['menu'],
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: DesignSystem.whiteColor,
-                          ),
+                      return Card(
+                        elevation: 3,
+                        margin:
+                            EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
                         ),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        child: Stack(
                           children: [
-                            Text(
-                              'Harga ${data['harga']}',
-                              style: TextStyle(
-                                color: DesignSystem.whiteColor,
+                            ListTile(
+                              contentPadding: EdgeInsets.all(12),
+                              title: Text(
+                                data['menu'],
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: DesignSystem.whiteColor,
+                                ),
                               ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Harga ${data['harga']}',
+                                    style: TextStyle(
+                                      color: DesignSystem.whiteColor,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Updated At ${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                                    style: TextStyle(
+                                      color: DesignSystem.whiteColor,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              leading: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.network(
+                                  data['image'],
+                                  height: 50,
+                                  width: 50,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        Duration(milliseconds: 200),
+                                    pageBuilder: (_, __, ___) =>
+                                        DetailProdukPage(
+                                            documentId: documentId),
+                                    transitionsBuilder:
+                                        (_, animation, __, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: Offset(1.0, 0.0),
+                                          end: Offset.zero,
+                                        ).animate(animation),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
                             ),
-                            Text(
-                              'Updated At: ${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                              style: TextStyle(
-                                color: DesignSystem.whiteColor,
+                            Positioned(
+                              top: 0,
+                              right: 0,
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 8, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: data['stok'] < 5
+                                      ? DesignSystem.redAccent.withOpacity(.50)
+                                      : DesignSystem.purpleAccent
+                                          .withOpacity(.20),
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(10),
+                                    bottomLeft: Radius.circular(10),
+                                  ),
+                                ),
+                                child: Text(
+                                  'Stok: ${data['stok']}',
+                                  style: TextStyle(
+                                    color: DesignSystem.whiteColor,
+                                  ),
+                                ),
                               ),
                             ),
                           ],
                         ),
-                        leading: Image.network(
-                          data['image'],
-                          height: 50,
-                          width: 50,
-                          fit: BoxFit.cover,
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              transitionDuration: Duration(milliseconds: 200),
-                              pageBuilder: (_, __, ___) =>
-                                  DetailProdukPage(documentId: documentId),
-                              transitionsBuilder: (_, animation, __, child) {
-                                return SlideTransition(
-                                  position: Tween<Offset>(
-                                    begin: Offset(1.0, 0.0),
-                                    end: Offset.zero,
-                                  ).animate(animation),
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
-                        },
                       );
-                    }).toList(),
+                    },
                   );
                 },
               ),
