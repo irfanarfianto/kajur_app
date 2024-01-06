@@ -28,6 +28,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
   late bool _isRefreshing = false;
   CategoryFilter _categoryFilter = CategoryFilter.All;
   SortingOption _sortingOption = SortingOption.Terbaru;
+  String _searchQuery = '';
 
   @override
   void initState() {
@@ -65,9 +66,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
   Widget buildCategoryButton(CategoryFilter category, String label) {
     return ElevatedButton(
       style: _categoryFilter == category
-          ? ElevatedButton.styleFrom(primary: DesignSystem.purpleAccent)
+          ? ElevatedButton.styleFrom(
+              primary: DesignSystem.purpleAccent,
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            )
           : ElevatedButton.styleFrom(
-              primary: DesignSystem.greyColor.withOpacity(.20)),
+              primary: DesignSystem.greyColor.withOpacity(.20),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
       onPressed: () {
         setState(() {
           _categoryFilter = category;
@@ -80,9 +86,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
   Widget buildSortingButton(SortingOption option, String label) {
     return ElevatedButton(
       style: _sortingOption == option
-          ? ElevatedButton.styleFrom(primary: DesignSystem.purpleAccent)
+          ? ElevatedButton.styleFrom(
+              primary: DesignSystem.purpleAccent,
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            )
           : ElevatedButton.styleFrom(
-              primary: DesignSystem.greyColor.withOpacity(.20)),
+              primary: DesignSystem.greyColor.withOpacity(.20),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            ),
       onPressed: () {
         setState(() {
           _sortingOption = option;
@@ -96,18 +107,50 @@ class _ListProdukPageState extends State<ListProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('List Produk'),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ActivityHistoryPage(),
+          Padding(
+            padding: EdgeInsets.only(right: 5.0),
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 0.7,
+              height: 40,
+              child: TextField(
+                style: TextStyle(color: Colors.white),
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: DesignSystem.greyColor.withOpacity(0.1),
+                  contentPadding: EdgeInsets.all(8.0),
+                  hintText: 'Cari produk',
+                  hintStyle: TextStyle(
+                    color: DesignSystem.greyColor,
+                    fontSize: 14.0,
+                  ),
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    borderSide: BorderSide.none,
+                  ),
                 ),
-              );
-            },
-            icon: Icon(Icons.history),
+                onChanged: (value) {
+                  setState(() {
+                    _searchQuery = value.toLowerCase();
+                  });
+                },
+              ),
+            ),
+          ),
+          Padding(
+            padding: EdgeInsets.only(right: 16.0),
+            child: IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => ActivityHistoryPage(),
+                  ),
+                );
+              },
+              icon: Icon(Icons.history),
+            ),
           ),
         ],
       ),
@@ -168,13 +211,15 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       snapshot.data!.docs.where((document) {
                     Map<String, dynamic> data =
                         document.data() as Map<String, dynamic>;
-                    if (_categoryFilter == CategoryFilter.All) {
-                      return true;
-                    } else if (_categoryFilter == CategoryFilter.Makanan) {
-                      return data['kategori'] == 'Makanan';
-                    } else {
-                      return data['kategori'] == 'Minuman';
-                    }
+
+                    // Tambahan: Filter berdasarkan kueri pencarian
+                    final menuName = data['menu'].toString().toLowerCase();
+                    return (_categoryFilter == CategoryFilter.All ||
+                            (_categoryFilter == CategoryFilter.Makanan &&
+                                data['kategori'] == 'Makanan') ||
+                            (_categoryFilter == CategoryFilter.Minuman &&
+                                data['kategori'] == 'Minuman')) &&
+                        (menuName.contains(_searchQuery));
                   }).toList();
 
                   filteredProducts.sort((a, b) {
