@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:intl/intl.dart';
 
@@ -33,26 +34,13 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         .get();
   }
 
-  Future<void> _deleteProduct(String documentId) async {
+  void _deleteProduct(String documentId) async {
     try {
       await _produkCollection.doc(documentId).delete();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            content: Text('Produk berhasil dihapus'),
-          ),
-        );
-      }
+      showToast(message: 'Produk berhasil dihapus');
     } catch (e) {
       print('Error: $e');
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Terjadi kesalahan saat menghapus produk'),
-          ),
-        );
-      }
+      showToast(message: 'Terjadi kesalahan saat menghapus produk');
     }
   }
 
@@ -238,7 +226,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       SizedBox(height: 8),
                       if (data.containsKey('lastEditedByName'))
                         Text(
-                          'Terakhir diupdate oleh ${data['lastEditedByName']}, ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate())}',
+                          'Diupdate pada ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate())}, oleh ${data['lastEditedByName']}',
                           style: TextStyle(
                             color: DesignSystem.whiteColor,
                           ),

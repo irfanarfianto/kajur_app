@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/global/common/toast.dart';
 
 class EditStockPage extends StatefulWidget {
   final String documentId;
@@ -48,14 +49,9 @@ class _EditStockPageState extends State<EditStockPage> {
         'lastEditedByName': userName,
       });
 
-      // Jika diperlukan, tambahkan logika lain setelah pembaruan berhasil
-      // Contoh: menampilkan pesan sukses atau navigasi kembali ke layar sebelumnya
-      // dengan snackbar
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Stok berhasil diperbarui'),
-        ),
-      );
+      showToast(message: 'Stok berhasil diperbarui');
+
+      Navigator.pop(context);
     } catch (error) {
       // Handle error
       print('Error updating stock: $error');

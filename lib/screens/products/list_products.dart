@@ -36,6 +36,18 @@ class _ListProdukPageState extends State<ListProdukPage> {
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
   }
 
+  void _resetCategoryFilter() {
+    setState(() {
+      _categoryFilter = CategoryFilter.All;
+    });
+  }
+
+  void _resetSortingOption() {
+    setState(() {
+      _sortingOption = SortingOption.Terbaru;
+    });
+  }
+
   Future<void> _deleteProduct(String documentId) async {
     await _produkCollection.doc(documentId).delete();
   }
@@ -68,16 +80,25 @@ class _ListProdukPageState extends State<ListProdukPage> {
       style: _categoryFilter == category
           ? ElevatedButton.styleFrom(
               primary: DesignSystem.purpleAccent,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            )
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+                side: BorderSide(color: DesignSystem.purpleAccent),
+              ))
           : ElevatedButton.styleFrom(
               primary: DesignSystem.greyColor.withOpacity(.20),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            ),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              )),
       onPressed: () {
-        setState(() {
-          _categoryFilter = category;
-        });
+        if (_categoryFilter == category) {
+          _resetCategoryFilter();
+        } else {
+          setState(() {
+            _categoryFilter = category;
+          });
+        }
       },
       child: Text(label),
     );
@@ -88,15 +109,24 @@ class _ListProdukPageState extends State<ListProdukPage> {
       style: _sortingOption == option
           ? ElevatedButton.styleFrom(
               primary: DesignSystem.purpleAccent,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            )
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+                side: BorderSide(color: DesignSystem.purpleAccent),
+              ))
           : ElevatedButton.styleFrom(
               primary: DesignSystem.greyColor.withOpacity(.20),
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-            ),
+              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              )),
       onPressed: () {
         setState(() {
-          _sortingOption = option;
+          if (_sortingOption == option) {
+            _sortingOption = SortingOption.Terbaru;
+          } else {
+            _sortingOption = option;
+          }
         });
       },
       child: Text(label),
@@ -157,12 +187,12 @@ class _ListProdukPageState extends State<ListProdukPage> {
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(left: 16),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
+                  SizedBox(width: 10),
                   buildCategoryButton(CategoryFilter.All, 'Semua'),
                   SizedBox(width: 8),
                   buildCategoryButton(CategoryFilter.Makanan, 'Makanan'),
@@ -240,6 +270,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                   });
 
                   return ListView.builder(
+                    physics: ClampingScrollPhysics(),
                     itemCount: filteredProducts.length,
                     itemBuilder: (BuildContext context, int index) {
                       DocumentSnapshot document = filteredProducts[index];
@@ -250,158 +281,162 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       Timestamp updatedAt =
                           data['updatedAt'] ?? Timestamp.now();
 
-                      return Card(
-                        elevation: 3,
-                        margin:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-                        // warna card
-                        color: DesignSystem.greyColor.withOpacity(0.1),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              PageRouteBuilder(
-                                transitionDuration: Duration(milliseconds: 200),
-                                pageBuilder: (_, __, ___) =>
-                                    DetailProdukPage(documentId: documentId),
-                                transitionsBuilder: (_, animation, __, child) {
-                                  return SlideTransition(
-                                    position: Tween<Offset>(
-                                      begin: Offset(1.0, 0.0),
-                                      end: Offset.zero,
-                                    ).animate(animation),
-                                    child: child,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.all(
-                                10), // Memberi ruang di dalam Card
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                ClipRRect(
-                                  borderRadius: BorderRadius.circular(6),
-                                  child: Image.network(
-                                    data['image'],
-                                    height: 100,
-                                    width: 100,
-                                    fit: BoxFit
-                                        .cover, // Sesuaikan dengan preferensi tampilan
+                      return Stack(
+                        children: [
+                          Card(
+                            elevation: 3,
+                            margin:
+                                EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            // warna card
+                            color: DesignSystem.greyColor.withOpacity(0.1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration: Duration(milliseconds: 200),
+                                    pageBuilder: (_, __, ___) =>
+                                        DetailProdukPage(documentId: documentId),
+                                    transitionsBuilder: (_, animation, __, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: Offset(1.0, 0.0),
+                                          end: Offset.zero,
+                                        ).animate(animation),
+                                        child: child,
+                                      );
+                                    },
                                   ),
-                                ),
-                                SizedBox(
-                                    width:
-                                        10), // Memberi jarak antara gambar dan teks
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
+                                );
+                              },
+                              child: Padding(
+                                padding: EdgeInsets.all(
+                                    10), // Memberi ruang di dalam Card
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(6),
+                                      child: Image.network(
+                                        data['image'],
+                                        height: 100,
+                                        width: 100,
+                                        fit: BoxFit
+                                            .cover, // Sesuaikan dengan preferensi tampilan
+                                      ),
+                                    ),
+                                    SizedBox(
+                                        width:
+                                            10), // Memberi jarak antara gambar dan teks
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 3, horizontal: 12),
-                                            decoration: BoxDecoration(
-                                              color:
+                                          Row(
+                                            children: [
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 3, horizontal: 12),
+                                                decoration: BoxDecoration(
+                                                  color:
+                                                      data['kategori'] == 'Makanan'
+                                                          ? Colors.green
+                                                              .withOpacity(.50)
+                                                          : data['kategori'] ==
+                                                                  'Minuman'
+                                                              ? DesignSystem
+                                                                  .primaryColor
+                                                                  .withOpacity(.50)
+                                                              : Colors.grey,
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Text(
                                                   data['kategori'] == 'Makanan'
-                                                      ? Colors.green
-                                                          .withOpacity(.50)
+                                                      ? 'Makanan'
                                                       : data['kategori'] ==
                                                               'Minuman'
-                                                          ? DesignSystem
-                                                              .primaryColor
-                                                              .withOpacity(.50)
-                                                          : Colors.grey,
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              data['kategori'] == 'Makanan'
-                                                  ? 'Makanan'
-                                                  : data['kategori'] ==
-                                                          'Minuman'
-                                                      ? 'Minuman'
-                                                      : 'Kategori Tidak Diketahui',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: DesignSystem.whiteColor,
+                                                          ? 'Minuman'
+                                                          : 'Kategori Tidak Diketahui',
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: DesignSystem.whiteColor,
+                                                  ),
+                                                ),
                                               ),
+                                              SizedBox(width: 8),
+                                              Container(
+                                                padding: EdgeInsets.symmetric(
+                                                    vertical: 3, horizontal: 12),
+                                                decoration: BoxDecoration(
+                                                  color: data['stok'] == 0
+                                                      ? DesignSystem.redAccent
+                                                          .withOpacity(.50)
+                                                      : data['stok'] < 5
+                                                          ? DesignSystem
+                                                              .purpleAccent
+                                                              .withOpacity(.50)
+                                                          : DesignSystem
+                                                              .purpleAccent
+                                                              .withOpacity(.50),
+                                                  borderRadius:
+                                                      BorderRadius.circular(50),
+                                                ),
+                                                child: Text(
+                                                  data['stok'] == 0
+                                                      ? 'Stok habis'
+                                                      : 'Stok ${data['stok'] ?? 0}',
+                                                  style: TextStyle(
+                                                    fontSize: 10,
+                                                    color: DesignSystem.whiteColor,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 4),
+                                          Text(
+                                            data['menu'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.normal,
+                                              fontSize: 16,
+                                              color: DesignSystem.whiteColor,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                          Text(
+                                            NumberFormat.currency(
+                                              locale: 'id',
+                                              symbol: 'Rp',
+                                              decimalDigits: 0,
+                                            ).format(data['harga']),
+                                            style: TextStyle(
+                                              fontSize: 18,
+                                              color: DesignSystem.whiteColor,
+                                              fontWeight: FontWeight.bold,
                                             ),
                                           ),
-                                          SizedBox(width: 8),
-                                          Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 3, horizontal: 12),
-                                            decoration: BoxDecoration(
-                                              color: data['stok'] == 0
-                                                  ? DesignSystem.redAccent
-                                                      .withOpacity(.50)
-                                                  : data['stok'] < 5
-                                                      ? DesignSystem
-                                                          .purpleAccent
-                                                          .withOpacity(.50)
-                                                      : DesignSystem
-                                                          .purpleAccent
-                                                          .withOpacity(.50),
-                                              borderRadius:
-                                                  BorderRadius.circular(50),
-                                            ),
-                                            child: Text(
-                                              data['stok'] == 0
-                                                  ? 'Stok habis'
-                                                  : 'Stok ${data['stok'] ?? 0}',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                                color: DesignSystem.whiteColor,
-                                              ),
+                                          Text(
+                                            'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                                            style: TextStyle(
+                                              color: DesignSystem.whiteColor,
+                                              fontSize: 12,
                                             ),
                                           ),
                                         ],
                                       ),
-                                      SizedBox(height: 4),
-                                      Text(
-                                        data['menu'],
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 16,
-                                          color: DesignSystem.whiteColor,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                        maxLines: 1,
-                                      ),
-                                      Text(
-                                        NumberFormat.currency(
-                                          locale: 'id',
-                                          symbol: 'Rp',
-                                          decimalDigits: 0,
-                                        ).format(data['harga']),
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          color: DesignSystem.whiteColor,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      Text(
-                                        'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                                        style: TextStyle(
-                                          color: DesignSystem.whiteColor,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       );
                     },
                   );

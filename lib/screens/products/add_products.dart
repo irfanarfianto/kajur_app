@@ -7,6 +7,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:kajur_app/global/common/toast.dart';
 
 class AddDataPage extends StatefulWidget {
   @override
@@ -22,9 +23,8 @@ class _AddDataPageState extends State<AddDataPage> {
   File? _selectedImage;
   bool _isLoading = false;
 
-  Future<void> _getImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
@@ -96,19 +96,10 @@ class _AddDataPageState extends State<AddDataPage> {
         'lastEditedBy': userId,
         'lastEditedByName': userName,
       }).then((_) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.green,
-            content: Text('Data berhasil ditambahkan'),
-          ),
-        );
+        showToast(message: 'Produk berhasil diperbarui');
         Navigator.pushReplacementNamed(context, '/list_produk');
       }).catchError((error) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Terjadi kesalahan: $error'),
-          ),
-        );
+        showToast(message: 'Terjadi kesalahan: $error');
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -161,27 +152,86 @@ class _AddDataPageState extends State<AddDataPage> {
                           )
                         : Container(),
                     GestureDetector(
-                      onTap: () => _getImage(),
-                      child: Center(
+                      onTap: () {
+                        // Menampilkan dialog pilihan untuk mengambil gambar dari kamera atau galeri
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: Text("Pilih Sumber Gambar"),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _getImage(ImageSource
+                                        .gallery); // Ambil gambar dari galeri
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.photo_library), // Icon galeri
+                                      SizedBox(
+                                          width:
+                                              8), // Spasi antara icon dan teks
+                                      Text("Galeri"), // Teks pilihan galeri
+                                    ],
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    _getImage(ImageSource
+                                        .camera); // Ambil gambar dari kamera
+                                  },
+                                  child: Row(
+                                    children: [
+                                      Icon(Icons.camera_alt), // Icon kamera
+                                      SizedBox(
+                                          width:
+                                              8), // Spasi antara icon dan teks
+                                      Text("Kamera"), // Teks pilihan kamera
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      },
+                      child: Container(
+                        // Konten untuk tombol yang dapat ditekan
+                        padding: EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                         child: _selectedImage != null
-                            ? Container()
-                            : Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Icon(
-                                    Icons.add_a_photo,
-                                    size: 50,
-                                    color: DesignSystem.greyColor,
-                                  ),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    'Upload Foto',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      color: DesignSystem.greyColor,
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.file(
+                                  _selectedImage!,
+                                  height: 150,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.add_a_photo,
+                                      size: 50,
+                                      color: Colors.grey,
                                     ),
-                                  ),
-                                ],
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Upload Foto',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
                       ),
                     ),

@@ -55,35 +55,13 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Tampilkan dialog konfirmasi sebelum keluar dari aplikasi saat tombol kembali ditekan
-        bool exit = await showDialog(
-          context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Keluar dari aplikasi?'),
-            content: Text('Apakah Anda yakin ingin keluar dari aplikasi?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('Tidak'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Ya'),
-              ),
-            ],
-          ),
-        );
-
-        if (exit != null && exit) {
-          SystemNavigator.pop();
-        }
-
-        return false;
+        SystemNavigator.pop();
+        return true;
       },
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: Text("Kantin Kejujuaran"),
+          title: Text("Manajemen Kajur"),
           actions: [
             Builder(
               builder: (context) => GestureDetector(

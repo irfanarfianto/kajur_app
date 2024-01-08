@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/global/common/toast.dart';
 
 class EditProdukPage extends StatefulWidget {
   final String documentId;
@@ -86,6 +87,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
         'lastEditedBy': userId,
         'lastEditedByName': userName,
       });
+      showToast(message: 'Produk berhasil diperbarui');
       Navigator.pop(context);
     } catch (e) {
       print('Error updating product details: $e');
@@ -103,9 +105,8 @@ class _EditProdukPageState extends State<EditProdukPage> {
     return await ref.getDownloadURL();
   }
 
-  Future<void> _getImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
+  Future<void> _getImage(ImageSource source) async {
+    final pickedFile = await ImagePicker().pickImage(source: source);
     if (pickedFile != null) {
       setState(() {
         _selectedImage = File(pickedFile.path);
@@ -129,7 +130,42 @@ class _EditProdukPageState extends State<EditProdukPage> {
             children: [
               GestureDetector(
                 onTap: () {
-                  _getImage();
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return AlertDialog(
+                        title: Text("Pilih Sumber Gambar"),
+                        actions: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _getImage(ImageSource.gallery);
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.photo_library),
+                                SizedBox(width: 8),
+                                Text("Galeri"),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                              _getImage(ImageSource.camera);
+                            },
+                            child: Row(
+                              children: [
+                                Icon(Icons.camera_alt),
+                                SizedBox(width: 8),
+                                Text("Kamera"),
+                              ],
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  );
                 },
                 child: Container(
                   height: 150,
@@ -150,7 +186,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                           ? ClipRRect(
                               borderRadius: BorderRadius.circular(10),
                               child: Image.network(
-                                _oldImageUrl!, // Menampilkan gambar lama
+                                _oldImageUrl!,
                                 fit: BoxFit.cover,
                               ),
                             )

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget? child;
@@ -17,12 +18,16 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _navigateToNextScreen() {
-    Future.delayed(Duration(seconds: 3), () {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (context) => widget.child!),
-        (route) => false,
-      );
+    Future.delayed(Duration(seconds: 3), () async {
+      User? user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+      
+        Navigator.pushReplacementNamed(context, '/login');
+      }
     });
   }
 
@@ -32,16 +37,12 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         constraints: BoxConstraints.expand(),
         decoration: BoxDecoration(
-          // You can adjust the image properties here
           image: DecorationImage(
             image: AssetImage('images/splash.png'),
-            fit: BoxFit.cover, // Adjust the BoxFit as needed
+            fit: BoxFit.cover,
           ),
         ),
-        child: Center(
-            // You can add additional widgets over the image if required
-            // Example: CircularProgressIndicator(), Text(), etc.
-            ),
+        child: Center(),
       ),
     );
   }
