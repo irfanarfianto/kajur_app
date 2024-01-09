@@ -77,6 +77,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             Timestamp updatedAt = data['updatedAt'] ?? Timestamp.now();
 
             return ListView(
+              physics: BouncingScrollPhysics(),
               children: [
                 GestureDetector(
                   onTap: () {

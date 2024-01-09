@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
 import 'package:kajur_app/screens/products/history.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:intl/intl.dart';
+import 'package:flutter/services.dart';
 
 enum CategoryFilter {
   All,
@@ -29,6 +32,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
   CategoryFilter _categoryFilter = CategoryFilter.All;
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
+  late AsyncSnapshot<QuerySnapshot> _currentSnapshot;
 
   @override
   void initState() {
@@ -45,6 +49,12 @@ class _ListProdukPageState extends State<ListProdukPage> {
   void _resetSortingOption() {
     setState(() {
       _sortingOption = SortingOption.Terbaru;
+    });
+  }
+
+  void _updateSnapshot(AsyncSnapshot<QuerySnapshot> newSnapshot) {
+    setState(() {
+      _currentSnapshot = newSnapshot;
     });
   }
 
@@ -75,7 +85,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
     }
   }
 
-  Widget buildCategoryButton(CategoryFilter category, String label) {
+  Widget buildCategoryButton(
+      CategoryFilter category, String label, IconData icon) {
     return ElevatedButton(
       style: _categoryFilter == category
           ? ElevatedButton.styleFrom(
@@ -100,11 +111,17 @@ class _ListProdukPageState extends State<ListProdukPage> {
           });
         }
       },
-      child: Text(label),
+      child: Row(
+        children: [
+          Icon(icon, size: 20),
+          SizedBox(width: 5),
+          Text(label),
+        ],
+      ),
     );
   }
 
-  Widget buildSortingButton(SortingOption option, String label) {
+  Widget buildSortingButton(SortingOption option, String label, IconData icon) {
     return ElevatedButton(
       style: _sortingOption == option
           ? ElevatedButton.styleFrom(
@@ -129,7 +146,13 @@ class _ListProdukPageState extends State<ListProdukPage> {
           }
         });
       },
-      child: Text(label),
+      child: Row(
+        children: [
+          Icon(icon, size: 20),
+          SizedBox(width: 5),
+          Text(label),
+        ],
+      ),
     );
   }
 
@@ -141,35 +164,58 @@ class _ListProdukPageState extends State<ListProdukPage> {
           Padding(
             padding: EdgeInsets.only(right: 5.0),
             child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
+              width: MediaQuery.of(context).size.width * 0.75,
               height: 40,
-              child: TextField(
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  filled: true,
-                  fillColor: DesignSystem.greyColor.withOpacity(0.1),
-                  contentPadding: EdgeInsets.all(8.0),
-                  hintText: 'Cari produk',
-                  hintStyle: TextStyle(
-                    color: DesignSystem.greyColor,
-                    fontSize: 14.0,
+              child: Stack(
+                alignment: Alignment.centerRight,
+                children: [
+                  TextField(
+                    style: TextStyle(
+                      color: Colors.white,
+                    ),
+                    decoration: InputDecoration(
+                      filled: true,
+                      fillColor: DesignSystem.greyColor.withOpacity(0.1),
+                      contentPadding: EdgeInsets.all(8.0),
+                      hintText: 'Cari produk',
+                      hintStyle: TextStyle(
+                        color: DesignSystem.greyColor,
+                        fontSize: 14.0,
+                      ),
+                      prefixIcon: Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none,
+                      ),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        _searchQuery = value.toLowerCase();
+                      });
+                    },
                   ),
-                  prefixIcon: Icon(Icons.search),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide.none,
+                  Visibility(
+                    visible: _searchQuery != null && _searchQuery.isNotEmpty,
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _searchQuery = '';
+                        });
+                      },
+                      child: Container(
+                        padding: EdgeInsets.symmetric(horizontal: 10),
+                        child: Icon(
+                          Icons.clear,
+                          color: DesignSystem.greyColor,
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-                onChanged: (value) {
-                  setState(() {
-                    _searchQuery = value.toLowerCase();
-                  });
-                },
+                ],
               ),
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(right: 16.0),
+          Container(
             child: IconButton(
               onPressed: () {
                 Navigator.push(
@@ -188,22 +234,31 @@ class _ListProdukPageState extends State<ListProdukPage> {
         children: [
           Container(
             child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
               scrollDirection: Axis.horizontal,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  SizedBox(width: 10),
-                  buildCategoryButton(CategoryFilter.All, 'Semua'),
+                  SizedBox(width: 16),
+                  buildCategoryButton(
+                      CategoryFilter.All, 'Semua', Icons.category),
                   SizedBox(width: 8),
-                  buildCategoryButton(CategoryFilter.Makanan, 'Makanan'),
+                  buildCategoryButton(
+                    CategoryFilter.Makanan,
+                    'Makanan',
+                    Icons.restaurant,
+                  ),
                   SizedBox(width: 8),
-                  buildCategoryButton(CategoryFilter.Minuman, 'Minuman'),
+                  buildCategoryButton(
+                      CategoryFilter.Minuman, 'Minuman', Icons.local_drink),
                   SizedBox(width: 8),
-                  buildSortingButton(SortingOption.Terbaru, 'Terbaru'),
+                  buildSortingButton(
+                      SortingOption.Terbaru, 'Terbaru', Icons.access_time),
                   SizedBox(width: 8),
-                  buildSortingButton(SortingOption.AZ, 'A-Z'),
+                  buildSortingButton(
+                      SortingOption.AZ, 'A-Z', Icons.sort_by_alpha),
                   SizedBox(width: 8),
-                  buildSortingButton(SortingOption.ZA, 'Z-A'),
+                  buildSortingButton(
+                      SortingOption.ZA, 'Z-A', Icons.sort_by_alpha_outlined),
                 ],
               ),
             ),
@@ -242,13 +297,16 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     Map<String, dynamic> data =
                         document.data() as Map<String, dynamic>;
 
-                    // Tambahan: Filter berdasarkan kueri pencarian
                     final menuName = data['menu'].toString().toLowerCase();
+                    final productCategory = data['kategori']
+                        .toString()
+                        .toLowerCase(); // Ganti dengan field yang sesuai di Firestore
+
                     return (_categoryFilter == CategoryFilter.All ||
                             (_categoryFilter == CategoryFilter.Makanan &&
-                                data['kategori'] == 'Makanan') ||
+                                productCategory == 'makanan') ||
                             (_categoryFilter == CategoryFilter.Minuman &&
-                                data['kategori'] == 'Minuman')) &&
+                                productCategory == 'minuman')) &&
                         (menuName.contains(_searchQuery));
                   }).toList();
 
@@ -270,7 +328,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                   });
 
                   return ListView.builder(
-                    physics: ClampingScrollPhysics(),
+                    padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    physics: BouncingScrollPhysics(),
                     itemCount: filteredProducts.length,
                     itemBuilder: (BuildContext context, int index) {
                       DocumentSnapshot document = filteredProducts[index];
@@ -285,8 +344,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         children: [
                           Card(
                             elevation: 3,
-                            margin:
-                                EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                            margin: EdgeInsets.symmetric(
+                                vertical: 8, horizontal: 12),
                             // warna card
                             color: DesignSystem.greyColor.withOpacity(0.1),
                             shape: RoundedRectangleBorder(
@@ -297,10 +356,13 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                 Navigator.push(
                                   context,
                                   PageRouteBuilder(
-                                    transitionDuration: Duration(milliseconds: 200),
+                                    transitionDuration:
+                                        Duration(milliseconds: 200),
                                     pageBuilder: (_, __, ___) =>
-                                        DetailProdukPage(documentId: documentId),
-                                    transitionsBuilder: (_, animation, __, child) {
+                                        DetailProdukPage(
+                                            documentId: documentId),
+                                    transitionsBuilder:
+                                        (_, animation, __, child) {
                                       return SlideTransition(
                                         position: Tween<Offset>(
                                           begin: Offset(1.0, 0.0),
@@ -340,18 +402,19 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                             children: [
                                               Container(
                                                 padding: EdgeInsets.symmetric(
-                                                    vertical: 3, horizontal: 12),
+                                                    vertical: 3,
+                                                    horizontal: 12),
                                                 decoration: BoxDecoration(
-                                                  color:
-                                                      data['kategori'] == 'Makanan'
-                                                          ? Colors.green
+                                                  color: data['kategori'] ==
+                                                          'Makanan'
+                                                      ? Colors.green
+                                                          .withOpacity(.50)
+                                                      : data['kategori'] ==
+                                                              'Minuman'
+                                                          ? DesignSystem
+                                                              .primaryColor
                                                               .withOpacity(.50)
-                                                          : data['kategori'] ==
-                                                                  'Minuman'
-                                                              ? DesignSystem
-                                                                  .primaryColor
-                                                                  .withOpacity(.50)
-                                                              : Colors.grey,
+                                                          : Colors.grey,
                                                   borderRadius:
                                                       BorderRadius.circular(50),
                                                 ),
@@ -364,14 +427,16 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                                           : 'Kategori Tidak Diketahui',
                                                   style: TextStyle(
                                                     fontSize: 10,
-                                                    color: DesignSystem.whiteColor,
+                                                    color:
+                                                        DesignSystem.whiteColor,
                                                   ),
                                                 ),
                                               ),
                                               SizedBox(width: 8),
                                               Container(
                                                 padding: EdgeInsets.symmetric(
-                                                    vertical: 3, horizontal: 12),
+                                                    vertical: 3,
+                                                    horizontal: 12),
                                                 decoration: BoxDecoration(
                                                   color: data['stok'] == 0
                                                       ? DesignSystem.redAccent
@@ -392,7 +457,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                                       : 'Stok ${data['stok'] ?? 0}',
                                                   style: TextStyle(
                                                     fontSize: 10,
-                                                    color: DesignSystem.whiteColor,
+                                                    color:
+                                                        DesignSystem.whiteColor,
                                                   ),
                                                 ),
                                               ),
@@ -444,6 +510,60 @@ class _ListProdukPageState extends State<ListProdukPage> {
               ),
             ),
           ),
+        ],
+      ),
+      floatingActionButton: SpeedDial(
+        // Both default and active icon can be set separately
+        animatedIcon: AnimatedIcons.menu_close,
+        animatedIconTheme: IconThemeData(size: 22.0),
+        // This is ignored if animatedIcon is non-null
+        icon: Icons.add,
+        activeIcon: Icons.close,
+        buttonSize: Size(56.0, 56.0),
+        visible: true,
+        closeManually: false,
+        curve: Curves.bounceIn,
+        overlayColor: Colors.black,
+        overlayOpacity: 0.5,
+        onOpen: () => print('Opening dial'),
+        onClose: () => print('Dial closed'),
+        tooltip: 'Speed Dial',
+        heroTag: 'speed-dial-hero-tag',
+        backgroundColor: Colors.purpleAccent,
+        foregroundColor: Colors.white,
+        elevation: 8.0,
+        shape: CircleBorder(),
+        children: [
+          SpeedDialChild(
+            child: Icon(Icons.add),
+            // backgroundColor: DesignSystem.whiteColor,
+            label: 'Tambah Produk',
+            labelStyle: TextStyle(fontSize: 18.0),
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => AddDataPage()),
+              );
+            },
+            shape: CircleBorder(),
+          ),
+          // SpeedDialChild(
+          //   child: Icon(Icons.arrow_downward_outlined),
+          //   backgroundColor: DesignSystem.whiteColor,
+          //   label: 'Pemasukan',
+          //   labelStyle: TextStyle(fontSize: 18.0),
+          //   onTap: () => print('Second action'),
+          //   shape: CircleBorder(),
+          // ),
+          // SpeedDialChild(
+          //   child: Icon(Icons.arrow_upward_outlined),
+          //   backgroundColor: DesignSystem.whiteColor,
+          //   label: 'Pengeluaran',
+          //   labelStyle: TextStyle(fontSize: 18.0),
+          //   onTap: () => print('Second action'),
+          //   shape: CircleBorder(),
+          // ),
+          // Add more SpeedDialChild widgets for additional actions
         ],
       ),
     );
