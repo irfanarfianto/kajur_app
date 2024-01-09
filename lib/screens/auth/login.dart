@@ -137,7 +137,7 @@ class _LoginPageState extends State<LoginPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Don't have an account?",
+                  Text("Belum punya akun?",
                       style: TextStyle(color: DesignSystem.whiteColor)),
                   SizedBox(
                     width: 5,
@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (user != null) {
-      showToast(message: "User is successfully signed in");
+      showToast(message: "Berhasil login");
       Navigator.pushNamed(context, "/home");
     } else {
       showToast(message: "some error occured");

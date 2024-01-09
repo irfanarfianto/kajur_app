@@ -42,7 +42,7 @@ class _SignUpPageState extends State<SignUpPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Sign Up",
+                "Daftar",
                 style: TextStyle(
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
@@ -101,7 +101,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: isSigningUp
                         ? CircularProgressIndicator(color: Colors.white)
                         : Text(
-                            "Sign Up",
+                            "Daftar akun",
                             style: TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -116,7 +116,7 @@ class _SignUpPageState extends State<SignUpPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Already have an account?",
+                  Text("Sudah punya akun?",
                       style: TextStyle(color: DesignSystem.whiteColor)),
                   SizedBox(
                     width: 5,
@@ -161,7 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
     if (user != null) {
       try {
         await user.updateProfile(displayName: username);
-        showToast(message: "User is successfully created");
+        showToast(message: "Berhasil daftar akun");
         // Ubah navigasi ke halaman login setelah sign-up berhasil
         Navigator.pushReplacement(
           context,
