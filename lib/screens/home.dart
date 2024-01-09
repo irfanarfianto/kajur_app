@@ -110,10 +110,6 @@ class _HomePageState extends State<HomePage> {
                   children: [
                     Container(
                       padding: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: DesignSystem.orangeAccent.withOpacity(.10),
-                      ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
