@@ -80,13 +80,14 @@ class _EditStockPageState extends State<EditStockPage> {
             ),
             SizedBox(height: 20),
             TextField(
-              controller: _stokController,
-              keyboardType: TextInputType.number,
-              decoration: InputDecoration(
-                labelText: 'Edit Stok Baru',
-                border: OutlineInputBorder(),
-              ),
-            ),
+                controller: _stokController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Stok Baru',
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),
+                )),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {

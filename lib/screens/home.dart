@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> {
             Builder(
               builder: (context) => GestureDetector(
                 onTap: () {
-                  Scaffold.of(context).openEndDrawer(); // Open the drawer
+                  Scaffold.of(context).openEndDrawer();
                 },
                 child: Container(
                   margin: EdgeInsets.only(right: 20),
@@ -99,68 +99,16 @@ class _HomePageState extends State<HomePage> {
                 margin: EdgeInsets.all(20),
                 width: 500,
                 decoration: BoxDecoration(
+                  color: DesignSystem.greyColor.withOpacity(.20),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
                     color: DesignSystem.greyColor.withOpacity(.20),
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: DesignSystem.greyColor.withOpacity(.20),
-                    )),
+                  ),
+                ),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 150,
-                      padding: EdgeInsets.all(8.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: DesignSystem.purpleAccent.withOpacity(.10),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Saldo",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: DesignSystem.whiteColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          Container(
-                            width: 150,
-                            padding: EdgeInsets.all(10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              color: DesignSystem.purpleAccent,
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Total Saldo",
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.bold,
-                                    color: DesignSystem.whiteColor,
-                                  ),
-                                ),
-                                Text(
-                                  "Rp 5.000.000",
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: DesignSystem.whiteColor,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 10),
-                    Container(
-                      width: 150,
                       padding: EdgeInsets.all(8.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
@@ -205,7 +153,7 @@ class _HomePageState extends State<HomePage> {
                               );
                             },
                             child: Container(
-                              width: 150,
+                              width: 310,
                               padding: EdgeInsets.all(10),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
@@ -214,14 +162,6 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    "Total Produk",
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.bold,
-                                      color: DesignSystem.whiteColor,
-                                    ),
-                                  ),
                                   StreamBuilder<QuerySnapshot>(
                                     stream: FirebaseFirestore.instance
                                         .collection('kantin')
@@ -235,13 +175,92 @@ class _HomePageState extends State<HomePage> {
                                         case ConnectionState.waiting:
                                           return CircularProgressIndicator();
                                         default:
-                                          return Text(
-                                            snapshot.data!.size.toString(),
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: DesignSystem.whiteColor,
-                                            ),
+                                          int totalProducts =
+                                              snapshot.data!.size;
+                                          int totalFoodProducts = snapshot
+                                              .data!.docs
+                                              .where((doc) =>
+                                                  doc['kategori'] == 'Makanan')
+                                              .toList()
+                                              .length;
+                                          int totalDrinkProducts = snapshot
+                                              .data!.docs
+                                              .where((doc) =>
+                                                  doc['kategori'] == 'Minuman')
+                                              .toList()
+                                              .length;
+                                          return Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    '$totalProducts',
+                                                    style: TextStyle(
+                                                      fontSize: 30,
+                                                      fontWeight:
+                                                          FontWeight.bold,
+                                                      color: DesignSystem
+                                                          .whiteColor,
+                                                    ),
+                                                  ),
+                                                  SizedBox(width: 5),
+                                                  Text('Produk',
+                                                      style: TextStyle(
+                                                          fontSize: 22,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: DesignSystem
+                                                              .whiteColor))
+                                                ],
+                                              ),
+                                              Divider(
+                                                  color: DesignSystem.whiteColor
+                                                      .withOpacity(.20)),
+                                              Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    Row(
+                                                      children: [
+                                                        Icon(Icons.restaurant,
+                                                            color: DesignSystem
+                                                                .whiteColor,
+                                                            size: 20),
+                                                        SizedBox(width: 5),
+                                                        Text(
+                                                          '$totalFoodProducts Makanan',
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            color: DesignSystem
+                                                                .whiteColor,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                    Row(
+                                                      children: [
+                                                        Icon(Icons.local_cafe,
+                                                            color: DesignSystem
+                                                                .whiteColor,
+                                                            size: 20),
+                                                        SizedBox(width: 5),
+                                                        Text(
+                                                          '$totalDrinkProducts Minuman',
+                                                          style: TextStyle(
+                                                            fontSize: 15,
+                                                            color: DesignSystem
+                                                                .whiteColor,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ]),
+                                            ],
                                           );
                                       }
                                     },
