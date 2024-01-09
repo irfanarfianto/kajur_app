@@ -162,7 +162,11 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         await user.updateProfile(displayName: username);
         showToast(message: "User is successfully created");
-        Navigator.pushNamed(context, "/home");
+        // Ubah navigasi ke halaman login setelah sign-up berhasil
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
       } catch (e) {
         showToast(message: "Error setting username: $e");
       }
