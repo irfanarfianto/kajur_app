@@ -1,4 +1,4 @@
-package com.example.kajur_app
+package com.test.kajur.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -25,7 +28,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        return macos;
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -43,21 +49,12 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDYGu5E6Hcfsi2DGw3sW6UOBZorSGFNw80',
-    appId: '1:92661859660:web:b282ef54d0202771bdbbe9',
-    messagingSenderId: '92661859660',
-    projectId: 'kajur-app',
-    authDomain: 'kajur-app.firebaseapp.com',
-    storageBucket: 'kajur-app.appspot.com',
-    measurementId: 'G-81YTC1E1K7',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyD0jpscArD0O7kzBB9j7l8a6Slmo4A6ngs',
-    appId: '1:92661859660:android:bc5962cc7412d540bdbbe9',
+    appId: '1:92661859660:android:97ddd3c83b05a4b7bdbbe9',
     messagingSenderId: '92661859660',
     projectId: 'kajur-app',
+    databaseURL: 'https://kajur-app-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'kajur-app.appspot.com',
   );
 
@@ -66,16 +63,9 @@ class DefaultFirebaseOptions {
     appId: '1:92661859660:ios:19c195365a670038bdbbe9',
     messagingSenderId: '92661859660',
     projectId: 'kajur-app',
+    databaseURL: 'https://kajur-app-default-rtdb.asia-southeast1.firebasedatabase.app',
     storageBucket: 'kajur-app.appspot.com',
+    iosClientId: '92661859660-dkov7o5qfo787kkljs0su50iqofqv26g.apps.googleusercontent.com',
     iosBundleId: 'com.example.kajurApp',
-  );
-
-  static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBMZb5orT-xG-5WciXXYG3VAU6oN2wFa30',
-    appId: '1:92661859660:ios:6af0ae0ff5e33081bdbbe9',
-    messagingSenderId: '92661859660',
-    projectId: 'kajur-app',
-    storageBucket: 'kajur-app.appspot.com',
-    iosBundleId: 'com.example.kajurApp.RunnerTests',
   );
 }

@@ -17,6 +17,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   bool _isSigning = false;
+  bool _passwordVisible = false;
+
   final FirebaseAuthService _auth = FirebaseAuthService();
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   TextEditingController _emailController = TextEditingController();
@@ -71,9 +73,28 @@ class _LoginPageState extends State<LoginPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(100),
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        setState(() {
+                          // Mengubah visibilitas teks password
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                      child: Icon(
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: DesignSystem.greyColor,
+                      ),
+                    ),
+                  ),
                 ),
                 keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
+                obscureText: !_passwordVisible,
                 textInputAction: TextInputAction.done,
               ),
               SizedBox(
@@ -86,7 +107,11 @@ class _LoginPageState extends State<LoginPage> {
                 child: Container(
                   child: Center(
                     child: _isSigning
-                        ? CircularProgressIndicator(color: Colors.white)
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:
+                                CircularProgressIndicator(color: Colors.white))
                         : Text(
                             "Login",
                             style: TextStyle(
@@ -175,6 +200,15 @@ class _LoginPageState extends State<LoginPage> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
+    // Pemeriksaan apakah kedua kolom email dan password sudah diisi
+    if (email.isEmpty || password.isEmpty) {
+      showToast(message: "Email dan password harus diisi");
+      setState(() {
+        _isSigning = false;
+      });
+      return;
+    }
+
     User? user = await _auth.signInWithEmailAndPassword(email, password);
 
     setState(() {
@@ -182,10 +216,10 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (user != null) {
-      showToast(message: "Berhasil login");
+      showToast(message: "Selamat datang");
       Navigator.pushNamed(context, "/home");
     } else {
-      showToast(message: "some error occured");
+      print('Ada yang error nih');
     }
   }
 

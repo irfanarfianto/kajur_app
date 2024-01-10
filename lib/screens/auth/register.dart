@@ -20,6 +20,7 @@ class _SignUpPageState extends State<SignUpPage> {
   TextEditingController _passwordController = TextEditingController();
 
   bool isSigningUp = false;
+  bool _passwordVisible = false;
 
   @override
   void dispose() {
@@ -44,9 +45,10 @@ class _SignUpPageState extends State<SignUpPage> {
               Text(
                 "Daftar",
                 style: TextStyle(
-                    fontSize: 27,
-                    fontWeight: FontWeight.bold,
-                    color: DesignSystem.whiteColor),
+                  fontSize: 27,
+                  fontWeight: FontWeight.bold,
+                  color: DesignSystem.whiteColor,
+                ),
               ),
               SizedBox(
                 height: 30,
@@ -84,9 +86,33 @@ class _SignUpPageState extends State<SignUpPage> {
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
+                  helperText: 'Minimal 8 karakter, termasuk huruf dan angka',
+                  helperStyle: TextStyle(
+                    color: DesignSystem.greyColor,
+                    fontStyle: FontStyle.italic,
+                  ),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(100),
+                      splashColor: Colors.transparent,
+                      onTap: () {
+                        setState(() {
+                          // Mengubah visibilitas teks password
+                          _passwordVisible = !_passwordVisible;
+                        });
+                      },
+                      child: Icon(
+                        _passwordVisible
+                            ? Icons.visibility
+                            : Icons.visibility_off,
+                        color: DesignSystem.greyColor,
+                      ),
+                    ),
+                  ),
                 ),
                 keyboardType: TextInputType.visiblePassword,
-                obscureText: true,
+                obscureText: !_passwordVisible,
                 textInputAction: TextInputAction.done,
               ),
               SizedBox(
@@ -99,7 +125,13 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Container(
                   child: Center(
                     child: isSigningUp
-                        ? CircularProgressIndicator(color: Colors.white)
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
+                          )
                         : Text(
                             "Daftar akun",
                             style: TextStyle(
@@ -116,26 +148,33 @@ class _SignUpPageState extends State<SignUpPage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Sudah punya akun?",
-                      style: TextStyle(color: DesignSystem.whiteColor)),
+                  Text(
+                    "Sudah punya akun?",
+                    style: TextStyle(color: DesignSystem.whiteColor),
+                  ),
                   SizedBox(
                     width: 5,
                   ),
                   GestureDetector(
-                      onTap: () {
-                        Navigator.pushAndRemoveUntil(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()),
-                            (route) => false);
-                      },
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                            color: Colors.blue, fontWeight: FontWeight.bold),
-                      ))
+                    onTap: () {
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => LoginPage(),
+                        ),
+                        (route) => false,
+                      );
+                    },
+                    child: Text(
+                      "Login",
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -152,7 +191,38 @@ class _SignUpPageState extends State<SignUpPage> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    User? user = await _auth.signUpWithEmailAndPassword(email, password);
+    // Pemeriksaan apakah semua form terisi
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+      showToast(message: "Semua form harus diisi");
+      setState(() {
+        isSigningUp = false;
+      });
+      return;
+    }
+
+    // Pemeriksaan apakah password memenuhi persyaratan
+    if (!_isPasswordValid(password)) {
+      showToast(
+        message: "Password minimal 8 karakter, termasuk huruf dan angka",
+      );
+      setState(() {
+        isSigningUp = false;
+      });
+      return;
+    }
+
+    bool isUsernameAvailable = await _auth.isUsernameAvailable(username);
+
+    if (!isUsernameAvailable) {
+      showToast(message: "Username sudah dipakai, pilih yang lain ya");
+      setState(() {
+        isSigningUp = false;
+      });
+      return;
+    }
+
+    User? user =
+        await _auth.signUpWithEmailAndPassword(email, password, username);
 
     setState(() {
       isSigningUp = false;
@@ -162,7 +232,6 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         await user.updateProfile(displayName: username);
         showToast(message: "Berhasil daftar akun");
-        // Ubah navigasi ke halaman login setelah sign-up berhasil
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
@@ -171,7 +240,17 @@ class _SignUpPageState extends State<SignUpPage> {
         showToast(message: "Error setting username: $e");
       }
     } else {
-      showToast(message: "Some error happened");
+      print("Ada kesalahan nih");
     }
+  }
+
+  bool _isPasswordValid(String password) {
+    // Pemeriksaan persyaratan password (minimal 8 karakter, termasuk huruf dan angka)
+    if (password.length < 8 ||
+        !password.contains(RegExp(r'[a-zA-Z]')) ||
+        !password.contains(RegExp(r'[0-9]'))) {
+      return false;
+    }
+    return true;
   }
 }

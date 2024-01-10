@@ -41,6 +41,42 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92661859660:android:97ddd3c83b05a4b7bdbbe9",
+        "android_client_info": {
+          "package_name": "com.test.kajur.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "92661859660-spt8sk6nvmc60iubndqjsr92fu4lgi6h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0jpscArD0O7kzBB9j7l8a6Slmo4A6ngs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "92661859660-spt8sk6nvmc60iubndqjsr92fu4lgi6h.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "92661859660-dkov7o5qfo787kkljs0su50iqofqv26g.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.kajurApp"
+              }
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
