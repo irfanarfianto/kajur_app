@@ -20,7 +20,8 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  late final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+
   TextEditingController _emailController = TextEditingController();
   TextEditingController _passwordController = TextEditingController();
 
@@ -240,10 +241,13 @@ class _LoginPageState extends State<LoginPage> {
         );
 
         await _firebaseAuth.signInWithCredential(credential);
+        showToast(message: "Login dengan Google berhasil");
         Navigator.pushNamed(context, "/home");
+      } else {
+        showToast(message: "Login dengan Google dibatalkan.");
       }
     } catch (e) {
-      showToast(message: "some error occured $e");
+      showToast(message: "Gagal login dengan Google, terjadi kesalahan: $e");
     }
   }
 }

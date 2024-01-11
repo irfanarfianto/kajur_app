@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late User? _currentUser;
   int totalProducts = 0;
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
   @override
   void initState() {
@@ -631,6 +633,7 @@ class _HomePageState extends State<HomePage> {
 
   void _signOut() async {
     try {
+      await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
       Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
       showToast(message: "Successfully signed out");
