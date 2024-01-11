@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../../global/common/toast.dart';
 
 class FirebaseAuthService {
@@ -49,8 +50,8 @@ class FirebaseAuthService {
         'lastLoginAt': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      print("Ada kesalahan pas nyimpen data user: $e");
-      showToast(message: 'Ada kesalahan pas nyimpen data user.');
+      print("Error saving user data to Firestore: $e");
+      showToast(message: 'Error saving user data to Firestore.');
     }
   }
 
@@ -99,6 +100,68 @@ class FirebaseAuthService {
       return snapshot.docs.isEmpty;
     } catch (e) {
       print("Ada kesalahan pas ngecek ketersediaan username: $e");
+      return false;
+    }
+  }
+
+  Future<User?> signInWithGoogle() async {
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
+
+    try {
+      // Clear the previous GoogleSignInAccount
+      await _googleSignIn.signOut();
+
+      // Jika pengguna belum masuk, minta untuk memilih akun Google
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken,
+        );
+
+        UserCredential authResult =
+            await _auth.signInWithCredential(credential);
+        User? user = authResult.user;
+
+        if (user != null) {
+          // Update timestamp login terakhir
+          await updateLastLogin(user.uid);
+
+          // Cek apakah user sudah terdaftar di Firestore
+          if (!(await isUserRegistered(user.uid))) {
+            // Jika belum terdaftar, simpan data user ke Firestore
+            await saveUserDataToFirestore(
+                user.uid, user.displayName ?? '', user.email ?? '');
+          }
+
+          // Show success toast message
+          showToast(message: "Selamat datang");
+
+          return user;
+        }
+      }
+    } catch (e) {
+      showToast(message: "Terjadi kesalahan: $e");
+    }
+
+    return null;
+  }
+
+  Future<bool> isUserRegistered(String userId) async {
+    try {
+      final snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userId)
+          .get();
+
+      return snapshot.exists;
+    } catch (e) {
+      print("Ada kesalahan pas cek user di Firestore: $e");
       return false;
     }
   }
