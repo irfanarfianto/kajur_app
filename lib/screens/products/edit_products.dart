@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -65,6 +66,16 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
   Future<void> _updateProductDetails() async {
     try {
+      if (_menuController.text.isEmpty ||
+          _hargaController.text.isEmpty ||
+          _stokController.text.isEmpty) {
+        AnimatedSnackBar.material(
+          'Eitss! Jangan ada kolom yang kosong ya',
+          type: AnimatedSnackBarType.info,
+        ).show(context);
+        return;
+      }
+
       User? user = FirebaseAuth.instance.currentUser;
       String? userId = user?.uid;
       String? userName = user?.displayName ?? 'Unknown User';
@@ -87,7 +98,10 @@ class _EditProdukPageState extends State<EditProdukPage> {
         'lastEditedBy': userId,
         'lastEditedByName': userName,
       });
-      showToast(message: 'Produk berhasil diperbarui');
+      AnimatedSnackBar.material(
+        'Produk berhasil diperbarui',
+        type: AnimatedSnackBarType.success,
+      ).show(context);
       Navigator.pop(context);
     } catch (e) {
       print('Error updating product details: $e');
@@ -168,8 +182,8 @@ class _EditProdukPageState extends State<EditProdukPage> {
                   );
                 },
                 child: Container(
-                  height: 150,
-                  width: 150,
+                  height: 250,
+                  width: 250,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
                     color: DesignSystem.greyColor.withOpacity(.20),
@@ -196,66 +210,126 @@ class _EditProdukPageState extends State<EditProdukPage> {
                 ),
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _menuController,
-                style: TextStyle(color: DesignSystem.whiteColor),
-                decoration: InputDecoration(
-                  labelText: 'Nama Produk',
-                  hintStyle: TextStyle(color: DesignSystem.greyColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Nama Produk *',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: DesignSystem.blackColor,
+                    ),
                   ),
-                ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _menuController,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(color: DesignSystem.blackColor),
+                    decoration: InputDecoration(
+                      hintText: 'Nama produk',
+                      hintStyle: TextStyle(
+                        color: DesignSystem.greyColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(height: 16.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    flex: 2,
-                    child: TextFormField(
-                      controller: _hargaController,
-                      style: TextStyle(color: DesignSystem.whiteColor),
-                      decoration: InputDecoration(
-                        labelText: 'Harga',
-                        hintStyle: TextStyle(color: DesignSystem.greyColor),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Harga *',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: DesignSystem.blackColor,
+                          ),
                         ),
-                      ),
-                      keyboardType: TextInputType.number,
+                        SizedBox(height: 8.0),
+                        TextFormField(
+                          style: TextStyle(color: DesignSystem.blackColor),
+                          controller: _hargaController,
+                          decoration: InputDecoration(
+                            hintText: 'Harga',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(width: 16.0),
                   Expanded(
-                    child: TextFormField(
-                      controller: _stokController,
-                      style: TextStyle(color: DesignSystem.whiteColor),
-                      decoration: InputDecoration(
-                        labelText: 'Stok',
-                        hintStyle: TextStyle(color: DesignSystem.greyColor),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Stok *',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: DesignSystem.blackColor,
+                          ),
                         ),
-                      ),
-                      keyboardType: TextInputType.number,
+                        SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _stokController,
+                          style: TextStyle(color: DesignSystem.blackColor),
+                          decoration: InputDecoration(
+                            hintText: 'Stok',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
                     ),
-                  ),
+                  )
                 ],
               ),
               SizedBox(height: 16.0),
-              TextFormField(
-                controller: _deskripsiController,
-                style: TextStyle(color: DesignSystem.whiteColor),
-                decoration: InputDecoration(
-                  labelText: 'Deskripsi',
-                  hintStyle: TextStyle(color: DesignSystem.greyColor),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Deskripsi',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: DesignSystem.blackColor,
+                    ),
                   ),
-                ),
-                keyboardType: TextInputType.multiline,
-                maxLines: 3,
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _deskripsiController,
+                    decoration: InputDecoration(
+                      hintText: 'Masukan deskripsi produk',
+                      hintStyle: TextStyle(
+                        color: DesignSystem.greyColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                    ),
+                    style: TextStyle(color: DesignSystem.blackColor),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 3,
+                  ),
+                ],
               ),
               SizedBox(height: 24.0),
               ElevatedButton(

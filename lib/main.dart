@@ -31,21 +31,24 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primarySwatch: Colors.purple,
+        fontFamily: 'Poppins',
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+        brightness: Brightness.light,
         scaffoldBackgroundColor: DesignSystem.backgroundColor,
-        primaryColor: DesignSystem.purpleAccent,
+        primaryColor: DesignSystem.primaryColor,
+        dialogBackgroundColor: DesignSystem.backgroundColor,
         appBarTheme: const AppBarTheme(
-            color: DesignSystem.backgroundColor,
-            foregroundColor: Colors.black,
-            elevation: 0),
+          color: DesignSystem.backgroundColor,
+          foregroundColor: Colors.black,
+        ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
                 padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                backgroundColor: DesignSystem.purpleAccent,
-                foregroundColor: Colors.white)),
+                backgroundColor: DesignSystem.primaryColor,
+                foregroundColor: DesignSystem.backgroundColor)),
         inputDecorationTheme: InputDecorationTheme(
           contentPadding:
               EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
@@ -54,7 +57,7 @@ class MyApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: Colors.purpleAccent, width: 1),
+            borderSide: BorderSide(color: DesignSystem.primaryColor, width: 1),
           ),
         ),
       ),

@@ -1,7 +1,7 @@
+import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kajur_app/global/common/toast.dart';
 
 class EditStockPage extends StatefulWidget {
   final String documentId;
@@ -49,7 +49,10 @@ class _EditStockPageState extends State<EditStockPage> {
         'lastEditedByName': userName,
       });
 
-      showToast(message: 'Stok berhasil diperbarui');
+      AnimatedSnackBar.material(
+        'Stok berhasil diperbarui',
+        type: AnimatedSnackBarType.success,
+      ).show(context);
 
       Navigator.pop(context);
     } catch (error) {

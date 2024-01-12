@@ -7,7 +7,6 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/menu_button.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:kajur_app/screens/products/stok.dart';
 import 'package:flutter/services.dart';
 
@@ -94,412 +93,578 @@ class _HomePageState extends State<HomePage> {
           // Define the drawer with user profile details
           child: _buildDrawer(),
         ),
-        body: Column(
-          children: [
-            Center(
-              child: Container(
-                padding: EdgeInsets.all(20),
-                margin: EdgeInsets.all(20),
-                width: 500,
-                decoration: BoxDecoration(
-                  color: DesignSystem.greyColor.withOpacity(.20),
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: DesignSystem.greyColor.withOpacity(.20),
-                  ),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            "Total Produk",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.bold,
-                              color: DesignSystem.blackColor,
-                            ),
-                          ),
-                          SizedBox(height: 8),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.of(context).push(
-                                PageRouteBuilder(
-                                  pageBuilder: (context, animation,
-                                          secondaryAnimation) =>
-                                      ListProdukPage(),
-                                  transitionsBuilder: (context, animation,
-                                      secondaryAnimation, child) {
-                                    const begin = Offset(1.0, 0.0);
-                                    const end = Offset.zero;
-                                    const curve = Curves.ease;
-
-                                    var tween =
-                                        Tween(begin: begin, end: end).chain(
-                                      CurveTween(curve: curve),
-                                    );
-
-                                    return SlideTransition(
-                                      position: animation.drive(tween),
-                                      child: child,
-                                    );
-                                  },
+        body: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
+          child: Column(
+            children: [
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                child: Center(
+                  child: Container(
+                    width: 500,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: DesignSystem.backgroundColor,
+                      border: Border.all(
+                          color: DesignSystem.greyColor.withOpacity(.10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: DesignSystem.greyColor.withOpacity(.10),
+                          offset: Offset(0, 5),
+                          blurRadius: 10,
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          padding: EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text(
+                                "Total Produk",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                  color: DesignSystem.blackColor,
                                 ),
-                              );
-                            },
-                            child: Container(
-                              width: 310,
-                              padding: EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: DesignSystem.orangeAccent,
                               ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  StreamBuilder<QuerySnapshot>(
-                                    stream: FirebaseFirestore.instance
-                                        .collection('kantin')
-                                        .snapshots(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                                      if (snapshot.hasError) {
-                                        return Text('Error: ${snapshot.error}');
-                                      }
-                                      switch (snapshot.connectionState) {
-                                        case ConnectionState.waiting:
-                                          return CircularProgressIndicator();
-                                        default:
-                                          int totalProducts =
-                                              snapshot.data!.size;
-                                          int totalFoodProducts = snapshot
-                                              .data!.docs
-                                              .where((doc) =>
-                                                  doc['kategori'] == 'Makanan')
-                                              .toList()
-                                              .length;
-                                          int totalDrinkProducts = snapshot
-                                              .data!.docs
-                                              .where((doc) =>
-                                                  doc['kategori'] == 'Minuman')
-                                              .toList()
-                                              .length;
-                                          return Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Row(
+                              SizedBox(height: 8),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.of(context).push(
+                                    PageRouteBuilder(
+                                      pageBuilder: (context, animation,
+                                              secondaryAnimation) =>
+                                          ListProdukPage(),
+                                      transitionsBuilder: (context, animation,
+                                          secondaryAnimation, child) {
+                                        const begin = Offset(1.0, 0.0);
+                                        const end = Offset.zero;
+                                        const curve = Curves.ease;
+
+                                        var tween =
+                                            Tween(begin: begin, end: end).chain(
+                                          CurveTween(curve: curve),
+                                        );
+
+                                        return SlideTransition(
+                                          position: animation.drive(tween),
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  width: 310,
+                                  padding: EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(10),
+                                    color: DesignSystem.orangeAccent,
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      StreamBuilder<QuerySnapshot>(
+                                        stream: FirebaseFirestore.instance
+                                            .collection('kantin')
+                                            .snapshots(),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<QuerySnapshot>
+                                                snapshot) {
+                                          if (snapshot.hasError) {
+                                            return Text(
+                                                'Error: ${snapshot.error}');
+                                          }
+                                          switch (snapshot.connectionState) {
+                                            case ConnectionState.waiting:
+                                              return CircularProgressIndicator();
+                                            default:
+                                              int totalProducts =
+                                                  snapshot.data!.size;
+                                              int totalFoodProducts = snapshot
+                                                  .data!.docs
+                                                  .where((doc) =>
+                                                      doc['kategori'] ==
+                                                      'Makanan')
+                                                  .toList()
+                                                  .length;
+                                              int totalDrinkProducts = snapshot
+                                                  .data!.docs
+                                                  .where((doc) =>
+                                                      doc['kategori'] ==
+                                                      'Minuman')
+                                                  .toList()
+                                                  .length;
+                                              return Column(
                                                 crossAxisAlignment:
-                                                    CrossAxisAlignment.center,
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(
-                                                    '$totalProducts',
-                                                    style: TextStyle(
-                                                      fontSize: 30,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      color: DesignSystem
-                                                          .whiteColor,
-                                                    ),
-                                                  ),
-                                                  SizedBox(width: 5),
-                                                  Text('Produk',
-                                                      style: TextStyle(
-                                                          fontSize: 22,
+                                                  Row(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Text(
+                                                        '$totalProducts',
+                                                        style: TextStyle(
+                                                          fontSize: 30,
                                                           fontWeight:
                                                               FontWeight.bold,
                                                           color: DesignSystem
-                                                              .whiteColor))
+                                                              .whiteColor,
+                                                        ),
+                                                      ),
+                                                      SizedBox(width: 5),
+                                                      Text('Produk',
+                                                          style: TextStyle(
+                                                              fontSize: 22,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              color: DesignSystem
+                                                                  .whiteColor))
+                                                    ],
+                                                  ),
+                                                  Divider(
+                                                      color: DesignSystem
+                                                          .whiteColor
+                                                          .withOpacity(.20)),
+                                                  Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceAround,
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                                Icons
+                                                                    .restaurant,
+                                                                color: DesignSystem
+                                                                    .whiteColor,
+                                                                size: 20),
+                                                            SizedBox(width: 5),
+                                                            Text(
+                                                              '$totalFoodProducts Makanan',
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                                color: DesignSystem
+                                                                    .whiteColor,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Icon(
+                                                                Icons
+                                                                    .local_cafe,
+                                                                color: DesignSystem
+                                                                    .whiteColor,
+                                                                size: 20),
+                                                            SizedBox(width: 5),
+                                                            Text(
+                                                              '$totalDrinkProducts Minuman',
+                                                              style: TextStyle(
+                                                                fontSize: 15,
+                                                                color: DesignSystem
+                                                                    .whiteColor,
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ]),
                                                 ],
-                                              ),
-                                              Divider(
-                                                  color: DesignSystem.whiteColor
-                                                      .withOpacity(.20)),
-                                              Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceAround,
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Icon(Icons.restaurant,
-                                                            color: DesignSystem
-                                                                .whiteColor,
-                                                            size: 20),
-                                                        SizedBox(width: 5),
-                                                        Text(
-                                                          '$totalFoodProducts Makanan',
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            color: DesignSystem
-                                                                .whiteColor,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Icon(Icons.local_cafe,
-                                                            color: DesignSystem
-                                                                .whiteColor,
-                                                            size: 20),
-                                                        SizedBox(width: 5),
-                                                        Text(
-                                                          '$totalDrinkProducts Minuman',
-                                                          style: TextStyle(
-                                                            fontSize: 15,
-                                                            color: DesignSystem
-                                                                .whiteColor,
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ]),
-                                            ],
-                                          );
-                                      }
-                                    },
+                                              );
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ),
-            Column(
-              children: [
-                Center(
-                  child: Container(
-                    padding: EdgeInsets.all(20),
-                    width: 500,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Pemberitahuan 📢',
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: DesignSystem.blackColor,
+                                ),
+                              )
+                            ],
                           ),
-                        ),
-                        StreamBuilder<QuerySnapshot>(
-                          stream: FirebaseFirestore.instance
-                              .collection('kantin')
-                              .snapshots(),
-                          builder: (BuildContext context,
-                              AsyncSnapshot<QuerySnapshot> snapshot) {
-                            if (snapshot.hasError) {
-                              return Text('Error: ${snapshot.error}');
-                            }
-
-                            switch (snapshot.connectionState) {
-                              case ConnectionState.waiting:
-                                return CircularProgressIndicator();
-                              default:
-                                if (snapshot.data!.docs.isEmpty) {
-                                  return Text('Belum ada info baru');
-                                }
-                                return Column(
-                                  children: snapshot.data!.docs
-                                      .map((DocumentSnapshot document) {
-                                    Map<String, dynamic> data =
-                                        document.data() as Map<String, dynamic>;
-                                    String namaProduk = data['menu'];
-                                    int stok = data['stok'];
-                                    String documentId = document.id;
-
-                                    if (stok == 0) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditStockPage(
-                                                namaProduk: namaProduk,
-                                                stok: stok,
-                                                documentId: documentId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 20),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(.10),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color:
-                                                  Colors.red.withOpacity(.50),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Produk $namaProduk sudah habis!',
-                                                  style: TextStyle(
-                                                    color:
-                                                        DesignSystem.blackColor,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    } else if (stok <= 10 && stok > 4) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditStockPage(
-                                                namaProduk: namaProduk,
-                                                stok: stok,
-                                                documentId: documentId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 20),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          decoration: BoxDecoration(
-                                            color:
-                                                Colors.yellow.withOpacity(.30),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color: Colors.yellow
-                                                  .withOpacity(.20),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                                  style: TextStyle(
-                                                    color:
-                                                        DesignSystem.blackColor,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    } else if (stok < 5) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditStockPage(
-                                                namaProduk: namaProduk,
-                                                stok: stok,
-                                                documentId: documentId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 20),
-                                          margin: EdgeInsets.symmetric(
-                                              vertical: 10),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(.10),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color:
-                                                  Colors.red.withOpacity(.20),
-                                            ),
-                                          ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Woy! $namaProduk mau abis, sisa $stok!',
-                                                  style: TextStyle(
-                                                    color:
-                                                        DesignSystem.blackColor,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 12,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                      );
-                                    } else {
-                                      return SizedBox(); // Jika stok tidak rendah atau sedang, kembalikan SizedBox kosong
-                                    }
-                                  }).toList(),
-                                );
-                            }
-                          },
                         )
                       ],
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-          backgroundColor: DesignSystem.purpleAccent,
-          elevation: 10,
-          tooltip: 'Menu',
-          foregroundColor: Colors.white,
-          splashColor: DesignSystem.purpleAccent,
-          onPressed: () {
-            showModalBottomSheet(
-              context: context,
-              builder: (BuildContext context) {
-                return MenuButton();
-              },
-            );
-          },
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+              ),
+              Column(
+                children: [
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: DesignSystem.backgroundColor,
+                        border: Border.all(
+                            color: DesignSystem.greyColor.withOpacity(.10)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: DesignSystem.greyColor.withOpacity(.10),
+                            offset: Offset(0, 5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Info Stok 📢',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: DesignSystem.blackColor,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Row(children: [
+                                    Text(
+                                      "Lihat semua",
+                                      style: TextStyle(
+                                        color: DesignSystem.blackColor,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Icon(
+                                      Icons.east,
+                                      color: DesignSystem.blackColor,
+                                      size: 16,
+                                    ),
+                                  ]),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Container(
+                            height: 200,
+                            child: Scrollbar(
+                                child: SingleChildScrollView(
+                              physics: BouncingScrollPhysics(),
+                              child: Column(children: [
+                                StreamBuilder<QuerySnapshot>(
+                                  stream: FirebaseFirestore.instance
+                                      .collection('kantin')
+                                      .snapshots(),
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                                    if (snapshot.hasError) {
+                                      return Center(
+                                          child:
+                                              Text('Error: ${snapshot.error}'));
+                                    }
+
+                                    switch (snapshot.connectionState) {
+                                      case ConnectionState.waiting:
+                                        return Center(
+                                            child: CircularProgressIndicator());
+                                      default:
+                                        if (snapshot.data!.docs.isEmpty) {
+                                          return Center(
+                                              child:
+                                                  Text('Belum ada info baru'));
+                                        }
+                                        return Column(
+                                          children: snapshot.data!.docs
+                                              .map((DocumentSnapshot document) {
+                                            Map<String, dynamic> data = document
+                                                .data() as Map<String, dynamic>;
+                                            String namaProduk = data['menu'];
+                                            int stok = data['stok'];
+                                            String documentId = document.id;
+
+                                            if (stok == 0) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditStockPage(
+                                                        namaProduk: namaProduk,
+                                                        stok: stok,
+                                                        documentId: documentId,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 20),
+                                                  margin: EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red
+                                                        .withOpacity(.10),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                      color: Colors.red
+                                                          .withOpacity(.50),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Flexible(
+                                                        child: Text(
+                                                          'Produk $namaProduk sudah habis!',
+                                                          style: TextStyle(
+                                                            color: DesignSystem
+                                                                .blackColor,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (stok <= 10 && stok > 4) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditStockPage(
+                                                        namaProduk: namaProduk,
+                                                        stok: stok,
+                                                        documentId: documentId,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 20),
+                                                  margin: EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.yellow
+                                                        .withOpacity(.30),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                      color: Colors.yellow
+                                                          .withOpacity(.20),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Flexible(
+                                                        child: Text(
+                                                          'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                                          style: TextStyle(
+                                                            color: DesignSystem
+                                                                .blackColor,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            } else if (stok < 5) {
+                                              return GestureDetector(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          EditStockPage(
+                                                        namaProduk: namaProduk,
+                                                        stok: stok,
+                                                        documentId: documentId,
+                                                      ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Container(
+                                                  padding: EdgeInsets.symmetric(
+                                                      vertical: 10,
+                                                      horizontal: 20),
+                                                  margin: EdgeInsets.symmetric(
+                                                      vertical: 10),
+                                                  decoration: BoxDecoration(
+                                                    color: Colors.red
+                                                        .withOpacity(.10),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            10),
+                                                    border: Border.all(
+                                                      color: Colors.red
+                                                          .withOpacity(.20),
+                                                    ),
+                                                  ),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment.start,
+                                                    children: [
+                                                      Flexible(
+                                                        child: Text(
+                                                          'Woy! $namaProduk mau abis, sisa $stok!',
+                                                          style: TextStyle(
+                                                            color: DesignSystem
+                                                                .blackColor,
+                                                            fontWeight:
+                                                                FontWeight
+                                                                    .normal,
+                                                            fontSize: 12,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                ),
+                                              );
+                                            } else {
+                                              return SizedBox(); // Jika stok tidak rendah atau sedang, kembalikan SizedBox kosong
+                                            }
+                                          }).toList(),
+                                        );
+                                    }
+                                  },
+                                ),
+                              ]),
+                            )),
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Center(
+                    child: Container(
+                      margin: EdgeInsets.all(16.0),
+                      padding: EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: DesignSystem.backgroundColor,
+                        border: Border.all(
+                            color: DesignSystem.greyColor.withOpacity(.10)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: DesignSystem.greyColor.withOpacity(.10),
+                            offset: Offset(0, 5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  'Aktivitas Terbaru',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                    color: DesignSystem.blackColor,
+                                  ),
+                                ),
+                                GestureDetector(
+                                  onTap: () {},
+                                  child: Row(children: [
+                                    Text(
+                                      "Lihat semua",
+                                      style: TextStyle(
+                                        color: DesignSystem.blackColor,
+                                        fontWeight: FontWeight.normal,
+                                      ),
+                                    ),
+                                    SizedBox(width: 5),
+                                    Icon(
+                                      Icons.east,
+                                      color: DesignSystem.blackColor,
+                                      size: 16,
+                                    ),
+                                  ]),
+                                ),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 5),
+                          Container(
+                            height: 200,
+                            // isi aktivitas user
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ),
-          icon: Icon(Icons.menu_rounded,
-              color: DesignSystem.whiteColor, size: 20),
-          label: Text('Menu',
-              style: TextStyle(color: DesignSystem.whiteColor, fontSize: 16)),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          color: Colors.transparent,
+          elevation: 0,
+          shape: const CircularNotchedRectangle(),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return MenuButton();
+                    },
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      'Menu',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                        width: 8), // Add some spacing between text and icon
+                    Icon(Icons.rocket_launch_outlined), // Add the desired icon
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

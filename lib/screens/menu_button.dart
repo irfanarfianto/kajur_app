@@ -104,7 +104,7 @@ class MenuButton extends StatelessWidget {
             width: 56,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
-              color: DesignSystem.purpleAccent,
+              color: DesignSystem.primaryColor,
             ),
             child: IconButton(
               onPressed: () {

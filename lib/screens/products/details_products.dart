@@ -4,6 +4,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:intl/intl.dart';
+import 'package:readmore/readmore.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final String documentId;
@@ -17,7 +18,6 @@ class DetailProdukPage extends StatefulWidget {
 
 class _DetailProdukPageState extends State<DetailProdukPage> {
   late CollectionReference _produkCollection;
-  bool showFullDescription = false;
   late Future<DocumentSnapshot> _productFuture;
 
   @override
@@ -48,6 +48,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Text('Detail Produk'),
       ),
       body: RefreshIndicator(
@@ -86,7 +87,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   child: Hero(
                     tag: 'product_image_${widget.documentId}',
                     child: Container(
-                      height: 300,
+                      height: 350,
                       width: double.infinity,
                       child: ClipRRect(
                         child: Image.network(
@@ -112,7 +113,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               style: TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 18,
-                                color: DesignSystem.whiteColor,
+                                color: DesignSystem.blackColor,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
@@ -152,9 +153,9 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                 color: data['stok'] == 0
                                     ? DesignSystem.redAccent.withOpacity(.50)
                                     : data['stok'] < 5
-                                        ? DesignSystem.purpleAccent
+                                        ? DesignSystem.primaryColor
                                             .withOpacity(.50)
-                                        : DesignSystem.purpleAccent
+                                        : DesignSystem.primaryColor
                                             .withOpacity(.50),
                                 borderRadius: BorderRadius.circular(50),
                               ),
@@ -177,7 +178,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             .format(data['harga']),
                         style: TextStyle(
                           fontSize: 20,
-                          color: DesignSystem.whiteColor,
+                          color: DesignSystem.blackColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -186,50 +187,39 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         Text(
                           'Dibuat oleh ${data['addedByName']}, ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(createdAt.toDate())}',
                           style: TextStyle(
-                            color: DesignSystem.whiteColor,
+                            color: DesignSystem.blackColor,
                           ),
                         ),
                       SizedBox(height: 8),
-                      Text(
-                        'Deskripsi produk',
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: DesignSystem.whiteColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      Text(
-                        '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: DesignSystem.whiteColor,
-                        ),
-                        maxLines: showFullDescription ? null : 2,
-                        overflow: showFullDescription
-                            ? TextOverflow.visible
-                            : TextOverflow.ellipsis,
-                      ),
-                      showFullDescription
-                          ? SizedBox()
-                          : TextButton(
-                              onPressed: () {
-                                setState(() {
-                                  showFullDescription = true;
-                                });
-                              },
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 0, horizontal: 0),
-                                foregroundColor: DesignSystem.purpleAccent,
-                              ),
-                              child: Text('Baca Selengkapnya'),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Deskripsi produk',
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: DesignSystem.blackColor,
+                              fontWeight: FontWeight.w600,
                             ),
+                          ),
+                          ReadMoreText(
+                            '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
+                            trimLines: 2,
+                            colorClickableText: DesignSystem.primaryColor,
+                            trimMode: TrimMode.Line,
+                            trimCollapsedText: 'Baca selengkapnya',
+                            trimExpandedText: 'Tutup',
+                            moreStyle: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
                       SizedBox(height: 8),
                       if (data.containsKey('lastEditedByName'))
                         Text(
                           'Diupdate pada ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate())}, oleh ${data['lastEditedByName']}',
                           style: TextStyle(
-                            color: DesignSystem.whiteColor,
+                            color: DesignSystem.blackColor,
                           ),
                         ),
                     ],
@@ -243,12 +233,11 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       bottomNavigationBar: BottomAppBar(
         color: Colors.transparent,
         elevation: 0,
-        shape: const CircularNotchedRectangle(),
-        clipBehavior: Clip.antiAlias,
-        child: Padding(
-          padding: EdgeInsets.symmetric(vertical: 8),
+        child: Center(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
             children: [
               IconButton(
                 style: IconButton.styleFrom(
@@ -257,7 +246,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     borderRadius: BorderRadius.circular(10),
                     side: BorderSide(color: DesignSystem.redAccent),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 ),
                 onPressed: () {
                   showDialog(
@@ -291,28 +280,24 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     color: DesignSystem.whiteColor, size: 20),
                 tooltip: 'Hapus',
               ),
-              SizedBox(width: 10),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  primary: DesignSystem.purpleAccent,
-                  onPrimary: DesignSystem.whiteColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: DesignSystem.purpleAccent),
+              SizedBox(width: 8),
+              Expanded(
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                   ),
-                  padding: EdgeInsets.symmetric(horizontal: 100, vertical: 12),
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditProdukPage(documentId: widget.documentId),
+                      ),
+                    );
+                    setState(() {});
+                  },
+                  child: Text('Edit'),
                 ),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          EditProdukPage(documentId: widget.documentId),
-                    ),
-                  );
-                  setState(() {});
-                },
-                child: Text('Edit'),
               ),
             ],
           ),

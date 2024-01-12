@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/products/add_products.dart';
+import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
-import 'package:kajur_app/screens/products/history.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:intl/intl.dart';
 import 'package:flutter/services.dart';
 
 enum CategoryFilter {
@@ -90,18 +87,20 @@ class _ListProdukPageState extends State<ListProdukPage> {
     return ElevatedButton(
       style: _categoryFilter == category
           ? ElevatedButton.styleFrom(
-              primary: DesignSystem.purpleAccent,
+              primary: DesignSystem.primaryColor,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
-                side: BorderSide(color: DesignSystem.purpleAccent),
               ))
           : ElevatedButton.styleFrom(
-              primary: DesignSystem.greyColor.withOpacity(.20),
+              primary: DesignSystem.backgroundColor,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
-              )),
+              ),
+              side: BorderSide(color: DesignSystem.greyColor.withOpacity(.50)),
+              elevation: 0,
+              onPrimary: DesignSystem.greyColor),
       onPressed: () {
         if (_categoryFilter == category) {
           _resetCategoryFilter();
@@ -125,18 +124,21 @@ class _ListProdukPageState extends State<ListProdukPage> {
     return ElevatedButton(
       style: _sortingOption == option
           ? ElevatedButton.styleFrom(
-              primary: DesignSystem.purpleAccent,
+              primary: DesignSystem.primaryColor,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
-                side: BorderSide(color: DesignSystem.purpleAccent),
+                side: BorderSide(color: DesignSystem.primaryColor),
               ))
           : ElevatedButton.styleFrom(
-              primary: DesignSystem.greyColor.withOpacity(.20),
+              primary: DesignSystem.backgroundColor,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
-              )),
+              ),
+              side: BorderSide(color: DesignSystem.greyColor.withOpacity(.50)),
+              elevation: 0,
+              onPrimary: DesignSystem.greyColor),
       onPressed: () {
         setState(() {
           if (_sortingOption == option) {
@@ -239,7 +241,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
               scrollDirection: Axis.horizontal,
               child: Row(
                 children: [
-                  SizedBox(width: 16),
+                  SizedBox(width: 8),
                   buildCategoryButton(
                       CategoryFilter.All, 'Semua', Icons.category),
                   SizedBox(width: 8),
@@ -266,6 +268,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
           ),
           Expanded(
             child: RefreshIndicator(
+              backgroundColor: DesignSystem.backgroundColor,
               onRefresh: _refreshData,
               child: StreamBuilder<QuerySnapshot>(
                 stream: _produkCollection.snapshots(),
@@ -279,9 +282,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
 
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       _isRefreshing) {
-                    return Center(
-                      child: CircularProgressIndicator(),
-                    );
+                    return Center();
                   }
 
                   if (snapshot.data!.docs.isEmpty) {
@@ -344,14 +345,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       return Stack(
                         children: [
                           Card(
-                            elevation: 3,
-                            margin: EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 12),
-                            // warna card
-                            color: DesignSystem.greyColor.withOpacity(0.1),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            elevation: 0,
+                            color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
                                 Navigator.push(
@@ -376,17 +371,16 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                 );
                               },
                               child: Padding(
-                                padding: EdgeInsets.all(
-                                    10), // Memberi ruang di dalam Card
+                                padding: EdgeInsets.symmetric(vertical: 5),
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     ClipRRect(
-                                      borderRadius: BorderRadius.circular(6),
+                                      borderRadius: BorderRadius.circular(8),
                                       child: Image.network(
                                         data['image'],
-                                        height: 100,
-                                        width: 100,
+                                        height: 80,
+                                        width: 80,
                                         fit: BoxFit
                                             .cover, // Sesuaikan dengan preferensi tampilan
                                       ),
@@ -399,99 +393,87 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Row(
-                                            children: [
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 3,
-                                                    horizontal: 12),
-                                                decoration: BoxDecoration(
-                                                  color: data['kategori'] ==
-                                                          'Makanan'
-                                                      ? Colors.green
-                                                          .withOpacity(.50)
-                                                      : data['kategori'] ==
-                                                              'Minuman'
-                                                          ? DesignSystem
-                                                              .primaryColor
-                                                              .withOpacity(.50)
-                                                          : Colors.grey,
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                ),
-                                                child: Text(
-                                                  data['kategori'] == 'Makanan'
-                                                      ? 'Makanan'
-                                                      : data['kategori'] ==
-                                                              'Minuman'
-                                                          ? 'Minuman'
-                                                          : 'Kategori Tidak Diketahui',
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    color:
-                                                        DesignSystem.whiteColor,
-                                                  ),
-                                                ),
-                                              ),
-                                              SizedBox(width: 8),
-                                              Container(
-                                                padding: EdgeInsets.symmetric(
-                                                    vertical: 3,
-                                                    horizontal: 12),
-                                                decoration: BoxDecoration(
-                                                  color: data['stok'] == 0
-                                                      ? DesignSystem.redAccent
-                                                          .withOpacity(.50)
-                                                      : data['stok'] < 5
-                                                          ? DesignSystem
-                                                              .purpleAccent
-                                                              .withOpacity(.50)
-                                                          : DesignSystem
-                                                              .purpleAccent
-                                                              .withOpacity(.50),
-                                                  borderRadius:
-                                                      BorderRadius.circular(50),
-                                                ),
-                                                child: Text(
-                                                  data['stok'] == 0
-                                                      ? 'Stok habis'
-                                                      : 'Stok ${data['stok'] ?? 0}',
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    color:
-                                                        DesignSystem.whiteColor,
-                                                  ),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                          SizedBox(height: 4),
+                                          // Row(
+                                          //   children: [
+                                          //     Container(
+                                          //       padding: EdgeInsets.symmetric(
+                                          //           vertical: 3,
+                                          //           horizontal: 12),
+                                          //       decoration: BoxDecoration(
+                                          //         color: data['kategori'] ==
+                                          //                 'Makanan'
+                                          //             ? Colors.green
+                                          //                 .withOpacity(.50)
+                                          //             : data['kategori'] ==
+                                          //                     'Minuman'
+                                          //                 ? DesignSystem
+                                          //                     .primaryColor
+                                          //                     .withOpacity(.50)
+                                          //                 : Colors.grey,
+                                          //         borderRadius:
+                                          //             BorderRadius.circular(50),
+                                          //       ),
+                                          //       child: Text(
+                                          //         data['kategori'] == 'Makanan'
+                                          //             ? 'Makanan'
+                                          //             : data['kategori'] ==
+                                          //                     'Minuman'
+                                          //                 ? 'Minuman'
+                                          //                 : 'Kategori Tidak Diketahui',
+                                          //         style: TextStyle(
+                                          //           fontSize: 10,
+                                          //           color:
+                                          //               DesignSystem.whiteColor,
+                                          //         ),
+                                          //       ),
+                                          //     ),
+                                          //     SizedBox(width: 8),
+                                          //     Container(
+                                          //       padding: EdgeInsets.symmetric(
+                                          //           vertical: 3,
+                                          //           horizontal: 12),
+                                          //       decoration: BoxDecoration(
+                                          //         color: data['stok'] == 0
+                                          //             ? DesignSystem.redAccent
+                                          //                 .withOpacity(.50)
+                                          //             : data['stok'] < 5
+                                          //                 ? DesignSystem
+                                          //                     .purpleAccent
+                                          //                     .withOpacity(.50)
+                                          //                 : DesignSystem
+                                          //                     .purpleAccent
+                                          //                     .withOpacity(.50),
+                                          //         borderRadius:
+                                          //             BorderRadius.circular(50),
+                                          //       ),
+                                          //       child: Text(
+                                          //         data['stok'] == 0
+                                          //             ? 'Stok habis'
+                                          //             : 'Stok ${data['stok'] ?? 0}',
+                                          //         style: TextStyle(
+                                          //           fontSize: 10,
+                                          //           color:
+                                          //               DesignSystem.whiteColor,
+                                          //         ),
+                                          //       ),
+                                          //     ),
+                                          //   ],
+                                          // ),
+                                          // SizedBox(height: 4),
                                           Text(
                                             data['menu'],
                                             style: TextStyle(
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 16,
-                                              color: DesignSystem.whiteColor,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 20,
+                                              color: DesignSystem.blackColor,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                           ),
                                           Text(
-                                            NumberFormat.currency(
-                                              locale: 'id',
-                                              symbol: 'Rp',
-                                              decimalDigits: 0,
-                                            ).format(data['harga']),
-                                            style: TextStyle(
-                                              fontSize: 18,
-                                              color: DesignSystem.whiteColor,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                          Text(
                                             'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
                                             style: TextStyle(
-                                              color: DesignSystem.whiteColor,
+                                              color: DesignSystem.blackColor,
                                               fontSize: 12,
                                             ),
                                           ),
@@ -511,60 +493,6 @@ class _ListProdukPageState extends State<ListProdukPage> {
               ),
             ),
           ),
-        ],
-      ),
-      floatingActionButton: SpeedDial(
-        // Both default and active icon can be set separately
-        animatedIcon: AnimatedIcons.menu_close,
-        animatedIconTheme: IconThemeData(size: 22.0),
-        // This is ignored if animatedIcon is non-null
-        icon: Icons.add,
-        activeIcon: Icons.close,
-        buttonSize: Size(56.0, 56.0),
-        visible: true,
-        closeManually: false,
-        curve: Curves.bounceIn,
-        overlayColor: Colors.black,
-        overlayOpacity: 0.5,
-        onOpen: () => print('Opening dial'),
-        onClose: () => print('Dial closed'),
-        tooltip: 'Speed Dial',
-        heroTag: 'speed-dial-hero-tag',
-        backgroundColor: Colors.purpleAccent,
-        foregroundColor: Colors.white,
-        elevation: 8.0,
-        shape: CircleBorder(),
-        children: [
-          SpeedDialChild(
-            child: Icon(Icons.add),
-            // backgroundColor: DesignSystem.whiteColor,
-            label: 'Tambah Produk',
-            labelStyle: TextStyle(fontSize: 18.0),
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => AddDataPage()),
-              );
-            },
-            shape: CircleBorder(),
-          ),
-          // SpeedDialChild(
-          //   child: Icon(Icons.arrow_downward_outlined),
-          //   backgroundColor: DesignSystem.whiteColor,
-          //   label: 'Pemasukan',
-          //   labelStyle: TextStyle(fontSize: 18.0),
-          //   onTap: () => print('Second action'),
-          //   shape: CircleBorder(),
-          // ),
-          // SpeedDialChild(
-          //   child: Icon(Icons.arrow_upward_outlined),
-          //   backgroundColor: DesignSystem.whiteColor,
-          //   label: 'Pengeluaran',
-          //   labelStyle: TextStyle(fontSize: 18.0),
-          //   onTap: () => print('Second action'),
-          //   shape: CircleBorder(),
-          // ),
-          // Add more SpeedDialChild widgets for additional actions
         ],
       ),
     );
