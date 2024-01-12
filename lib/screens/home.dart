@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/screens/menu_button.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -71,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                   Scaffold.of(context).openEndDrawer();
                 },
                 child: Container(
-                  margin: EdgeInsets.only(right: 20),
+                  margin: EdgeInsets.only(right: 10),
                   padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                   alignment: Alignment.center,
                   child: _currentUser != null
@@ -80,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(
                             fontWeight: FontWeight.w300,
                             fontSize: 15,
-                            color: DesignSystem.whiteColor,
+                            color: DesignSystem.blackColor,
                           ),
                         )
                       : CircularProgressIndicator(), // Show loading indicator while fetching user data
@@ -120,7 +121,7 @@ class _HomePageState extends State<HomePage> {
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
-                              color: DesignSystem.whiteColor,
+                              color: DesignSystem.blackColor,
                             ),
                           ),
                           SizedBox(height: 8),
@@ -288,7 +289,7 @@ class _HomePageState extends State<HomePage> {
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 18,
-                            color: DesignSystem.whiteColor,
+                            color: DesignSystem.blackColor,
                           ),
                         ),
                         StreamBuilder<QuerySnapshot>(
@@ -353,7 +354,8 @@ class _HomePageState extends State<HomePage> {
                                                 child: Text(
                                                   'Produk $namaProduk sudah habis!',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color:
+                                                        DesignSystem.blackColor,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                     fontSize: 12,
@@ -385,7 +387,7 @@ class _HomePageState extends State<HomePage> {
                                               vertical: 10),
                                           decoration: BoxDecoration(
                                             color:
-                                                Colors.yellow.withOpacity(.10),
+                                                Colors.yellow.withOpacity(.30),
                                             borderRadius:
                                                 BorderRadius.circular(10),
                                             border: Border.all(
@@ -401,7 +403,8 @@ class _HomePageState extends State<HomePage> {
                                                 child: Text(
                                                   'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color:
+                                                        DesignSystem.blackColor,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                     fontSize: 12,
@@ -448,7 +451,8 @@ class _HomePageState extends State<HomePage> {
                                                 child: Text(
                                                   'Woy! $namaProduk mau abis, sisa $stok!',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color:
+                                                        DesignSystem.blackColor,
                                                     fontWeight:
                                                         FontWeight.normal,
                                                     fontSize: 12,
@@ -475,59 +479,27 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        floatingActionButton: SpeedDial(
-          // Both default and active icon can be set separately
-          animatedIcon: AnimatedIcons.menu_close,
-          animatedIconTheme: IconThemeData(size: 22.0),
-          // This is ignored if animatedIcon is non-null
-          icon: Icons.add,
-          activeIcon: Icons.close,
-          buttonSize: Size(56.0, 56.0),
-          visible: true,
-          closeManually: false,
-          curve: Curves.bounceIn,
-          overlayColor: Colors.black,
-          overlayOpacity: 0.5,
-          onOpen: () => print('Opening dial'),
-          onClose: () => print('Dial closed'),
-          tooltip: 'Speed Dial',
-          heroTag: 'speed-dial-hero-tag',
-          backgroundColor: Colors.purpleAccent,
+        floatingActionButton: FloatingActionButton.extended(
+          backgroundColor: DesignSystem.purpleAccent,
+          elevation: 10,
+          tooltip: 'Menu',
           foregroundColor: Colors.white,
-          elevation: 8.0,
-          shape: CircleBorder(),
-          children: [
-            SpeedDialChild(
-              child: Icon(Icons.add),
-              // backgroundColor: DesignSystem.whiteColor,
-              label: 'Tambah Produk',
-              labelStyle: TextStyle(fontSize: 18.0),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => AddDataPage()),
-                );
+          splashColor: DesignSystem.purpleAccent,
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              builder: (BuildContext context) {
+                return MenuButton();
               },
-              shape: CircleBorder(),
-            ),
-            // SpeedDialChild(
-            //   child: Icon(Icons.arrow_downward_outlined),
-            //   backgroundColor: DesignSystem.whiteColor,
-            //   label: 'Pemasukan',
-            //   labelStyle: TextStyle(fontSize: 18.0),
-            //   onTap: () => print('Second action'),
-            //   shape: CircleBorder(),
-            // ),
-            // SpeedDialChild(
-            //   child: Icon(Icons.arrow_upward_outlined),
-            //   backgroundColor: DesignSystem.whiteColor,
-            //   label: 'Pengeluaran',
-            //   labelStyle: TextStyle(fontSize: 18.0),
-            //   onTap: () => print('Second action'),
-            //   shape: CircleBorder(),
-            // ),
-            // Add more SpeedDialChild widgets for additional actions
-          ],
+            );
+          },
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          icon: Icon(Icons.menu_rounded,
+              color: DesignSystem.whiteColor, size: 20),
+          label: Text('Menu',
+              style: TextStyle(color: DesignSystem.whiteColor, fontSize: 16)),
         ),
       ),
     );

@@ -49,14 +49,14 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextStyle(
                     fontSize: 27,
                     fontWeight: FontWeight.bold,
-                    color: DesignSystem.whiteColor),
+                    color: DesignSystem.blackColor),
               ),
               SizedBox(
                 height: 30,
               ),
               TextFormField(
                 controller: _emailController,
-                style: TextStyle(color: DesignSystem.whiteColor),
+                style: TextStyle(color: DesignSystem.blackColor),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                style: TextStyle(color: DesignSystem.whiteColor),
+                style: TextStyle(color: DesignSystem.blackColor),
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
@@ -131,7 +131,7 @@ class _LoginPageState extends State<LoginPage> {
                   _signInWithGoogle();
                 },
                 style: ElevatedButton.styleFrom(
-                  primary: DesignSystem.whiteColor,
+                  primary: DesignSystem.whiteColor.withOpacity(.80),
                 ),
                 child: Container(
                   child: Center(
@@ -146,7 +146,7 @@ class _LoginPageState extends State<LoginPage> {
                           width: 5,
                         ),
                         Text(
-                          "Sign in with Google",
+                          "Masuk dengan Google",
                           style: TextStyle(
                             color: DesignSystem.blackColor,
                             fontWeight: FontWeight.bold,
@@ -164,7 +164,7 @@ class _LoginPageState extends State<LoginPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text("Belum punya akun?",
-                      style: TextStyle(color: DesignSystem.whiteColor)),
+                      style: TextStyle(color: DesignSystem.blackColor)),
                   SizedBox(
                     width: 5,
                   ),
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                       );
                     },
                     child: Text(
-                      "Sign Up",
+                      "Daftar",
                       style: TextStyle(
                         color: Colors.blue,
                         fontWeight: FontWeight.bold,

@@ -47,7 +47,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 style: TextStyle(
                   fontSize: 27,
                   fontWeight: FontWeight.bold,
-                  color: DesignSystem.whiteColor,
+                  color: DesignSystem.blackColor,
                 ),
               ),
               SizedBox(
@@ -55,7 +55,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               TextFormField(
                 controller: _usernameController,
-                style: TextStyle(color: DesignSystem.whiteColor),
+                style: TextStyle(color: DesignSystem.blackColor),
                 decoration: InputDecoration(
                   labelText: 'Username',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
@@ -68,7 +68,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               TextFormField(
                 controller: _emailController,
-                style: TextStyle(color: DesignSystem.whiteColor),
+                style: TextStyle(color: DesignSystem.blackColor),
                 decoration: InputDecoration(
                   labelText: 'Email',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
@@ -82,7 +82,7 @@ class _SignUpPageState extends State<SignUpPage> {
               ),
               TextFormField(
                 controller: _passwordController,
-                style: TextStyle(color: DesignSystem.whiteColor),
+                style: TextStyle(color: DesignSystem.blackColor),
                 decoration: InputDecoration(
                   labelText: 'Password',
                   hintStyle: TextStyle(color: DesignSystem.greyColor),
@@ -129,13 +129,13 @@ class _SignUpPageState extends State<SignUpPage> {
                             width: 20,
                             height: 20,
                             child: CircularProgressIndicator(
-                              color: Colors.white,
+                              color: DesignSystem.whiteColor,
                             ),
                           )
                         : Text(
                             "Daftar akun",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: DesignSystem.whiteColor,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -150,7 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 children: [
                   Text(
                     "Sudah punya akun?",
-                    style: TextStyle(color: DesignSystem.whiteColor),
+                    style: TextStyle(color: DesignSystem.blackColor),
                   ),
                   SizedBox(
                     width: 5,

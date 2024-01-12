@@ -160,6 +160,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         actions: [
           Padding(
             padding: EdgeInsets.only(right: 5.0),

@@ -31,29 +31,30 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        brightness: Brightness.dark,
         primarySwatch: Colors.purple,
-        scaffoldBackgroundColor: DesignSystem.blackColor,
+        scaffoldBackgroundColor: DesignSystem.backgroundColor,
         primaryColor: DesignSystem.purpleAccent,
         appBarTheme: const AppBarTheme(
-            color: DesignSystem.blackColor, foregroundColor: Colors.white),
+            color: DesignSystem.backgroundColor,
+            foregroundColor: Colors.black,
+            elevation: 0),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 backgroundColor: DesignSystem.purpleAccent,
                 foregroundColor: Colors.white)),
         inputDecorationTheme: InputDecorationTheme(
+          contentPadding:
+              EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
           border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide: BorderSide(
-                color: DesignSystem.greyColor.withOpacity(.50),
-              )),
+            borderRadius: BorderRadius.circular(10.0),
+          ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: Colors.deepPurple),
+            borderSide: BorderSide(color: Colors.purpleAccent, width: 1),
           ),
         ),
       ),

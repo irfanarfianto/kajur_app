@@ -8,6 +8,8 @@ class DesignSystem {
   static const Color purpleAccent = Colors.purple;
   static const Color redAccent = Colors.red;
   static const Color orangeAccent = Colors.orange;
+  static const Color greenAccent = Colors.green;
+  static const Color backgroundColor = Color(0xFFF5FFFA);
 
   static const TextStyle titleTextStyle = TextStyle(
     color: Colors.white,

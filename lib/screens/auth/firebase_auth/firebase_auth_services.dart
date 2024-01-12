@@ -20,7 +20,8 @@ class FirebaseAuthService {
           await user.updateProfile(displayName: username);
 
           // Simpan data tambahan user ke Firestore
-          await saveUserDataToFirestore(user.uid, username, email);
+          await saveUserDataToFirestore(
+              user.uid, username, email, user.displayName ?? '');
 
           return user;
         }
@@ -40,11 +41,12 @@ class FirebaseAuthService {
   }
 
   Future<void> saveUserDataToFirestore(
-      String userId, String username, String email) async {
+      String userId, String username, String email, String displayName) async {
     try {
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'username': username,
         'email': email,
+        'displayName': displayName,
         'createdAt': DateTime.now().toIso8601String(),
         'updatedAt': DateTime.now().toIso8601String(),
         'lastLoginAt': DateTime.now().toIso8601String(),
@@ -135,12 +137,12 @@ class FirebaseAuthService {
           // Cek apakah user sudah terdaftar di Firestore
           if (!(await isUserRegistered(user.uid))) {
             // Jika belum terdaftar, simpan data user ke Firestore
-            await saveUserDataToFirestore(
-                user.uid, user.displayName ?? '', user.email ?? '');
+            await saveUserDataToFirestore(user.uid, user.displayName ?? '',
+                user.email ?? '', user.displayName ?? '');
           }
 
-          // Show success toast message
-          showToast(message: "Selamat datang");
+          // Menampilkan pesan toast selamat datang
+          showToast(message: "Selamat datang, ${user.displayName}!");
 
           return user;
         }

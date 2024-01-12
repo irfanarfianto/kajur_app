@@ -1,5 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:animated_snack_bar/animated_snack_bar.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -7,7 +9,6 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
-import 'package:kajur_app/global/common/toast.dart';
 
 class AddDataPage extends StatefulWidget {
   @override
@@ -22,6 +23,7 @@ class _AddDataPageState extends State<AddDataPage> {
   String _selectedCategory = '';
   File? _selectedImage;
   bool _isLoading = false;
+  bool isInfoSnackbarVisible = false;
 
   Future<void> _getImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -37,10 +39,9 @@ class _AddDataPageState extends State<AddDataPage> {
   Future<String> _uploadImage() async {
     if (_selectedImage == null) return '';
 
-    // Kompressi gambar sebelum mengunggahnya
     Uint8List? compressedImage = await FlutterImageCompress.compressWithFile(
       _selectedImage!.path,
-      quality: 70, // Atur kualitas kompresi di sini (0 sampai 100)
+      quality: 70,
     );
     File compressedFile = File(_selectedImage!.path)
       ..writeAsBytesSync(compressedImage!);
@@ -50,10 +51,8 @@ class _AddDataPageState extends State<AddDataPage> {
         .child('kantin')
         .child('image_${DateTime.now().millisecondsSinceEpoch}.jpg');
 
-    // Unggah file gambar yang sudah dikompresi
     await ref.putFile(compressedFile);
 
-    // Dapatkan URL unduhan gambar yang sudah dikompresi
     return await ref.getDownloadURL();
   }
 
@@ -96,20 +95,34 @@ class _AddDataPageState extends State<AddDataPage> {
         'lastEditedBy': userId,
         'lastEditedByName': userName,
       }).then((_) {
-        showToast(message: 'Produk berhasil diperbarui');
+        AnimatedSnackBar.material(
+          'Produk berhasil diperbarui',
+          type: AnimatedSnackBarType.success,
+        ).show(context);
+
         Navigator.pushReplacementNamed(context, '/list_produk');
       }).catchError((error) {
-        showToast(message: 'Terjadi kesalahan: $error');
+        AnimatedSnackBar.material(
+          'Terjadi kesalahan: $error',
+          type: AnimatedSnackBarType.info,
+        ).show(context);
       });
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text(
-            'Mohon isi semua bidang',
-          ),
-        ),
-      );
+      if (!isInfoSnackbarVisible) {
+        AnimatedSnackBar.material(
+          'Mohon isi semuanya ya!',
+          type: AnimatedSnackBarType.info,
+        ).show(context);
+
+        isInfoSnackbarVisible = true;
+
+        // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
+        Future.delayed(Duration(seconds: 5), () {
+          setState(() {
+            isInfoSnackbarVisible = false;
+          });
+        });
+      }
     }
     setState(() {
       _isLoading = false;
@@ -120,22 +133,24 @@ class _AddDataPageState extends State<AddDataPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Text('Tambah Produk'),
       ),
       body: Padding(
         padding: EdgeInsets.all(10.0),
         child: SingleChildScrollView(
+          physics: BouncingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Container(
-                height: 150,
+                height: 250,
                 width: double.infinity,
-                // margin: EdgeInsets.all(8.0),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(
                     color: DesignSystem.greyColor.withOpacity(.50),
+                    width: 1,
                   ),
                 ),
                 child: Stack(
@@ -145,7 +160,7 @@ class _AddDataPageState extends State<AddDataPage> {
                             borderRadius: BorderRadius.circular(10),
                             child: Image.file(
                               _selectedImage!,
-                              height: 150,
+                              height: 250,
                               width: double.infinity,
                               fit: BoxFit.cover,
                             ),
@@ -198,7 +213,6 @@ class _AddDataPageState extends State<AddDataPage> {
                         );
                       },
                       child: Container(
-                        // Konten untuk tombol yang dapat ditekan
                         padding: EdgeInsets.all(10),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
@@ -220,14 +234,15 @@ class _AddDataPageState extends State<AddDataPage> {
                                     Icon(
                                       Icons.add_a_photo,
                                       size: 50,
-                                      color: Colors.grey,
+                                      color: DesignSystem.greyColor
+                                          .withOpacity(.20),
                                     ),
                                     SizedBox(height: 8),
                                     Text(
                                       'Upload Foto',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        color: Colors.grey,
+                                        color: DesignSystem.greyColor,
                                       ),
                                     ),
                                   ],
@@ -239,119 +254,221 @@ class _AddDataPageState extends State<AddDataPage> {
                 ),
               ),
               SizedBox(height: 16.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Nama Produk *',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: DesignSystem.blackColor,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _menuController,
+                    keyboardType: TextInputType.name,
+                    textCapitalization: TextCapitalization.words,
+                    textInputAction: TextInputAction.next,
+                    style: TextStyle(color: DesignSystem.blackColor),
+                    decoration: InputDecoration(
+                      hintText: 'Nama produk',
+                      hintStyle: TextStyle(
+                        color: DesignSystem.greyColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    flex: 2,
-                    child: TextFormField(
-                      controller: _menuController,
-                      style: TextStyle(color: DesignSystem.whiteColor),
-                      decoration: InputDecoration(
-                        labelText: 'Nama Produk',
-                        hintStyle: TextStyle(color: DesignSystem.greyColor),
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Harga *',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: DesignSystem.blackColor,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        TextFormField(
+                          style: TextStyle(color: DesignSystem.blackColor),
+                          controller: _hargaController,
+                          decoration: InputDecoration(
+                            hintText: 'Harga',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(width: 16.0),
                   Expanded(
-                    child: TextFormField(
-                      controller: _stokController,
-                      style: TextStyle(color: DesignSystem.whiteColor),
-                      decoration: InputDecoration(
-                        labelText: 'Stok',
-                        hintStyle: TextStyle(color: DesignSystem.greyColor),
-                      ),
-                      keyboardType: TextInputType.number,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Stok *',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: DesignSystem.blackColor,
+                          ),
+                        ),
+                        SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _stokController,
+                          style: TextStyle(color: DesignSystem.blackColor),
+                          decoration: InputDecoration(
+                            hintText: 'Stok',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          keyboardType: TextInputType.number,
+                        ),
+                      ],
                     ),
                   )
                 ],
               ),
               SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: TextFormField(
-                      style: TextStyle(color: DesignSystem.whiteColor),
-                      controller: _hargaController,
-                      decoration: InputDecoration(
-                        labelText: 'Harga',
-                        hintStyle: TextStyle(color: DesignSystem.greyColor),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              BorderSide(color: DesignSystem.whiteColor),
-                        ),
-                      ),
-                      keyboardType: TextInputType.number,
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+                Text(
+                  'Pilih kategori *',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: DesignSystem.blackColor,
+                  ),
+                ),
+                SizedBox(height: 8.0),
+                DropdownButtonFormField2<String>(
+                  isExpanded: true,
+                  decoration: InputDecoration(
+                    contentPadding: EdgeInsets.symmetric(vertical: 12),
+                  ),
+                  hint: Text(
+                    'Pilih kategori',
+                    style: TextStyle(
+                      color: DesignSystem.greyColor,
+                      fontWeight: FontWeight.normal,
+                      fontSize: 16,
                     ),
                   ),
-                  SizedBox(width: 16.0),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      isExpanded: true,
-                      value: _selectedCategory.isNotEmpty
-                          ? _selectedCategory
-                          : null,
-                      style: TextStyle(color: DesignSystem.greyColor),
-                      decoration: InputDecoration(
-                        labelText: 'Kategori',
-                        filled: true, // Aktifkan pengisian background
-                        fillColor: DesignSystem
-                            .blackColor, // Atur warna latar belakang di sini
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide:
-                              BorderSide(color: DesignSystem.whiteColor),
-                        ),
+                  value:
+                      _selectedCategory.isNotEmpty ? _selectedCategory : null,
+                  style: TextStyle(color: DesignSystem.greyColor),
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: 'Makanan',
+                      child: Text(
+                        'Makanan',
+                        style: TextStyle(
+                            color: DesignSystem.blackColor, fontSize: 16),
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'Makanan',
-                          child: Text(
-                            'Makanan',
-                            style: TextStyle(color: DesignSystem.whiteColor),
-                          ),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Minuman',
-                          child: Text(
-                            'Minuman',
-                            style: TextStyle(color: DesignSystem.whiteColor),
-                          ),
-                        ),
-                      ],
-                      onChanged: (String? value) {
-                        setState(() {
-                          _selectedCategory = value ?? '';
-                        });
-                      },
                     ),
+                    DropdownMenuItem<String>(
+                      value: 'Minuman',
+                      child: Text(
+                        'Minuman',
+                        style: TextStyle(
+                            color: DesignSystem.blackColor, fontSize: 16),
+                      ),
+                    ),
+                  ],
+                  dropdownStyleData: DropdownStyleData(
+                    decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: DesignSystem.backgroundColor,
+                        border: Border.all(
+                          color: DesignSystem.greyColor.withOpacity(.20),
+                        )),
+                  ),
+                  buttonStyleData: const ButtonStyleData(
+                    padding: EdgeInsets.only(right: 8),
+                  ),
+                  menuItemStyleData: const MenuItemStyleData(
+                    padding: EdgeInsets.symmetric(horizontal: 12),
+                  ),
+                  iconStyleData: const IconStyleData(
+                    icon: Icon(
+                      Icons.expand_more_outlined,
+                      color: Colors.black45,
+                    ),
+                    iconSize: 24,
+                  ),
+                  onChanged: (String? value) {
+                    setState(() {
+                      _selectedCategory = value ?? '';
+                    });
+                  },
+                ),
+              ]),
+              SizedBox(height: 16.0),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Deskripsi *',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: DesignSystem.blackColor,
+                    ),
+                  ),
+                  SizedBox(height: 8.0),
+                  TextFormField(
+                    controller: _deskripsiController,
+                    decoration: InputDecoration(
+                      hintText: 'Masukan deskripsi produk',
+                      hintStyle: TextStyle(
+                        color: DesignSystem.greyColor,
+                        fontWeight: FontWeight.normal,
+                      ),
+                      contentPadding: EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 10.0),
+                    ),
+                    style: TextStyle(color: DesignSystem.blackColor),
+                    keyboardType: TextInputType.multiline,
+                    maxLines: 3,
                   ),
                 ],
               ),
-              SizedBox(height: 16.0),
-              TextFormField(
-                controller: _deskripsiController,
-                decoration: InputDecoration(
-                  labelText: 'Deskripsi',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    borderSide: BorderSide(color: DesignSystem.whiteColor),
+              SizedBox(height: 24.0),
+              ElevatedButton(
+                onPressed: _isLoading ? null : () => _submitData(context),
+                child: Container(
+                  child: Center(
+                    child: _isLoading
+                        ? SizedBox(
+                            width: 20,
+                            height: 20,
+                            child:
+                                CircularProgressIndicator(color: Colors.white))
+                        : Text(
+                            "Tambah",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                   ),
                 ),
-                style: TextStyle(color: DesignSystem.whiteColor),
-                keyboardType: TextInputType.multiline,
-                maxLines: 3,
               ),
-              SizedBox(height: 24.0),
-              _isLoading
-                  ? Center(child: CircularProgressIndicator())
-                  : ElevatedButton(
-                      onPressed: _isLoading ? null : () => _submitData(context),
-                      child: Text('Tambah Data'),
-                    ),
             ],
           ),
         ),
