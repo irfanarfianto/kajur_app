@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:kajur_app/design/system.dart';
 
 void showToast({required String message}) {
   Fluttertoast.showToast(
@@ -7,7 +7,7 @@ void showToast({required String message}) {
       toastLength: Toast.LENGTH_SHORT,
       gravity: ToastGravity.BOTTOM,
       timeInSecForIosWeb: 2,
-      backgroundColor: Colors.blue,
-      textColor: Colors.white,
+      backgroundColor: DesignSystem.primaryColor,
+      textColor: DesignSystem.whiteColor,
       fontSize: 16.0);
 }
