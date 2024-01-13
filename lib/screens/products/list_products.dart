@@ -329,165 +329,168 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     }
                   });
 
-                  return ListView.builder(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    physics: BouncingScrollPhysics(),
-                    itemCount: filteredProducts.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      DocumentSnapshot document = filteredProducts[index];
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-                      String documentId = document.id;
+                  return Scrollbar(
+                    child: ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 8.0),
+                      physics: BouncingScrollPhysics(),
+                      itemCount: filteredProducts.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        DocumentSnapshot document = filteredProducts[index];
+                        Map<String, dynamic> data =
+                            document.data() as Map<String, dynamic>;
+                        String documentId = document.id;
 
-                      Timestamp updatedAt =
-                          data['updatedAt'] ?? Timestamp.now();
+                        Timestamp updatedAt =
+                            data['updatedAt'] ?? Timestamp.now();
 
-                      return Stack(
-                        children: [
-                          Card(
-                            elevation: 0,
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    transitionDuration:
-                                        Duration(milliseconds: 200),
-                                    pageBuilder: (_, __, ___) =>
-                                        DetailProdukPage(
-                                            documentId: documentId),
-                                    transitionsBuilder:
-                                        (_, animation, __, child) {
-                                      return SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: Offset(1.0, 0.0),
-                                          end: Offset.zero,
-                                        ).animate(animation),
-                                        child: child,
-                                      );
-                                    },
+                        return Stack(
+                          children: [
+                            Card(
+                              elevation: 0,
+                              color: Colors.transparent,
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    PageRouteBuilder(
+                                      transitionDuration:
+                                          Duration(milliseconds: 200),
+                                      pageBuilder: (_, __, ___) =>
+                                          DetailProdukPage(
+                                              documentId: documentId),
+                                      transitionsBuilder:
+                                          (_, animation, __, child) {
+                                        return SlideTransition(
+                                          position: Tween<Offset>(
+                                            begin: Offset(1.0, 0.0),
+                                            end: Offset.zero,
+                                          ).animate(animation),
+                                          child: child,
+                                        );
+                                      },
+                                    ),
+                                  );
+                                },
+                                child: Padding(
+                                  padding: EdgeInsets.symmetric(vertical: 5),
+                                  child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          data['image'],
+                                          height: 80,
+                                          width: 80,
+                                          fit: BoxFit
+                                              .cover, // Sesuaikan dengan preferensi tampilan
+                                        ),
+                                      ),
+                                      SizedBox(
+                                          width:
+                                              10), // Memberi jarak antara gambar dan teks
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            // Row(
+                                            //   children: [
+                                            //     Container(
+                                            //       padding: EdgeInsets.symmetric(
+                                            //           vertical: 3,
+                                            //           horizontal: 12),
+                                            //       decoration: BoxDecoration(
+                                            //         color: data['kategori'] ==
+                                            //                 'Makanan'
+                                            //             ? Colors.green
+                                            //                 .withOpacity(.50)
+                                            //             : data['kategori'] ==
+                                            //                     'Minuman'
+                                            //                 ? DesignSystem
+                                            //                     .primaryColor
+                                            //                     .withOpacity(.50)
+                                            //                 : Colors.grey,
+                                            //         borderRadius:
+                                            //             BorderRadius.circular(50),
+                                            //       ),
+                                            //       child: Text(
+                                            //         data['kategori'] == 'Makanan'
+                                            //             ? 'Makanan'
+                                            //             : data['kategori'] ==
+                                            //                     'Minuman'
+                                            //                 ? 'Minuman'
+                                            //                 : 'Kategori Tidak Diketahui',
+                                            //         style: TextStyle(
+                                            //           fontSize: 10,
+                                            //           color:
+                                            //               DesignSystem.whiteColor,
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //     SizedBox(width: 8),
+                                            //     Container(
+                                            //       padding: EdgeInsets.symmetric(
+                                            //           vertical: 3,
+                                            //           horizontal: 12),
+                                            //       decoration: BoxDecoration(
+                                            //         color: data['stok'] == 0
+                                            //             ? DesignSystem.redAccent
+                                            //                 .withOpacity(.50)
+                                            //             : data['stok'] < 5
+                                            //                 ? DesignSystem
+                                            //                     .purpleAccent
+                                            //                     .withOpacity(.50)
+                                            //                 : DesignSystem
+                                            //                     .purpleAccent
+                                            //                     .withOpacity(.50),
+                                            //         borderRadius:
+                                            //             BorderRadius.circular(50),
+                                            //       ),
+                                            //       child: Text(
+                                            //         data['stok'] == 0
+                                            //             ? 'Stok habis'
+                                            //             : 'Stok ${data['stok'] ?? 0}',
+                                            //         style: TextStyle(
+                                            //           fontSize: 10,
+                                            //           color:
+                                            //               DesignSystem.whiteColor,
+                                            //         ),
+                                            //       ),
+                                            //     ),
+                                            //   ],
+                                            // ),
+                                            // SizedBox(height: 4),
+                                            Text(
+                                              data['menu'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 20,
+                                                color: DesignSystem.blackColor,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 1,
+                                            ),
+                                            Text(
+                                              'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                                              style: TextStyle(
+                                                color: DesignSystem.blackColor,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                              child: Padding(
-                                padding: EdgeInsets.symmetric(vertical: 5),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(8),
-                                      child: Image.network(
-                                        data['image'],
-                                        height: 80,
-                                        width: 80,
-                                        fit: BoxFit
-                                            .cover, // Sesuaikan dengan preferensi tampilan
-                                      ),
-                                    ),
-                                    SizedBox(
-                                        width:
-                                            10), // Memberi jarak antara gambar dan teks
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          // Row(
-                                          //   children: [
-                                          //     Container(
-                                          //       padding: EdgeInsets.symmetric(
-                                          //           vertical: 3,
-                                          //           horizontal: 12),
-                                          //       decoration: BoxDecoration(
-                                          //         color: data['kategori'] ==
-                                          //                 'Makanan'
-                                          //             ? Colors.green
-                                          //                 .withOpacity(.50)
-                                          //             : data['kategori'] ==
-                                          //                     'Minuman'
-                                          //                 ? DesignSystem
-                                          //                     .primaryColor
-                                          //                     .withOpacity(.50)
-                                          //                 : Colors.grey,
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(50),
-                                          //       ),
-                                          //       child: Text(
-                                          //         data['kategori'] == 'Makanan'
-                                          //             ? 'Makanan'
-                                          //             : data['kategori'] ==
-                                          //                     'Minuman'
-                                          //                 ? 'Minuman'
-                                          //                 : 'Kategori Tidak Diketahui',
-                                          //         style: TextStyle(
-                                          //           fontSize: 10,
-                                          //           color:
-                                          //               DesignSystem.whiteColor,
-                                          //         ),
-                                          //       ),
-                                          //     ),
-                                          //     SizedBox(width: 8),
-                                          //     Container(
-                                          //       padding: EdgeInsets.symmetric(
-                                          //           vertical: 3,
-                                          //           horizontal: 12),
-                                          //       decoration: BoxDecoration(
-                                          //         color: data['stok'] == 0
-                                          //             ? DesignSystem.redAccent
-                                          //                 .withOpacity(.50)
-                                          //             : data['stok'] < 5
-                                          //                 ? DesignSystem
-                                          //                     .purpleAccent
-                                          //                     .withOpacity(.50)
-                                          //                 : DesignSystem
-                                          //                     .purpleAccent
-                                          //                     .withOpacity(.50),
-                                          //         borderRadius:
-                                          //             BorderRadius.circular(50),
-                                          //       ),
-                                          //       child: Text(
-                                          //         data['stok'] == 0
-                                          //             ? 'Stok habis'
-                                          //             : 'Stok ${data['stok'] ?? 0}',
-                                          //         style: TextStyle(
-                                          //           fontSize: 10,
-                                          //           color:
-                                          //               DesignSystem.whiteColor,
-                                          //         ),
-                                          //       ),
-                                          //     ),
-                                          //   ],
-                                          // ),
-                                          // SizedBox(height: 4),
-                                          Text(
-                                            data['menu'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 20,
-                                              color: DesignSystem.blackColor,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          ),
-                                          Text(
-                                            'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                                            style: TextStyle(
-                                              color: DesignSystem.blackColor,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      );
-                    },
+                          ],
+                        );
+                      },
+                    ),
                   );
                 },
               ),

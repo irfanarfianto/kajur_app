@@ -134,211 +134,215 @@ class _EditProdukPageState extends State<EditProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        surfaceTintColor: Colors.transparent,
         title: Text('Edit Produk'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text("Pilih Sumber Gambar"),
-                        actions: <Widget>[
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              _getImage(ImageSource.gallery);
-                            },
-                            child: Row(
-                              children: [
-                                Icon(Icons.photo_library),
-                                SizedBox(width: 8),
-                                Text("Galeri"),
-                              ],
+      body: Scrollbar(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          child: SingleChildScrollView(
+            physics: BouncingScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Pilih Sumber Gambar"),
+                          actions: <Widget>[
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                _getImage(ImageSource.gallery);
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(Icons.photo_library),
+                                  SizedBox(width: 8),
+                                  Text("Galeri"),
+                                ],
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                _getImage(ImageSource.camera);
+                              },
+                              child: Row(
+                                children: [
+                                  Icon(Icons.camera_alt),
+                                  SizedBox(width: 8),
+                                  Text("Kamera"),
+                                ],
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: Container(
+                    height: 250,
+                    width: 250,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: DesignSystem.greyColor.withOpacity(.20),
+                    ),
+                    child: _selectedImage != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.file(
+                              _selectedImage!,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : (_oldImageUrl != null && _oldImageUrl != '')
+                            ? ClipRRect(
+                                borderRadius: BorderRadius.circular(10),
+                                child: Image.network(
+                                  _oldImageUrl!,
+                                  fit: BoxFit.cover,
+                                ),
+                              )
+                            : Center(
+                                child: Icon(Icons.add_a_photo),
+                              ),
+                  ),
+                ),
+                SizedBox(height: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Nama Produk *',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: DesignSystem.blackColor,
+                      ),
+                    ),
+                    SizedBox(height: 8.0),
+                    TextFormField(
+                      controller: _menuController,
+                      keyboardType: TextInputType.name,
+                      textCapitalization: TextCapitalization.words,
+                      textInputAction: TextInputAction.next,
+                      style: TextStyle(color: DesignSystem.blackColor),
+                      decoration: InputDecoration(
+                        hintText: 'Nama produk',
+                        hintStyle: TextStyle(
+                          color: DesignSystem.greyColor,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Harga *',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: DesignSystem.blackColor,
                             ),
                           ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                              _getImage(ImageSource.camera);
-                            },
-                            child: Row(
-                              children: [
-                                Icon(Icons.camera_alt),
-                                SizedBox(width: 8),
-                                Text("Kamera"),
-                              ],
+                          SizedBox(height: 8.0),
+                          TextFormField(
+                            style: TextStyle(color: DesignSystem.blackColor),
+                            controller: _hargaController,
+                            decoration: InputDecoration(
+                              hintText: 'Harga',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
+                            keyboardType: TextInputType.number,
                           ),
                         ],
-                      );
-                    },
-                  );
-                },
-                child: Container(
-                  height: 250,
-                  width: 250,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: DesignSystem.greyColor.withOpacity(.20),
-                  ),
-                  child: _selectedImage != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: Image.file(
-                            _selectedImage!,
-                            fit: BoxFit.cover,
+                      ),
+                    ),
+                    SizedBox(width: 16.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Stok *',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: DesignSystem.blackColor,
+                            ),
                           ),
-                        )
-                      : (_oldImageUrl != null && _oldImageUrl != '')
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(10),
-                              child: Image.network(
-                                _oldImageUrl!,
-                                fit: BoxFit.cover,
+                          SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: _stokController,
+                            style: TextStyle(color: DesignSystem.blackColor),
+                            decoration: InputDecoration(
+                              hintText: 'Stok',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
                               ),
-                            )
-                          : Center(
-                              child: Icon(Icons.add_a_photo),
                             ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
                 ),
-              ),
-              SizedBox(height: 16.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Nama Produk *',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: DesignSystem.blackColor,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    controller: _menuController,
-                    keyboardType: TextInputType.name,
-                    textCapitalization: TextCapitalization.words,
-                    textInputAction: TextInputAction.next,
-                    style: TextStyle(color: DesignSystem.blackColor),
-                    decoration: InputDecoration(
-                      hintText: 'Nama produk',
-                      hintStyle: TextStyle(
-                        color: DesignSystem.greyColor,
-                        fontWeight: FontWeight.normal,
+                SizedBox(height: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Deskripsi',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: DesignSystem.blackColor,
                       ),
                     ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Harga *',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: DesignSystem.blackColor,
-                          ),
+                    SizedBox(height: 8.0),
+                    TextFormField(
+                      controller: _deskripsiController,
+                      decoration: InputDecoration(
+                        hintText: 'Masukan deskripsi produk',
+                        hintStyle: TextStyle(
+                          color: DesignSystem.greyColor,
+                          fontWeight: FontWeight.normal,
                         ),
-                        SizedBox(height: 8.0),
-                        TextFormField(
-                          style: TextStyle(color: DesignSystem.blackColor),
-                          controller: _hargaController,
-                          decoration: InputDecoration(
-                            hintText: 'Harga',
-                            hintStyle: TextStyle(
-                              color: DesignSystem.greyColor,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(width: 16.0),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Stok *',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: DesignSystem.blackColor,
-                          ),
-                        ),
-                        SizedBox(height: 8.0),
-                        TextFormField(
-                          controller: _stokController,
-                          style: TextStyle(color: DesignSystem.blackColor),
-                          decoration: InputDecoration(
-                            hintText: 'Stok',
-                            hintStyle: TextStyle(
-                              color: DesignSystem.greyColor,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          ),
-                          keyboardType: TextInputType.number,
-                        ),
-                      ],
-                    ),
-                  )
-                ],
-              ),
-              SizedBox(height: 16.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Deskripsi',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: DesignSystem.blackColor,
-                    ),
-                  ),
-                  SizedBox(height: 8.0),
-                  TextFormField(
-                    controller: _deskripsiController,
-                    decoration: InputDecoration(
-                      hintText: 'Masukan deskripsi produk',
-                      hintStyle: TextStyle(
-                        color: DesignSystem.greyColor,
-                        fontWeight: FontWeight.normal,
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: 10.0, horizontal: 10.0),
                       ),
-                      contentPadding: EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 10.0),
+                      style: TextStyle(color: DesignSystem.blackColor),
+                      keyboardType: TextInputType.multiline,
+                      maxLines: 3,
                     ),
-                    style: TextStyle(color: DesignSystem.blackColor),
-                    keyboardType: TextInputType.multiline,
-                    maxLines: 3,
-                  ),
-                ],
-              ),
-              SizedBox(height: 24.0),
-              ElevatedButton(
-                onPressed: () {
-                  _updateProductDetails();
-                },
-                child: Text('Update'),
-              ),
-            ],
+                  ],
+                ),
+                SizedBox(height: 24.0),
+                ElevatedButton(
+                  onPressed: () {
+                    _updateProductDetails();
+                  },
+                  child: Text('Update'),
+                ),
+              ],
+            ),
           ),
         ),
       ),
