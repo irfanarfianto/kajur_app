@@ -29,6 +29,21 @@ class _StockPageState extends State<StockPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Info Stok 📢'),
+        actions: [
+          // Adding the IconButton for sharing
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: Icon(Icons.share),
+              onPressed: () {
+                // Implement your sharing logic here
+                // For example, you can open a share dialog
+                // with the content you want to share
+                // Share.share('Check out this stock information!');
+              },
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -133,19 +148,20 @@ class _StockPageState extends State<StockPage> {
 
                     // Add the containers to the main list in the desired order
                     if (outOfStockContainers.isNotEmpty) {
-                      stockContainers.add(buildCategoryTitle('Stok Habis'));
+                      stockContainers
+                          .add(buildCategoryTitle('Stok sudah habis'));
                       stockContainers.addAll(outOfStockContainers);
                     }
 
                     if (criticalStockContainers.isNotEmpty) {
                       stockContainers
-                          .add(buildCategoryTitle('Stok Kritis (<5)'));
+                          .add(buildCategoryTitle('Stok kurang dari 5'));
                       stockContainers.addAll(criticalStockContainers);
                     }
 
                     if (lowStockContainers.isNotEmpty) {
                       stockContainers
-                          .add(buildCategoryTitle('Stok Rendah (<=10)'));
+                          .add(buildCategoryTitle('Stok kurang dari 10'));
                       stockContainers.addAll(lowStockContainers);
                     }
 
