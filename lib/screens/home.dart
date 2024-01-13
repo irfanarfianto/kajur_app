@@ -7,7 +7,6 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/menu_button.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
-import 'package:kajur_app/screens/products/stok.dart';
 import 'package:flutter/services.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk.dart';
 
@@ -22,6 +21,7 @@ class _HomePageState extends State<HomePage> {
   late User? _currentUser;
   int totalProducts = 0;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -46,6 +46,27 @@ class _HomePageState extends State<HomePage> {
     } catch (e) {
       print('Error: $e');
       return 0;
+    }
+  }
+
+  Future<void> _refreshData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Simulate fetching new data from your data source
+      await Future.delayed(Duration(seconds: 2));
+
+      // After fetching new data, you can setState or update your variables
+      // Example: setState(() { yourData = fetchedData; });
+    } catch (error) {
+      // Handle error if it occurs during data refresh
+      print('Error refreshing data: $error');
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -212,17 +233,34 @@ class _HomePageState extends State<HomePage> {
           child: _buildAppBar(),
         ),
         endDrawer: Drawer(child: _buildDrawer()),
-        body: Scrollbar(
-          child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                _buildTotalProductsWidget(),
-                _buildStockWidget(),
-                _buildRecentActivityWidget(),
-              ],
+        body: Stack(
+          children: [
+            // Body content
+            RefreshIndicator(
+              onRefresh: _refreshData,
+              child: Visibility(
+                visible: !_isLoading,
+                child: SingleChildScrollView(
+                  physics: BouncingScrollPhysics(),
+                  child: Column(
+                    children: [
+                      _buildTotalProductsWidget(),
+                      _buildStockWidget(),
+                      _buildRecentActivityWidget(),
+                    ],
+                  ),
+                ),
+              ),
             ),
-          ),
+
+            // Loading indicator
+            Visibility(
+              visible: _isLoading,
+              child: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          ],
         ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.transparent,
@@ -501,151 +539,102 @@ class _HomePageState extends State<HomePage> {
                                         document.data() as Map<String, dynamic>;
                                     String namaProduk = data['menu'];
                                     int stok = data['stok'];
-                                    String documentId = document.id;
 
                                     if (stok == 0) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditStockPage(
-                                                namaProduk: namaProduk,
-                                                stok: stok,
-                                                documentId: documentId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 20),
-                                          margin:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(.10),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color:
-                                                  Colors.red.withOpacity(.50),
-                                            ),
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(.10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.red.withOpacity(.50),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Produk $namaProduk sudah habis!',
-                                                  style: TextStyle(
-                                                    color:
-                                                        DesignSystem.blackColor,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 12,
-                                                  ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                'Produk $namaProduk sudah habis!',
+                                                style: TextStyle(
+                                                  color:
+                                                      DesignSystem.blackColor,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       );
                                     } else if (stok <= 10 && stok > 4) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditStockPage(
-                                                namaProduk: namaProduk,
-                                                stok: stok,
-                                                documentId: documentId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 20),
-                                          margin:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          decoration: BoxDecoration(
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.yellow.withOpacity(.30),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
                                             color:
-                                                Colors.yellow.withOpacity(.30),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color: Colors.yellow
-                                                  .withOpacity(.20),
-                                            ),
+                                                Colors.yellow.withOpacity(.20),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                                  style: TextStyle(
-                                                    color:
-                                                        DesignSystem.blackColor,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 12,
-                                                  ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                                style: TextStyle(
+                                                  color:
+                                                      DesignSystem.blackColor,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       );
                                     } else if (stok < 5) {
-                                      return GestureDetector(
-                                        onTap: () {
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  EditStockPage(
-                                                namaProduk: namaProduk,
-                                                stok: stok,
-                                                documentId: documentId,
-                                              ),
-                                            ),
-                                          );
-                                        },
-                                        child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 10, horizontal: 20),
-                                          margin:
-                                              EdgeInsets.symmetric(vertical: 5),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red.withOpacity(.10),
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            border: Border.all(
-                                              color:
-                                                  Colors.red.withOpacity(.20),
-                                            ),
+                                      return Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 10, horizontal: 20),
+                                        margin:
+                                            EdgeInsets.symmetric(vertical: 5),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red.withOpacity(.10),
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.red.withOpacity(.20),
                                           ),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.start,
-                                            children: [
-                                              Flexible(
-                                                child: Text(
-                                                  'Woy! $namaProduk mau abis, sisa $stok!',
-                                                  style: TextStyle(
-                                                    color:
-                                                        DesignSystem.blackColor,
-                                                    fontWeight:
-                                                        FontWeight.normal,
-                                                    fontSize: 12,
-                                                  ),
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                'Woy! $namaProduk mau abis, sisa $stok!',
+                                                style: TextStyle(
+                                                  color:
+                                                      DesignSystem.blackColor,
+                                                  fontWeight: FontWeight.normal,
+                                                  fontSize: 12,
                                                 ),
                                               ),
-                                            ],
-                                          ),
+                                            ),
+                                          ],
                                         ),
                                       );
                                     }

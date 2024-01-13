@@ -33,149 +33,208 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-      ),
       body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Daftar",
-                style: TextStyle(
-                  fontSize: 27,
-                  fontWeight: FontWeight.bold,
-                  color: DesignSystem.blackColor,
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              TextFormField(
-                controller: _usernameController,
-                style: TextStyle(color: DesignSystem.blackColor),
-                decoration: InputDecoration(
-                  labelText: 'Username',
-                  hintStyle: TextStyle(color: DesignSystem.greyColor),
-                ),
-                keyboardType: TextInputType.name,
-                textInputAction: TextInputAction.next,
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: _emailController,
-                style: TextStyle(color: DesignSystem.blackColor),
-                decoration: InputDecoration(
-                  labelText: 'Email',
-                  hintStyle: TextStyle(color: DesignSystem.greyColor),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                textInputAction: TextInputAction.next,
-                onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextFormField(
-                controller: _passwordController,
-                style: TextStyle(color: DesignSystem.blackColor),
-                decoration: InputDecoration(
-                  labelText: 'Password',
-                  hintStyle: TextStyle(color: DesignSystem.greyColor),
-                  helperText: 'Minimal 8 karakter, termasuk huruf dan angka',
-                  helperStyle: TextStyle(
-                    color: DesignSystem.greyColor,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  suffixIcon: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: InkWell(
-                      borderRadius: BorderRadius.circular(100),
-                      splashColor: Colors.transparent,
-                      onTap: () {
-                        setState(() {
-                          // Mengubah visibilitas teks password
-                          _passwordVisible = !_passwordVisible;
-                        });
-                      },
-                      child: Icon(
-                        _passwordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
-                        color: DesignSystem.greyColor,
-                      ),
-                    ),
-                  ),
-                ),
-                keyboardType: TextInputType.visiblePassword,
-                obscureText: !_passwordVisible,
-                textInputAction: TextInputAction.done,
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  _signUp();
-                },
-                child: Container(
-                  child: Center(
-                    child: isSigningUp
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: DesignSystem.whiteColor,
-                            ),
-                          )
-                        : Text(
-                            "Daftar akun",
-                            style: TextStyle(
-                              color: DesignSystem.whiteColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
-                ),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Row(
+        child: Scrollbar(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 15),
+            child: SingleChildScrollView(
+              physics: BouncingScrollPhysics(),
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    "Sudah punya akun?",
-                    style: TextStyle(color: DesignSystem.blackColor),
+                    "Daftar",
+                    style: TextStyle(
+                      fontSize: 27,
+                      fontWeight: FontWeight.bold,
+                      color: DesignSystem.blackColor,
+                    ),
                   ),
                   SizedBox(
-                    width: 5,
+                    height: 30,
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => LoginPage(),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: DesignSystem.blackColor,
                         ),
-                        (route) => false,
-                      );
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _usernameController,
+                        textCapitalization: TextCapitalization.words,
+                        keyboardType: TextInputType.name,
+                        textInputAction: TextInputAction.next,
+                        style: TextStyle(color: DesignSystem.blackColor),
+                        decoration: InputDecoration(
+                          hintText: 'Username',
+                          hintStyle: TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        onFieldSubmitted: (_) =>
+                            FocusScope.of(context).nextFocus(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Email',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: DesignSystem.blackColor,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _emailController,
+                        textCapitalization: TextCapitalization.words,
+                        keyboardType: TextInputType.emailAddress,
+                        textInputAction: TextInputAction.next,
+                        style: TextStyle(color: DesignSystem.blackColor),
+                        decoration: InputDecoration(
+                          hintText: 'Email',
+                          hintStyle: TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        onFieldSubmitted: (_) =>
+                            FocusScope.of(context).nextFocus(),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Password',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: DesignSystem.blackColor,
+                        ),
+                      ),
+                      SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _passwordController,
+                        style: TextStyle(color: DesignSystem.blackColor),
+                        decoration: InputDecoration(
+                          hintText: 'Password',
+                          hintStyle: TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          helperText:
+                              'Minimal 8 karakter, termasuk huruf dan angka',
+                          helperStyle: TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontStyle: FontStyle.italic,
+                          ),
+                          suffixIcon: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(100),
+                              splashColor: Colors.transparent,
+                              onTap: () {
+                                setState(() {
+                                  // Mengubah visibilitas teks password
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                              child: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: DesignSystem.greyColor,
+                              ),
+                            ),
+                          ),
+                        ),
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: !_passwordVisible,
+                        textInputAction: TextInputAction.done,
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 30,
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      _signUp();
                     },
-                    child: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontWeight: FontWeight.bold,
+                    child: Container(
+                      child: Center(
+                        child: isSigningUp
+                            ? SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: DesignSystem.whiteColor,
+                                ),
+                              )
+                            : Text(
+                                "Daftar akun",
+                                style: TextStyle(
+                                  color: DesignSystem.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Sudah punya akun?",
+                        style: TextStyle(color: DesignSystem.blackColor),
+                      ),
+                      SizedBox(
+                        width: 5,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pushAndRemoveUntil(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                            (route) => false,
+                          );
+                        },
+                        child: Text(
+                          "Login",
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
-            ],
+            ),
           ),
         ),
       ),
