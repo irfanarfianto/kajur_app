@@ -308,7 +308,7 @@ class _StockPageState extends State<StockPage> {
               ),
               SizedBox(width: 20),
               Text(
-                '${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                '${timeago.format(updatedAt.toDate(), locale: 'id_short')}',
                 style: TextStyle(
                   color: DesignSystem.blackColor,
                   fontSize: 12,

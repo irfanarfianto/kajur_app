@@ -12,7 +12,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
-  timeago.setLocaleMessages('id_short', timeago.IdMessages());
+  timeago.setLocaleMessages('id', timeago.IdMessages());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
