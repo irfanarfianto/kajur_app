@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/screens/auth/login.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:kajur_app/screens/auth/register.dart';
@@ -11,7 +12,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 void main() async {
-  timeago.setLocaleMessages('id', timeago.IdMessages());
+  timeago.setLocaleMessages('id_short', timeago.IdMessages());
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
@@ -69,6 +70,7 @@ class MyApp extends StatelessWidget {
         '/signUp': (context) => SignUpPage(),
         '/home': (context) => HomePage(),
         '/list_produk': (context) => ListProdukPage(),
+        '/comingsoon': (context) => ComingSoonPage(),
       },
     );
   }

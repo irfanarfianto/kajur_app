@@ -5,6 +5,7 @@ import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/services.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
   All,
@@ -30,6 +31,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
   late AsyncSnapshot<QuerySnapshot> _currentSnapshot;
+  bool _enabled = false;
 
   @override
   void initState() {
@@ -63,21 +65,25 @@ class _ListProdukPageState extends State<ListProdukPage> {
     // Set state to indicate refreshing
     setState(() {
       _isRefreshing = true;
+      _enabled = false; // Enable skeleton loading while data is being refreshed
     });
 
     try {
-      // Fetch or refresh data here (e.g., refetch Firestore data)
-      await Future.delayed(Duration(seconds: 2)); // Simulating a delay
-
       // Turn off refreshing state after completion
       setState(() {
         _isRefreshing = false;
+        _enabled = true;
       });
+
+      // Fetch or refresh data here (e.g., refetch Firestore data)
+      await Future.delayed(Duration(seconds: 2)); // Simulating a delay
     } catch (error) {
       // Handle error in case of any issues during refresh
       print('Error refreshing data: $error');
+    } finally {
+      // Disable skeleton loading after data has been fetched or in case of an error
       setState(() {
-        _isRefreshing = false;
+        _enabled = false;
       });
     }
   }
@@ -266,233 +272,177 @@ class _ListProdukPageState extends State<ListProdukPage> {
               ),
             ),
           ),
+          SizedBox(height: 8),
           Expanded(
             child: RefreshIndicator(
               backgroundColor: DesignSystem.backgroundColor,
               onRefresh: _refreshData,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: _produkCollection.snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  }
-
-                  if (snapshot.connectionState == ConnectionState.waiting ||
-                      _isRefreshing) {
-                    return Center();
-                  }
-
-                  if (snapshot.data!.docs.isEmpty) {
-                    return Center(
-                      child: Text(
-                        'No Products Available',
-                        style: TextStyle(color: DesignSystem.whiteColor),
-                      ),
-                    );
-                  }
-
-                  List<DocumentSnapshot> filteredProducts =
-                      snapshot.data!.docs.where((document) {
-                    Map<String, dynamic> data =
-                        document.data() as Map<String, dynamic>;
-
-                    final menuName = data['menu'].toString().toLowerCase();
-                    final productCategory = data['kategori']
-                        .toString()
-                        .toLowerCase(); // Ganti dengan field yang sesuai di Firestore
-
-                    return (_categoryFilter == CategoryFilter.All ||
-                            (_categoryFilter == CategoryFilter.Makanan &&
-                                productCategory == 'makanan') ||
-                            (_categoryFilter == CategoryFilter.Minuman &&
-                                productCategory == 'minuman')) &&
-                        (menuName.contains(_searchQuery));
-                  }).toList();
-
-                  filteredProducts.sort((a, b) {
-                    Map<String, dynamic> dataA =
-                        a.data() as Map<String, dynamic>;
-                    Map<String, dynamic> dataB =
-                        b.data() as Map<String, dynamic>;
-
-                    if (_sortingOption == SortingOption.Terbaru) {
-                      Timestamp timeA = dataA['updatedAt'] ?? Timestamp.now();
-                      Timestamp timeB = dataB['updatedAt'] ?? Timestamp.now();
-                      return timeB.compareTo(timeA);
-                    } else if (_sortingOption == SortingOption.AZ) {
-                      return dataA['menu'].compareTo(dataB['menu']);
-                    } else {
-                      return dataB['menu'].compareTo(dataA['menu']);
+              child: Skeletonizer(
+                enabled: _enabled,
+                child: StreamBuilder<QuerySnapshot>(
+                  stream: _produkCollection.snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Center(
+                        child: Text('Error: ${snapshot.error}'),
+                      );
                     }
-                  });
 
-                  return Scrollbar(
-                    child: ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 8.0),
-                      physics: BouncingScrollPhysics(),
-                      itemCount: filteredProducts.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        DocumentSnapshot document = filteredProducts[index];
-                        Map<String, dynamic> data =
-                            document.data() as Map<String, dynamic>;
-                        String documentId = document.id;
+                    if (snapshot.connectionState == ConnectionState.waiting ||
+                        _isRefreshing) {
+                      return Skeletonizer(
+                        enabled: _enabled,
+                        child:
+                            Container(), // Add the required 'child' argument here
+                      );
+                    }
 
-                        Timestamp updatedAt =
-                            data['updatedAt'] ?? Timestamp.now();
+                    if (snapshot.data!.docs.isEmpty) {
+                      return Center(
+                        child: Text(
+                          'No Products Available',
+                          style: TextStyle(color: DesignSystem.whiteColor),
+                        ),
+                      );
+                    }
 
-                        return Stack(
-                          children: [
-                            Card(
-                              elevation: 0,
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    PageRouteBuilder(
-                                      transitionDuration:
-                                          Duration(milliseconds: 200),
-                                      pageBuilder: (_, __, ___) =>
-                                          DetailProdukPage(
-                                              documentId: documentId),
-                                      transitionsBuilder:
-                                          (_, animation, __, child) {
-                                        return SlideTransition(
-                                          position: Tween<Offset>(
-                                            begin: Offset(1.0, 0.0),
-                                            end: Offset.zero,
-                                          ).animate(animation),
-                                          child: child,
-                                        );
-                                      },
+                    List<DocumentSnapshot> filteredProducts =
+                        snapshot.data!.docs.where((document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+
+                      final menuName = data['menu'].toString().toLowerCase();
+                      final productCategory = data['kategori']
+                          .toString()
+                          .toLowerCase(); // Ganti dengan field yang sesuai di Firestore
+
+                      return (_categoryFilter == CategoryFilter.All ||
+                              (_categoryFilter == CategoryFilter.Makanan &&
+                                  productCategory == 'makanan') ||
+                              (_categoryFilter == CategoryFilter.Minuman &&
+                                  productCategory == 'minuman')) &&
+                          (menuName.contains(_searchQuery));
+                    }).toList();
+
+                    filteredProducts.sort((a, b) {
+                      Map<String, dynamic> dataA =
+                          a.data() as Map<String, dynamic>;
+                      Map<String, dynamic> dataB =
+                          b.data() as Map<String, dynamic>;
+
+                      if (_sortingOption == SortingOption.Terbaru) {
+                        Timestamp timeA = dataA['updatedAt'] ?? Timestamp.now();
+                        Timestamp timeB = dataB['updatedAt'] ?? Timestamp.now();
+                        return timeB.compareTo(timeA);
+                      } else if (_sortingOption == SortingOption.AZ) {
+                        return dataA['menu'].compareTo(dataB['menu']);
+                      } else {
+                        return dataB['menu'].compareTo(dataA['menu']);
+                      }
+                    });
+
+                    return Expanded(
+                      child: Scrollbar(
+                        child: GridView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
+                          physics: BouncingScrollPhysics(),
+                          gridDelegate:
+                              SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 10.0,
+                            mainAxisSpacing:
+                                30.0, // Adjusted the main axis spacing
+                          ),
+                          itemCount: filteredProducts.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            DocumentSnapshot document = filteredProducts[index];
+                            Map<String, dynamic> data =
+                                document.data() as Map<String, dynamic>;
+                            String documentId = document.id;
+
+                            Timestamp updatedAt =
+                                data['updatedAt'] ?? Timestamp.now();
+
+                            return InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  PageRouteBuilder(
+                                    transitionDuration:
+                                        Duration(milliseconds: 200),
+                                    pageBuilder: (_, __, ___) =>
+                                        DetailProdukPage(
+                                      documentId: documentId,
                                     ),
-                                  );
-                                },
-                                child: Padding(
-                                  padding: EdgeInsets.symmetric(vertical: 5),
-                                  child: Row(
+                                    transitionsBuilder:
+                                        (_, animation, __, child) {
+                                      return SlideTransition(
+                                        position: Tween<Offset>(
+                                          begin: Offset(1.0, 0.0),
+                                          end: Offset.zero,
+                                        ).animate(animation),
+                                        child: child,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              child: Expanded(
+                                child: Card(
+                                  elevation: 0,
+                                  color: Colors.transparent,
+                                  child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      ClipRRect(
-                                        borderRadius: BorderRadius.circular(8),
-                                        child: Image.network(
-                                          data['image'],
-                                          height: 80,
-                                          width: 80,
-                                          fit: BoxFit
-                                              .cover, // Sesuaikan dengan preferensi tampilan
+                                      Container(
+                                        height: 130,
+                                        width: double.infinity,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Image.network(
+                                            data['image'],
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
-                                      SizedBox(
-                                          width:
-                                              10), // Memberi jarak antara gambar dan teks
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            // Row(
-                                            //   children: [
-                                            //     Container(
-                                            //       padding: EdgeInsets.symmetric(
-                                            //           vertical: 3,
-                                            //           horizontal: 12),
-                                            //       decoration: BoxDecoration(
-                                            //         color: data['kategori'] ==
-                                            //                 'Makanan'
-                                            //             ? Colors.green
-                                            //                 .withOpacity(.50)
-                                            //             : data['kategori'] ==
-                                            //                     'Minuman'
-                                            //                 ? DesignSystem
-                                            //                     .primaryColor
-                                            //                     .withOpacity(.50)
-                                            //                 : Colors.grey,
-                                            //         borderRadius:
-                                            //             BorderRadius.circular(50),
-                                            //       ),
-                                            //       child: Text(
-                                            //         data['kategori'] == 'Makanan'
-                                            //             ? 'Makanan'
-                                            //             : data['kategori'] ==
-                                            //                     'Minuman'
-                                            //                 ? 'Minuman'
-                                            //                 : 'Kategori Tidak Diketahui',
-                                            //         style: TextStyle(
-                                            //           fontSize: 10,
-                                            //           color:
-                                            //               DesignSystem.whiteColor,
-                                            //         ),
-                                            //       ),
-                                            //     ),
-                                            //     SizedBox(width: 8),
-                                            //     Container(
-                                            //       padding: EdgeInsets.symmetric(
-                                            //           vertical: 3,
-                                            //           horizontal: 12),
-                                            //       decoration: BoxDecoration(
-                                            //         color: data['stok'] == 0
-                                            //             ? DesignSystem.redAccent
-                                            //                 .withOpacity(.50)
-                                            //             : data['stok'] < 5
-                                            //                 ? DesignSystem
-                                            //                     .purpleAccent
-                                            //                     .withOpacity(.50)
-                                            //                 : DesignSystem
-                                            //                     .purpleAccent
-                                            //                     .withOpacity(.50),
-                                            //         borderRadius:
-                                            //             BorderRadius.circular(50),
-                                            //       ),
-                                            //       child: Text(
-                                            //         data['stok'] == 0
-                                            //             ? 'Stok habis'
-                                            //             : 'Stok ${data['stok'] ?? 0}',
-                                            //         style: TextStyle(
-                                            //           fontSize: 10,
-                                            //           color:
-                                            //               DesignSystem.whiteColor,
-                                            //         ),
-                                            //       ),
-                                            //     ),
-                                            //   ],
-                                            // ),
-                                            // SizedBox(height: 4),
-                                            Text(
-                                              data['menu'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 20,
-                                                color: DesignSystem.blackColor,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 1,
+                                      SizedBox(height: 8),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            data['menu'],
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 18,
+                                              color: DesignSystem.blackColor,
                                             ),
-                                            Text(
-                                              'Diperbarui ${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                                              style: TextStyle(
-                                                color: DesignSystem.blackColor,
-                                                fontSize: 12,
-                                              ),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                          Text(
+                                            '${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                                            style: TextStyle(
+                                              color: DesignSystem.blackColor,
+                                              fontSize: 12,
                                             ),
-                                          ],
-                                        ),
+                                          ),
+                                        ],
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-                  );
-                },
+                            );
+                          },
+                        ),
+                      ),
+                    );
+                  },
+                ),
               ),
             ),
           ),

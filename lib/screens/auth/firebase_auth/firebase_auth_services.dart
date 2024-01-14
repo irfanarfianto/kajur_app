@@ -6,6 +6,39 @@ import '../../../global/common/toast.dart';
 class FirebaseAuthService {
   FirebaseAuth _auth = FirebaseAuth.instance;
 
+  Future<User?> signUpWithGoogle(AuthCredential credential) async {
+    try {
+      UserCredential authResult = await _auth.signInWithCredential(credential);
+      User? user = authResult.user;
+
+      if (user != null) {
+        // Update timestamp login terakhir
+        await updateLastLogin(user.uid);
+
+        // Cek apakah user sudah terdaftar di Firestore
+        if (!(await isUserRegistered(user.uid))) {
+          // Jika belum terdaftar, simpan data user ke Firestore
+          await saveUserDataToFirestore(
+            user.uid,
+            user.displayName ?? '',
+            user.email ?? '',
+            user.displayName ?? '',
+          );
+        }
+
+        // Menampilkan pesan toast selamat datang
+        showToast(message: "Selamat datang, ${user.displayName}!");
+
+        return user;
+      }
+    } catch (e) {
+      showToast(message: "Terjadi kesalahan: $e");
+    }
+
+    return null;
+  }
+
+
   Future<User?> signUpWithEmailAndPassword(
       String email, String password, String username) async {
     try {
