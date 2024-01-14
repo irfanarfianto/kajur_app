@@ -2,6 +2,7 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/design/system.dart';
 
 class EditStockPage extends StatefulWidget {
   final String documentId;
@@ -82,15 +83,33 @@ class _EditStockPageState extends State<EditStockPage> {
               style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 20),
-            TextField(
-                controller: _stokController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  labelText: 'Stok Baru',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Stok Baru',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: DesignSystem.blackColor,
                   ),
-                )),
+                ),
+                SizedBox(height: 8.0),
+                TextFormField(
+                  controller: _stokController,
+                  keyboardType: TextInputType.number,
+                  textInputAction: TextInputAction.next,
+                  style: TextStyle(color: DesignSystem.blackColor),
+                  decoration: InputDecoration(
+                    hintText: 'Masukkan Stok Baru',
+                    hintStyle: TextStyle(
+                      color: DesignSystem.greyColor,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                ),
+              ],
+            ),
             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
