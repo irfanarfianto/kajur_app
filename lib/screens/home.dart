@@ -9,6 +9,7 @@ import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:flutter/services.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key});
@@ -21,7 +22,7 @@ class _HomePageState extends State<HomePage> {
   late User? _currentUser;
   int totalProducts = 0;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
-  bool _isLoading = false;
+  bool _enabled = false;
 
   @override
   void initState() {
@@ -52,7 +53,7 @@ class _HomePageState extends State<HomePage> {
   Future<void> _refreshData() async {
     try {
       setState(() {
-        _isLoading = true;
+        _enabled = true;
       });
 
       // Simulate fetching new data from your data source
@@ -65,7 +66,7 @@ class _HomePageState extends State<HomePage> {
       print('Error refreshing data: $error');
     } finally {
       setState(() {
-        _isLoading = false;
+        _enabled = false;
       });
     }
   }
@@ -235,11 +236,11 @@ class _HomePageState extends State<HomePage> {
         endDrawer: Drawer(child: _buildDrawer()),
         body: Stack(
           children: [
-            // Body content
             RefreshIndicator(
+              color: DesignSystem.primaryColor,
               onRefresh: _refreshData,
-              child: Visibility(
-                visible: !_isLoading,
+              child: Skeletonizer(
+                enabled: _enabled,
                 child: SingleChildScrollView(
                   physics: BouncingScrollPhysics(),
                   child: Column(
@@ -250,14 +251,6 @@ class _HomePageState extends State<HomePage> {
                     ],
                   ),
                 ),
-              ),
-            ),
-
-            // Loading indicator
-            Visibility(
-              visible: _isLoading,
-              child: Center(
-                child: CircularProgressIndicator(),
               ),
             ),
           ],
@@ -541,100 +534,112 @@ class _HomePageState extends State<HomePage> {
                                     int stok = data['stok'];
 
                                     if (stok == 0) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(.10),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: Colors.red.withOpacity(.50),
+                                      return Skeleton.leaf(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 20),
+                                          margin:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(.10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color:
+                                                  Colors.red.withOpacity(.50),
+                                            ),
                                           ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                'Produk $namaProduk sudah habis!',
-                                                style: TextStyle(
-                                                  color:
-                                                      DesignSystem.blackColor,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  'Produk $namaProduk sudah habis!',
+                                                  style: TextStyle(
+                                                    color:
+                                                        DesignSystem.blackColor,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       );
                                     } else if (stok <= 10 && stok > 4) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.yellow.withOpacity(.30),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
+                                      return Skeleton.leaf(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 20),
+                                          margin:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          decoration: BoxDecoration(
                                             color:
-                                                Colors.yellow.withOpacity(.20),
+                                                Colors.yellow.withOpacity(.30),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color: Colors.yellow
+                                                  .withOpacity(.20),
+                                            ),
                                           ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                                style: TextStyle(
-                                                  color:
-                                                      DesignSystem.blackColor,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
+                                                  style: TextStyle(
+                                                    color:
+                                                        DesignSystem.blackColor,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       );
                                     } else if (stok < 5) {
-                                      return Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 10, horizontal: 20),
-                                        margin:
-                                            EdgeInsets.symmetric(vertical: 5),
-                                        decoration: BoxDecoration(
-                                          color: Colors.red.withOpacity(.10),
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          border: Border.all(
-                                            color: Colors.red.withOpacity(.20),
+                                      return Skeleton.leaf(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 10, horizontal: 20),
+                                          margin:
+                                              EdgeInsets.symmetric(vertical: 5),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red.withOpacity(.10),
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                            border: Border.all(
+                                              color:
+                                                  Colors.red.withOpacity(.20),
+                                            ),
                                           ),
-                                        ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                'Woy! $namaProduk mau abis, sisa $stok!',
-                                                style: TextStyle(
-                                                  color:
-                                                      DesignSystem.blackColor,
-                                                  fontWeight: FontWeight.normal,
-                                                  fontSize: 12,
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                            children: [
+                                              Flexible(
+                                                child: Text(
+                                                  'Woy! $namaProduk mau abis, sisa $stok!',
+                                                  style: TextStyle(
+                                                    color:
+                                                        DesignSystem.blackColor,
+                                                    fontWeight:
+                                                        FontWeight.normal,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
                                       );
                                     }
