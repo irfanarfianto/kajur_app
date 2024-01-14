@@ -61,10 +61,7 @@ class _StockPageState extends State<StockPage> {
             child: IconButton(
               icon: Icon(Icons.share),
               onPressed: () {
-                // Implement your sharing logic here
-                // For example, you can open a share dialog
-                // with the content you want to share
-                // Share.share('Check out this stock information!');
+                Navigator.pushNamed(context, '/comingsoon');
               },
             ),
           ),
@@ -311,7 +308,7 @@ class _StockPageState extends State<StockPage> {
               ),
               SizedBox(width: 20),
               Text(
-                '${timeago.format(updatedAt.toDate(), locale: 'id')}',
+                '${timeago.format(updatedAt.toDate(), locale: 'id_short')}',
                 style: TextStyle(
                   color: DesignSystem.blackColor,
                   fontSize: 12,

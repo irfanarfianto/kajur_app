@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/services.dart';
@@ -104,7 +103,6 @@ class _ListProdukPageState extends State<ListProdukPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
-              side: BorderSide(color: DesignSystem.greyColor.withOpacity(.50)),
               elevation: 0,
               onPrimary: DesignSystem.greyColor),
       onPressed: () {
@@ -134,7 +132,6 @@ class _ListProdukPageState extends State<ListProdukPage> {
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
-                side: BorderSide(color: DesignSystem.primaryColor),
               ))
           : ElevatedButton.styleFrom(
               primary: DesignSystem.backgroundColor,
@@ -142,7 +139,6 @@ class _ListProdukPageState extends State<ListProdukPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
-              side: BorderSide(color: DesignSystem.greyColor.withOpacity(.50)),
               elevation: 0,
               onPrimary: DesignSystem.greyColor),
       onPressed: () {
@@ -180,7 +176,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                 children: [
                   TextField(
                     style: TextStyle(
-                      color: Colors.white,
+                      color: DesignSystem.blackColor,
                     ),
                     decoration: InputDecoration(
                       filled: true,
@@ -193,9 +189,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       ),
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
+                          borderRadius: BorderRadius.circular(10.0),
+                          borderSide: BorderSide.none),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -227,12 +222,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
           Container(
             child: IconButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ActivityHistoryPage(),
-                  ),
-                );
+                Navigator.pushNamed(context, '/comingsoon');
               },
               icon: Icon(Icons.history),
             ),
@@ -342,63 +332,71 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       }
                     });
 
-                    return Expanded(
-                      child: Scrollbar(
-                        child: GridView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          physics: BouncingScrollPhysics(),
-                          gridDelegate:
-                              SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 10.0,
-                            mainAxisSpacing:
-                                30.0, // Adjusted the main axis spacing
-                          ),
-                          itemCount: filteredProducts.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            DocumentSnapshot document = filteredProducts[index];
-                            Map<String, dynamic> data =
-                                document.data() as Map<String, dynamic>;
-                            String documentId = document.id;
+                    return Scrollbar(
+                      child: GridView.builder(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
+                        physics: BouncingScrollPhysics(),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing:
+                              20.0, // Adjusted the main axis spacing
+                        ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          DocumentSnapshot document = filteredProducts[index];
+                          Map<String, dynamic> data =
+                              document.data() as Map<String, dynamic>;
+                          String documentId = document.id;
 
-                            Timestamp updatedAt =
-                                data['updatedAt'] ?? Timestamp.now();
+                          Timestamp updatedAt =
+                              data['updatedAt'] ?? Timestamp.now();
 
-                            return InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    transitionDuration:
-                                        Duration(milliseconds: 200),
-                                    pageBuilder: (_, __, ___) =>
-                                        DetailProdukPage(
-                                      documentId: documentId,
-                                    ),
-                                    transitionsBuilder:
-                                        (_, animation, __, child) {
-                                      return SlideTransition(
-                                        position: Tween<Offset>(
-                                          begin: Offset(1.0, 0.0),
-                                          end: Offset.zero,
-                                        ).animate(animation),
-                                        child: child,
-                                      );
-                                    },
+                          return InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                PageRouteBuilder(
+                                  transitionDuration:
+                                      Duration(milliseconds: 200),
+                                  pageBuilder: (_, __, ___) => DetailProdukPage(
+                                    documentId: documentId,
                                   ),
-                                );
-                              },
-                              child: Expanded(
-                                child: Card(
-                                  elevation: 0,
-                                  color: Colors.transparent,
-                                  child: Column(
+                                  transitionsBuilder:
+                                      (_, animation, __, child) {
+                                    return SlideTransition(
+                                      position: Tween<Offset>(
+                                        begin: Offset(1.0, 0.0),
+                                        end: Offset.zero,
+                                      ).animate(animation),
+                                      child: child,
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                            child: Card(
+                              elevation: 0,
+                              color: DesignSystem.backgroundColor,
+                              child: Stack(
+                                children: [
+                                  Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        height: 130,
-                                        width: double.infinity,
+                                        height: 120,
+                                        width: 300,
+                                        decoration: BoxDecoration(
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color: DesignSystem.greyColor
+                                                  .withOpacity(.10),
+                                              offset: Offset(0, 5),
+                                              blurRadius: 10,
+                                            ),
+                                          ],
+                                        ),
                                         child: ClipRRect(
                                           borderRadius:
                                               BorderRadius.circular(8),
@@ -408,37 +406,64 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 8),
-                                      Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            data['menu'],
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.bold,
-                                              fontSize: 18,
-                                              color: DesignSystem.blackColor,
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 8.0, vertical: 5.0),
+                                        child: Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              data['menu'],
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                fontSize: 16,
+                                                color: DesignSystem.blackColor,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                              maxLines: 2,
                                             ),
-                                            overflow: TextOverflow.ellipsis,
-                                            maxLines: 1,
-                                          ),
-                                          Text(
-                                            '${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                                            style: TextStyle(
-                                              color: DesignSystem.blackColor,
-                                              fontSize: 12,
-                                            ),
-                                          ),
-                                        ],
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),
-                                ),
+                                  Positioned(
+                                    top: 8,
+                                    right: 8,
+                                    child: Skeleton.unite(
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            vertical: 5, horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          color: data['stok'] == 0
+                                              ? DesignSystem.redAccent
+                                                  .withOpacity(.80)
+                                              : data['stok'] < 5
+                                                  ? DesignSystem.primaryColor
+                                                      .withOpacity(.80)
+                                                  : DesignSystem.primaryColor
+                                                      .withOpacity(.80),
+                                          borderRadius:
+                                              BorderRadius.circular(100),
+                                        ),
+                                        child: Text(
+                                          data['stok'] == 0
+                                              ? 'Stok habis'
+                                              : '${data['stok'] ?? 0}',
+                                          style: TextStyle(
+                                            fontSize: 12,
+                                            color: DesignSystem.whiteColor,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
