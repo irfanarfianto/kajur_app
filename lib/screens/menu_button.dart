@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
@@ -63,11 +64,11 @@ class MenuButton extends StatelessWidget {
               ),
               Expanded(
                 child: buildCircularButton(
-                    context, "Pengeluaran", Icons.money_off, ListProdukPage()),
+                    context, "Pengeluaran", Icons.money_off, ComingSoonPage()),
               ),
               Expanded(
                 child: buildCircularButton(
-                    context, "Pemasukan", Icons.attach_money, ListProdukPage()),
+                    context, "Pemasukan", Icons.attach_money, ComingSoonPage()),
               ),
             ],
           ),
