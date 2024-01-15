@@ -144,11 +144,11 @@ class _LoginPageState extends State<LoginPage> {
                     child: Center(
                       child: _isSigning
                           ? SizedBox(
-                              width: 15,
-                              height: 15,
+                              width: 20,
+                              height: 20,
                               child: CircularProgressIndicator(
                                 color: Colors.white,
-                                strokeWidth: 1,
+                                strokeWidth: 2,
                               ))
                           : Text(
                               "Login",
