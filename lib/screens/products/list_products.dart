@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:flutter/services.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
-  All,
+  Semua,
   Makanan,
   Minuman,
 }
@@ -26,7 +25,7 @@ class ListProdukPage extends StatefulWidget {
 class _ListProdukPageState extends State<ListProdukPage> {
   late CollectionReference _produkCollection;
   late bool _isRefreshing = false;
-  CategoryFilter _categoryFilter = CategoryFilter.All;
+  CategoryFilter _categoryFilter = CategoryFilter.Semua;
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
   late AsyncSnapshot<QuerySnapshot> _currentSnapshot;
@@ -36,11 +35,12 @@ class _ListProdukPageState extends State<ListProdukPage> {
   void initState() {
     super.initState();
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
+    _refreshData();
   }
 
   void _resetCategoryFilter() {
     setState(() {
-      _categoryFilter = CategoryFilter.All;
+      _categoryFilter = CategoryFilter.Semua;
     });
   }
 
@@ -64,11 +64,16 @@ class _ListProdukPageState extends State<ListProdukPage> {
     // Set state to indicate refreshing
     setState(() {
       _isRefreshing = true;
-      _enabled = false; // Enable skeleton loading while data is being refreshed
+      _enabled = false;
+      _resetCategoryFilter();
+      _resetSortingOption();
     });
 
+    if (!mounted) {
+      return; // Check if the widget is still mounted
+    }
+
     try {
-      // Turn off refreshing state after completion
       setState(() {
         _isRefreshing = false;
         _enabled = true;
@@ -81,22 +86,153 @@ class _ListProdukPageState extends State<ListProdukPage> {
       print('Error refreshing data: $error');
     } finally {
       // Disable skeleton loading after data has been fetched or in case of an error
-      setState(() {
-        _enabled = false;
-      });
+      if (mounted) {
+        // Check again before calling setState
+        setState(() {
+          _enabled = false;
+        });
+      }
     }
   }
 
-  Widget buildCategoryButton(
-      CategoryFilter category, String label, IconData icon) {
+  void _showFilterSortingOverlay() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return DraggableScrollableSheet(
+          expand: false,
+          initialChildSize: 0.4, // Adjusted initial size
+          maxChildSize: 0.4, // Adjusted max size
+          minChildSize: 0.1,
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Container(
+              padding: EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: DesignSystem.backgroundColor,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    height: 5,
+                    width: 40,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: DesignSystem.greyColor.withOpacity(.50),
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Kategori',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: DesignSystem.blackColor,
+                        ),
+                      ),
+                      Row(children: [
+                        buildSortingAndFilteringButton(
+                          label: 'Semua',
+                          icon: Icons.category,
+                          onPressed: () {
+                            _setcategoryOption(CategoryFilter.Semua);
+                            _refreshData();
+                            Navigator.pop(context);
+                          },
+                          isActive: _categoryFilter == CategoryFilter.Semua,
+                        ),
+                        SizedBox(width: 10),
+                        buildSortingAndFilteringButton(
+                          label: 'Makanan',
+                          icon: Icons.restaurant,
+                          onPressed: () {
+                            _setcategoryOption(CategoryFilter.Makanan);
+                            Navigator.pop(context);
+                          },
+                          isActive: _categoryFilter == CategoryFilter.Makanan,
+                        ),
+                        SizedBox(width: 10),
+                        buildSortingAndFilteringButton(
+                          label: 'Minuman',
+                          icon: Icons.local_drink_outlined,
+                          onPressed: () {
+                            _setcategoryOption(CategoryFilter.Minuman);
+                            Navigator.pop(context);
+                          },
+                          isActive: _categoryFilter == CategoryFilter.Minuman,
+                        ),
+                      ]),
+                      SizedBox(height: 20),
+                      Text(
+                        'Urutkan berdasarkan',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: DesignSystem.blackColor,
+                        ),
+                      ),
+                      Row(children: [
+                        buildSortingAndFilteringButton(
+                          label: 'Terbaru',
+                          icon: Icons.flash_auto_outlined,
+                          onPressed: () {
+                            _setSortingOption(SortingOption.Terbaru);
+                            Navigator.pop(context);
+                          },
+                          isActive: _sortingOption == SortingOption.Terbaru,
+                        ),
+                        SizedBox(width: 10),
+                        buildSortingAndFilteringButton(
+                          label: 'A-Z',
+                          icon: Icons.sort_by_alpha,
+                          onPressed: () {
+                            _setSortingOption(SortingOption.AZ);
+                            Navigator.pop(context);
+                          },
+                          isActive: _sortingOption == SortingOption.AZ,
+                        ),
+                        SizedBox(width: 10),
+                        buildSortingAndFilteringButton(
+                          label: 'Z-A',
+                          icon: Icons.sort_by_alpha_outlined,
+                          onPressed: () {
+                            _setSortingOption(SortingOption.ZA);
+                            Navigator.pop(context);
+                          },
+                          isActive: _sortingOption == SortingOption.ZA,
+                        ),
+                      ]),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget buildSortingAndFilteringButton({
+    required String label,
+    required IconData icon,
+    required VoidCallback onPressed,
+    required bool isActive,
+  }) {
     return ElevatedButton(
-      style: _categoryFilter == category
+      style: isActive
           ? ElevatedButton.styleFrom(
               primary: DesignSystem.primaryColor,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
-              ))
+              ),
+            )
           : ElevatedButton.styleFrom(
               primary: DesignSystem.backgroundColor,
               padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
@@ -104,16 +240,9 @@ class _ListProdukPageState extends State<ListProdukPage> {
                 borderRadius: BorderRadius.circular(100),
               ),
               elevation: 0,
-              onPrimary: DesignSystem.greyColor),
-      onPressed: () {
-        if (_categoryFilter == category) {
-          _resetCategoryFilter();
-        } else {
-          setState(() {
-            _categoryFilter = category;
-          });
-        }
-      },
+              onPrimary: DesignSystem.greyColor,
+            ),
+      onPressed: onPressed,
       child: Row(
         children: [
           Icon(icon, size: 20),
@@ -124,40 +253,60 @@ class _ListProdukPageState extends State<ListProdukPage> {
     );
   }
 
-  Widget buildSortingButton(SortingOption option, String label, IconData icon) {
-    return ElevatedButton(
-      style: _sortingOption == option
-          ? ElevatedButton.styleFrom(
-              primary: DesignSystem.primaryColor,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ))
-          : ElevatedButton.styleFrom(
-              primary: DesignSystem.backgroundColor,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              elevation: 0,
-              onPrimary: DesignSystem.greyColor),
-      onPressed: () {
-        setState(() {
-          if (_sortingOption == option) {
-            _sortingOption = SortingOption.Terbaru;
-          } else {
-            _sortingOption = option;
-          }
-        });
-      },
-      child: Row(
-        children: [
-          Icon(icon, size: 20),
-          SizedBox(width: 5),
-          Text(label),
-        ],
-      ),
-    );
+  void _setSortingOption(SortingOption option) {
+    setState(() {
+      _sortingOption = option;
+    });
+  }
+
+  void _setcategoryOption(CategoryFilter option) {
+    setState(() {
+      _categoryFilter = option;
+    });
+  }
+
+  void _resetFilters() {
+    setState(() {
+      _categoryFilter = CategoryFilter.Semua;
+      _sortingOption = SortingOption.Terbaru;
+      _refreshData();
+    });
+  }
+
+  List<DocumentSnapshot> _filterProducts(QuerySnapshot snapshot) {
+    return snapshot.docs.where((document) {
+      Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+
+      final menuName = data['menu'].toString().toLowerCase();
+      final productCategory = data['kategori']
+          .toString()
+          .toLowerCase(); // Change to the appropriate field in Firestore
+
+      return (_categoryFilter == CategoryFilter.Semua ||
+              (_categoryFilter == CategoryFilter.Makanan &&
+                  productCategory == 'makanan') ||
+              (_categoryFilter == CategoryFilter.Minuman &&
+                  productCategory == 'minuman')) &&
+          (menuName.contains(_searchQuery));
+    }).toList();
+  }
+
+  List<DocumentSnapshot> _sortProducts(List<DocumentSnapshot> products) {
+    return products
+      ..sort((a, b) {
+        Map<String, dynamic> dataA = a.data() as Map<String, dynamic>;
+        Map<String, dynamic> dataB = b.data() as Map<String, dynamic>;
+
+        if (_sortingOption == SortingOption.Terbaru) {
+          Timestamp timeA = dataA['updatedAt'] ?? Timestamp.now();
+          Timestamp timeB = dataB['updatedAt'] ?? Timestamp.now();
+          return timeB.compareTo(timeA);
+        } else if (_sortingOption == SortingOption.AZ) {
+          return dataA['menu'].compareTo(dataB['menu']);
+        } else {
+          return dataB['menu'].compareTo(dataA['menu']);
+        }
+      });
   }
 
   @override
@@ -189,8 +338,9 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       ),
                       prefixIcon: Icon(Icons.search),
                       border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          borderSide: BorderSide.none),
+                        borderRadius: BorderRadius.circular(10.0),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
                     onChanged: (value) {
                       setState(() {
@@ -230,41 +380,104 @@ class _ListProdukPageState extends State<ListProdukPage> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  SizedBox(width: 8),
-                  buildCategoryButton(
-                      CategoryFilter.All, 'Semua', Icons.category),
-                  SizedBox(width: 8),
-                  buildCategoryButton(
-                    CategoryFilter.Makanan,
-                    'Makanan',
-                    Icons.restaurant,
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0.5,
+                    primary: _categoryFilter != CategoryFilter.Semua
+                        ? DesignSystem.primaryColor
+                        : DesignSystem.backgroundColor,
+                    onPrimary: _categoryFilter != CategoryFilter.Semua
+                        ? Colors.white
+                        : Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
                   ),
+                  onPressed: () {
+                    _showFilterSortingOverlay();
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        _categoryFilter != CategoryFilter.Semua
+                            ? '${_categoryFilter.toString().split('.').last}'
+                            : 'Filter',
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.expand_more_outlined,
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(width: 8),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    elevation: 0.5,
+                    primary: _sortingOption != SortingOption.Terbaru
+                        ? DesignSystem.primaryColor
+                        : DesignSystem.backgroundColor,
+                    onPrimary: _sortingOption != SortingOption.Terbaru
+                        ? Colors.white
+                        : Colors.black,
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(100),
+                    ),
+                  ),
+                  onPressed: () {
+                    _showFilterSortingOverlay();
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        style: TextStyle(
+                          fontSize: 16,
+                        ),
+                        _sortingOption != SortingOption.Terbaru
+                            ? '${_sortingOption.toString().split('.').last}'
+                            : 'Sort',
+                      ),
+                      SizedBox(width: 8),
+                      Icon(
+                        Icons.expand_more_outlined,
+                      ),
+                    ],
+                  ),
+                ),
+                if (_categoryFilter != CategoryFilter.Semua ||
+                    _sortingOption != SortingOption.Terbaru)
                   SizedBox(width: 8),
-                  buildCategoryButton(
-                      CategoryFilter.Minuman, 'Minuman', Icons.local_drink),
-                  SizedBox(width: 8),
-                  buildSortingButton(
-                      SortingOption.Terbaru, 'Terbaru', Icons.access_time),
-                  SizedBox(width: 8),
-                  buildSortingButton(
-                      SortingOption.AZ, 'A-Z', Icons.sort_by_alpha),
-                  SizedBox(width: 8),
-                  buildSortingButton(
-                      SortingOption.ZA, 'Z-A', Icons.sort_by_alpha_outlined),
-                ],
-              ),
+                if (_categoryFilter != CategoryFilter.Semua ||
+                    _sortingOption != SortingOption.Terbaru)
+                  TextButton(
+                    onPressed: () {
+                      _resetFilters();
+                    },
+                    child: Text(
+                      'Reset',
+                      style: TextStyle(
+                        color: DesignSystem.primaryColor,
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
-          SizedBox(height: 8),
           Expanded(
             child: RefreshIndicator(
+              color: DesignSystem.primaryColor,
               backgroundColor: DesignSystem.backgroundColor,
               onRefresh: _refreshData,
               child: Skeletonizer(
@@ -283,8 +496,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         _isRefreshing) {
                       return Skeletonizer(
                         enabled: _enabled,
-                        child:
-                            Container(), // Add the required 'child' argument here
+                        child: Container(),
                       );
                     }
 
@@ -298,39 +510,9 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     }
 
                     List<DocumentSnapshot> filteredProducts =
-                        snapshot.data!.docs.where((document) {
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-
-                      final menuName = data['menu'].toString().toLowerCase();
-                      final productCategory = data['kategori']
-                          .toString()
-                          .toLowerCase(); // Ganti dengan field yang sesuai di Firestore
-
-                      return (_categoryFilter == CategoryFilter.All ||
-                              (_categoryFilter == CategoryFilter.Makanan &&
-                                  productCategory == 'makanan') ||
-                              (_categoryFilter == CategoryFilter.Minuman &&
-                                  productCategory == 'minuman')) &&
-                          (menuName.contains(_searchQuery));
-                    }).toList();
-
-                    filteredProducts.sort((a, b) {
-                      Map<String, dynamic> dataA =
-                          a.data() as Map<String, dynamic>;
-                      Map<String, dynamic> dataB =
-                          b.data() as Map<String, dynamic>;
-
-                      if (_sortingOption == SortingOption.Terbaru) {
-                        Timestamp timeA = dataA['updatedAt'] ?? Timestamp.now();
-                        Timestamp timeB = dataB['updatedAt'] ?? Timestamp.now();
-                        return timeB.compareTo(timeA);
-                      } else if (_sortingOption == SortingOption.AZ) {
-                        return dataA['menu'].compareTo(dataB['menu']);
-                      } else {
-                        return dataB['menu'].compareTo(dataA['menu']);
-                      }
-                    });
+                        _filterProducts(snapshot.data!);
+                    List<DocumentSnapshot> sortedProducts =
+                        _sortProducts(filteredProducts);
 
                     return Scrollbar(
                       child: GridView.builder(
@@ -338,128 +520,117 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         physics: BouncingScrollPhysics(),
                         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
-                          crossAxisSpacing: 10.0,
-                          mainAxisSpacing:
-                              20.0, // Adjusted the main axis spacing
+                          crossAxisSpacing: 15.0,
+                          mainAxisSpacing: 10.0,
                         ),
-                        itemCount: filteredProducts.length,
+                        itemCount: sortedProducts.length,
                         itemBuilder: (BuildContext context, int index) {
-                          DocumentSnapshot document = filteredProducts[index];
+                          DocumentSnapshot document = sortedProducts[index];
                           Map<String, dynamic> data =
                               document.data() as Map<String, dynamic>;
                           String documentId = document.id;
-
-                          Timestamp updatedAt =
-                              data['updatedAt'] ?? Timestamp.now();
 
                           return InkWell(
                             onTap: () {
                               Navigator.push(
                                 context,
-                                PageRouteBuilder(
-                                  transitionDuration:
-                                      Duration(milliseconds: 200),
-                                  pageBuilder: (_, __, ___) => DetailProdukPage(
+                                MaterialPageRoute(
+                                  builder: (context) => DetailProdukPage(
                                     documentId: documentId,
                                   ),
-                                  transitionsBuilder:
-                                      (_, animation, __, child) {
-                                    return SlideTransition(
-                                      position: Tween<Offset>(
-                                        begin: Offset(1.0, 0.0),
-                                        end: Offset.zero,
-                                      ).animate(animation),
-                                      child: child,
-                                    );
-                                  },
                                 ),
                               );
                             },
-                            child: Card(
-                              elevation: 0,
-                              color: DesignSystem.backgroundColor,
-                              child: Stack(
-                                children: [
-                                  Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        height: 120,
-                                        width: 300,
-                                        decoration: BoxDecoration(
-                                          boxShadow: [
-                                            BoxShadow(
-                                              color: DesignSystem.greyColor
-                                                  .withOpacity(.10),
-                                              offset: Offset(0, 5),
-                                              blurRadius: 10,
+                            child: Hero(
+                              tag: 'product_image_$documentId',
+                              child: Card(
+                                elevation: 0,
+                                color: DesignSystem.backgroundColor,
+                                child: Stack(
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Container(
+                                          height: 150,
+                                          width: 300,
+                                          decoration: BoxDecoration(
+                                            boxShadow: [
+                                              BoxShadow(
+                                                color: DesignSystem.greyColor
+                                                    .withOpacity(.10),
+                                                offset: Offset(0, 5),
+                                                blurRadius: 10,
+                                              ),
+                                            ],
+                                          ),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                            child: Image.network(
+                                              data['image'],
+                                              fit: BoxFit.cover,
                                             ),
-                                          ],
-                                        ),
-                                        child: ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                          child: Image.network(
-                                            data['image'],
-                                            fit: BoxFit.cover,
                                           ),
                                         ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 8.0, vertical: 5.0),
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              data['menu'],
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 16,
-                                                color: DesignSystem.blackColor,
+                                        SizedBox(height: 5),
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 8.0),
+                                          child: Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                data['menu'],
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 16,
+                                                  color:
+                                                      DesignSystem.blackColor,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 1,
                                               ),
-                                              overflow: TextOverflow.ellipsis,
-                                              maxLines: 2,
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Positioned(
+                                      top: 8,
+                                      right: 8,
+                                      child: Skeleton.unite(
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 5, horizontal: 10),
+                                          decoration: BoxDecoration(
+                                            color: data['stok'] == 0
+                                                ? DesignSystem.redAccent
+                                                    .withOpacity(.80)
+                                                : data['stok'] < 5
+                                                    ? DesignSystem.primaryColor
+                                                        .withOpacity(.80)
+                                                    : DesignSystem.primaryColor
+                                                        .withOpacity(.80),
+                                            borderRadius:
+                                                BorderRadius.circular(100),
+                                          ),
+                                          child: Text(
+                                            data['stok'] == 0
+                                                ? 'Stok habis'
+                                                : '${data['stok'] ?? 0}',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: DesignSystem.whiteColor,
                                             ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Positioned(
-                                    top: 8,
-                                    right: 8,
-                                    child: Skeleton.unite(
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(
-                                            vertical: 5, horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          color: data['stok'] == 0
-                                              ? DesignSystem.redAccent
-                                                  .withOpacity(.80)
-                                              : data['stok'] < 5
-                                                  ? DesignSystem.primaryColor
-                                                      .withOpacity(.80)
-                                                  : DesignSystem.primaryColor
-                                                      .withOpacity(.80),
-                                          borderRadius:
-                                              BorderRadius.circular(100),
-                                        ),
-                                        child: Text(
-                                          data['stok'] == 0
-                                              ? 'Stok habis'
-                                              : '${data['stok'] ?? 0}',
-                                          style: TextStyle(
-                                            fontSize: 12,
-                                            color: DesignSystem.whiteColor,
                                           ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           );

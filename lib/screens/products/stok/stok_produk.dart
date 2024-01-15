@@ -20,6 +20,7 @@ class _StockPageState extends State<StockPage> {
   void initState() {
     super.initState();
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
+    _refreshData();
   }
 
   void _updateSnapshot(AsyncSnapshot<QuerySnapshot> newSnapshot) {
@@ -29,23 +30,29 @@ class _StockPageState extends State<StockPage> {
   }
 
   Future<void> _refreshData() async {
+    if (!mounted) {
+      return; // Check if the widget is still mounted
+    }
+
+    // Set state to indicate refreshing
+    setState(() {
+      _enabled = true;
+    });
+
     try {
-      setState(() {
-        _enabled = true;
-      });
-
-      // Simulate fetching new data from your data source
-      await Future.delayed(Duration(seconds: 2));
-
-      // After fetching new data, you can setState or update your variables
-      // Example: setState(() { yourData = fetchedData; });
+      // Fetch or refresh data here (e.g., refetch Firestore data)
+      await Future.delayed(Duration(seconds: 1)); // Simulating a delay
     } catch (error) {
-      // Handle error if it occurs during data refresh
+      // Handle error in case of any issues during refresh
       print('Error refreshing data: $error');
     } finally {
-      setState(() {
-        _enabled = false;
-      });
+      // Disable skeleton loading after data has been fetched or in case of an error
+      if (mounted) {
+        // Check again before calling setState
+        setState(() {
+          _enabled = false;
+        });
+      }
     }
   }
 
@@ -67,12 +74,12 @@ class _StockPageState extends State<StockPage> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: RefreshIndicator(
-          backgroundColor: DesignSystem.backgroundColor,
-          color: DesignSystem.primaryColor,
-          onRefresh: _refreshData,
+      body: RefreshIndicator(
+        backgroundColor: DesignSystem.backgroundColor,
+        color: DesignSystem.primaryColor,
+        onRefresh: _refreshData,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Skeletonizer(
             enabled: _enabled,
             child: StreamBuilder<QuerySnapshot>(
@@ -308,7 +315,7 @@ class _StockPageState extends State<StockPage> {
               ),
               SizedBox(width: 20),
               Text(
-                '${timeago.format(updatedAt.toDate(), locale: 'id_short')}',
+                '${timeago.format(updatedAt.toDate(), locale: 'id')}',
                 style: TextStyle(
                   color: DesignSystem.blackColor,
                   fontSize: 12,

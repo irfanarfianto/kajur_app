@@ -5,6 +5,8 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:intl/intl.dart';
 import 'package:readmore/readmore.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final String documentId;
@@ -18,20 +20,13 @@ class DetailProdukPage extends StatefulWidget {
 
 class _DetailProdukPageState extends State<DetailProdukPage> {
   late CollectionReference _produkCollection;
-  late Future<DocumentSnapshot> _productFuture;
+  bool _enabled = false;
 
   @override
   void initState() {
     super.initState();
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
-    _productFuture = _fetchProductData();
-  }
-
-  Future<DocumentSnapshot> _fetchProductData() async {
-    return await FirebaseFirestore.instance
-        .collection('kantin')
-        .doc(widget.documentId)
-        .get();
+    _refreshData();
   }
 
   void _deleteProduct(String documentId) async {
@@ -44,6 +39,33 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     }
   }
 
+  Future<void> _refreshData() async {
+    if (!mounted) {
+      return; // Check if the widget is still mounted
+    }
+
+    // Set state to indicate refreshing
+    setState(() {
+      _enabled = true;
+    });
+
+    try {
+      // Fetch or refresh data here (e.g., refetch Firestore data)
+      await Future.delayed(Duration(seconds: 1)); // Simulating a delay
+    } catch (error) {
+      // Handle error in case of any issues during refresh
+      print('Error refreshing data: $error');
+    } finally {
+      // Disable skeleton loading after data has been fetched or in case of an error
+      if (mounted) {
+        // Check again before calling setState
+        setState(() {
+          _enabled = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,54 +73,65 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         surfaceTintColor: Colors.transparent,
         title: Text('Detail Produk'),
       ),
-      body: RefreshIndicator(
-        onRefresh: () async {
-          setState(() {
-            _productFuture = _fetchProductData();
-          });
-        },
-        child: FutureBuilder<DocumentSnapshot>(
-          future: FirebaseFirestore.instance
-              .collection('kantin')
-              .doc(widget.documentId)
-              .get(),
-          builder:
-              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
-            } else if (snapshot.hasError) {
-              return Center(child: Text('Error: ${snapshot.error}'));
-            } else if (!snapshot.hasData || !snapshot.data!.exists) {
-              return Center(child: Text('Document does not exist'));
-            }
+      body: _buildProductDetails(),
+      bottomNavigationBar: _buildBottomAppBar(),
+    );
+  }
 
-            Map<String, dynamic> data =
-                snapshot.data!.data() as Map<String, dynamic>;
-            Timestamp createdAt = data['createdAt'] ?? Timestamp.now();
-            Timestamp updatedAt = data['updatedAt'] ?? Timestamp.now();
+  Widget _buildProductDetails() {
+    return StreamBuilder<QuerySnapshot>(
+      stream: _produkCollection.snapshots(), // Use snapshots() to get a stream
+      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+        if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        }
 
-            return ListView(
-              physics: BouncingScrollPhysics(),
-              children: [
-                GestureDetector(
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        var documents = snapshot.data!.docs;
+        var data = documents
+            .firstWhere((doc) => doc.id == widget.documentId)
+            .data() as Map<String, dynamic>;
+
+        Timestamp createdAt = data['createdAt'] ?? Timestamp.now();
+        Timestamp updatedAt = data['updatedAt'] ?? Timestamp.now();
+
+        return Column(
+          children: [
+            GestureDetector(
+              onTap: () {
+                _showImageDialog(context, data['image']);
+              },
+              child: Hero(
+                tag: 'product_image_${widget.documentId}',
+                child: GestureDetector(
                   onTap: () {
                     _showImageDialog(context, data['image']);
                   },
-                  child: Hero(
-                    tag: 'product_image_${widget.documentId}',
+                  child: Skeleton.keep(
                     child: Container(
                       height: 350,
                       width: double.infinity,
                       child: ClipRRect(
-                        child: Image.network(
-                          data['image'],
+                        child: CachedNetworkImage(
+                          imageUrl: data['image'],
                           fit: BoxFit.cover,
+                          placeholder: (context, url) =>
+                              CircularProgressIndicator(),
+                          errorWidget: (context, url, error) =>
+                              Icon(Icons.error),
                         ),
                       ),
                     ),
                   ),
                 ),
-                Container(
+              ),
+            ),
+            Skeletonizer(
+                enabled: _enabled,
+                child: Container(
                   padding: EdgeInsets.all(16),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,51 +154,55 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           ),
                           SizedBox(width: 8),
                           Row(children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: data['kategori'] == 'Makanan'
-                                    ? Colors.green.withOpacity(.50)
-                                    : data['kategori'] == 'Minuman'
-                                        ? DesignSystem.primaryColor
-                                            .withOpacity(.50)
-                                        : Colors.grey,
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text(
-                                data['kategori'] == 'Makanan'
-                                    ? 'Makanan'
-                                    : data['kategori'] == 'Minuman'
-                                        ? 'Minuman'
-                                        : 'Kategori Tidak Diketahui',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: DesignSystem.whiteColor,
+                            Skeleton.leaf(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: data['kategori'] == 'Makanan'
+                                      ? Colors.green.withOpacity(.50)
+                                      : data['kategori'] == 'Minuman'
+                                          ? DesignSystem.primaryColor
+                                              .withOpacity(.50)
+                                          : Colors.grey,
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  data['kategori'] == 'Makanan'
+                                      ? 'Makanan'
+                                      : data['kategori'] == 'Minuman'
+                                          ? 'Minuman'
+                                          : 'Kategori Tidak Diketahui',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: DesignSystem.whiteColor,
+                                  ),
                                 ),
                               ),
                             ),
                             SizedBox(width: 8),
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 5, horizontal: 12),
-                              decoration: BoxDecoration(
-                                color: data['stok'] == 0
-                                    ? DesignSystem.redAccent.withOpacity(.50)
-                                    : data['stok'] < 5
-                                        ? DesignSystem.primaryColor
-                                            .withOpacity(.50)
-                                        : DesignSystem.primaryColor
-                                            .withOpacity(.50),
-                                borderRadius: BorderRadius.circular(50),
-                              ),
-                              child: Text(
-                                data['stok'] == 0
-                                    ? 'Stok habis'
-                                    : 'Stok ${data['stok'] ?? 0}',
-                                style: TextStyle(
-                                  fontSize: 10,
-                                  color: DesignSystem.whiteColor,
+                            Skeleton.leaf(
+                              child: Container(
+                                padding: EdgeInsets.symmetric(
+                                    vertical: 5, horizontal: 12),
+                                decoration: BoxDecoration(
+                                  color: data['stok'] == 0
+                                      ? DesignSystem.redAccent.withOpacity(.50)
+                                      : data['stok'] < 5
+                                          ? DesignSystem.primaryColor
+                                              .withOpacity(.50)
+                                          : DesignSystem.primaryColor
+                                              .withOpacity(.50),
+                                  borderRadius: BorderRadius.circular(50),
+                                ),
+                                child: Text(
+                                  data['stok'] == 0
+                                      ? 'Stok habis'
+                                      : 'Stok ${data['stok'] ?? 0}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    color: DesignSystem.whiteColor,
+                                  ),
                                 ),
                               ),
                             ),
@@ -224,83 +261,84 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         ),
                     ],
                   ),
+                )),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildBottomAppBar() {
+    return BottomAppBar(
+      color: Colors.transparent,
+      elevation: 0,
+      child: Center(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            IconButton(
+              style: IconButton.styleFrom(
+                backgroundColor: DesignSystem.redAccent,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  side: BorderSide(color: DesignSystem.redAccent),
                 ),
-              ],
-            );
-          },
-        ),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
-        elevation: 0,
-        child: Center(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              IconButton(
-                style: IconButton.styleFrom(
-                  backgroundColor: DesignSystem.redAccent,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                    side: BorderSide(color: DesignSystem.redAccent),
-                  ),
+                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+              ),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text('Hapus Produk'),
+                      content:
+                          Text('Apakah Anda yakin ingin menghapus produk ini?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Batal'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            _deleteProduct(widget.documentId);
+                            Navigator.pop(context);
+                            Navigator.pop(context);
+                          },
+                          child: Text('Hapus'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              icon:
+                  Icon(Icons.delete, color: DesignSystem.whiteColor, size: 20),
+              tooltip: 'Hapus',
+            ),
+            SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 ),
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: Text('Hapus Produk'),
-                        content: Text(
-                            'Apakah Anda yakin ingin menghapus produk ini?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: Text('Batal'),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              _deleteProduct(widget.documentId);
-                              Navigator.pop(context);
-                              Navigator.pop(context);
-                            },
-                            child: Text('Hapus'),
-                          ),
-                        ],
-                      );
-                    },
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          EditProdukPage(documentId: widget.documentId),
+                    ),
                   );
+                  setState(() {});
                 },
-                icon: Icon(Icons.delete,
-                    color: DesignSystem.whiteColor, size: 20),
-                tooltip: 'Hapus',
+                child: Text('Edit'),
               ),
-              SizedBox(width: 8),
-              Expanded(
-                child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                  ),
-                  onPressed: () async {
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) =>
-                            EditProdukPage(documentId: widget.documentId),
-                      ),
-                    );
-                    setState(() {});
-                  },
-                  child: Text('Edit'),
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

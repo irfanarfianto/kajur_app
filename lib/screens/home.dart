@@ -29,6 +29,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     _getCurrentUser();
     _fetchTotalProducts();
+    _refreshData();
   }
 
   Future<void> _fetchTotalProducts() async {
@@ -346,7 +347,7 @@ class _HomePageState extends State<HomePage> {
                             .toList()
                             .length;
                         return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -370,48 +371,62 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ],
                             ),
+                            SizedBox(
+                              height: 65,
+                            ),
                             Divider(
                                 color:
                                     DesignSystem.whiteColor.withOpacity(.20)),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.restaurant,
-                                      color: DesignSystem.whiteColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      '$totalFoodProducts Makanan',
-                                      style: TextStyle(
-                                        fontSize: 15,
+                            SizedBox(height: 10),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            ListProdukPage()));
+                              },
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.restaurant,
                                         color: DesignSystem.whiteColor,
+                                        size: 20,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.local_cafe,
-                                      color: DesignSystem.whiteColor,
-                                      size: 20,
-                                    ),
-                                    SizedBox(width: 5),
-                                    Text(
-                                      '$totalDrinkProducts Minuman',
-                                      style: TextStyle(
-                                        fontSize: 15,
+                                      SizedBox(width: 5),
+                                      Text(
+                                        '$totalFoodProducts Makanan',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: DesignSystem.whiteColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        Icons.local_cafe,
                                         color: DesignSystem.whiteColor,
+                                        size: 20,
                                       ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        '$totalDrinkProducts Minuman',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: DesignSystem.whiteColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            )
                           ],
                         );
                     }

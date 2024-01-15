@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Poppins',
+        fontFamily: 'Inter',
         visualDensity: VisualDensity.adaptivePlatformDensity,
         brightness: Brightness.light,
         scaffoldBackgroundColor: DesignSystem.backgroundColor,
