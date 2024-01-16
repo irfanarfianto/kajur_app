@@ -62,14 +62,20 @@ class _AddDataPageState extends State<AddDataPage> {
     });
 
     String menu = _menuController.text;
-    int harga = int.tryParse(_hargaController.text) ?? 0;
-    int stok = int.tryParse(_stokController.text) ?? 0;
+    String hargaText = _hargaController.text;
+    String stokText = _stokController.text;
+    int harga = int.tryParse(hargaText) ?? 0;
+    int stok = int.tryParse(stokText) ?? 0;
 
+    // Validasi input
     if (menu.isNotEmpty &&
         harga > 0 &&
         stok >= 0 &&
         _selectedCategory.isNotEmpty &&
-        _selectedImage != null) {
+        _selectedImage != null &&
+        hargaText == harga.toString() &&
+        stokText == stok.toString()) {
+      // Lanjutkan dengan upload gambar
       String imageUrl = await _uploadImage();
 
       CollectionReference collectionRef =
@@ -115,7 +121,7 @@ class _AddDataPageState extends State<AddDataPage> {
     } else {
       if (!isInfoSnackbarVisible) {
         AnimatedSnackBar.material(
-          'Mohon isi semua field yang diperlukan',
+          'Mohon isi semua field yang diperlukan dan pastikan harga dan stok valid',
           type: AnimatedSnackBarType.info,
         ).show(context);
 
@@ -311,6 +317,14 @@ class _AddDataPageState extends State<AddDataPage> {
                             style: TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaController,
                             decoration: InputDecoration(
+                              prefixIcon: Padding(
+                                  padding: EdgeInsets.all(11),
+                                  child: Text('Rp',
+                                      style: TextStyle(
+                                        color: DesignSystem.greyColor,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ))),
                               hintText: 'Harga',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,

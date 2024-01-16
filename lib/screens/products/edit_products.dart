@@ -76,52 +76,65 @@ class _EditProdukPageState extends State<EditProdukPage> {
         return;
       }
 
-      User? user = FirebaseAuth.instance.currentUser;
-      String? userId = user?.uid;
-      String? userName = user?.displayName ?? 'Unknown User';
+      String hargaText = _hargaController.text;
+      String stokText = _stokController.text;
+      int harga = int.tryParse(hargaText) ?? 0;
+      int stok = int.tryParse(stokText) ?? 0;
 
-      String? imageUrl;
-      if (_selectedImage != null) {
-        imageUrl = await _uploadImage();
-      } else {
-        imageUrl =
-            _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
-      }
+      // Validasi input
+      if (hargaText == harga.toString() && stokText == stok.toString()) {
+        User? user = FirebaseAuth.instance.currentUser;
+        String? userId = user?.uid;
+        String? userName = user?.displayName ?? 'Unknown User';
 
-      // Mendapatkan detail produk sebelum diperbarui
-      DocumentSnapshot oldProductSnapshot =
-          await _produkCollection.doc(widget.documentId).get();
-      Map<String, dynamic> oldProductData =
-          oldProductSnapshot.data() as Map<String, dynamic>;
+        String? imageUrl;
+        if (_selectedImage != null) {
+          imageUrl = await _uploadImage();
+        } else {
+          imageUrl =
+              _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
+        }
 
-      // Merekam log aktivitas
-      await _recordActivityLog(
-        action: 'Edit Produk',
-        oldProductData: oldProductData,
-        newProductData: {
+        // Mendapatkan detail produk sebelum diperbarui
+        DocumentSnapshot oldProductSnapshot =
+            await _produkCollection.doc(widget.documentId).get();
+        Map<String, dynamic> oldProductData =
+            oldProductSnapshot.data() as Map<String, dynamic>;
+
+        // Merekam log aktivitas
+        await _recordActivityLog(
+          action: 'Edit Produk',
+          oldProductData: oldProductData,
+          newProductData: {
+            'menu': _menuController.text,
+            'harga': harga,
+            'deskripsi': _deskripsiController.text,
+            'image': imageUrl,
+            'stok': stok,
+          },
+        );
+
+        await _produkCollection.doc(widget.documentId).update({
           'menu': _menuController.text,
-          'harga': int.tryParse(_hargaController.text) ?? 0,
+          'harga': harga,
           'deskripsi': _deskripsiController.text,
           'image': imageUrl,
-          'stok': int.tryParse(_stokController.text) ?? 0,
-        },
-      );
-
-      await _produkCollection.doc(widget.documentId).update({
-        'menu': _menuController.text,
-        'harga': int.tryParse(_hargaController.text) ?? 0,
-        'deskripsi': _deskripsiController.text,
-        'image': imageUrl,
-        'stok': int.tryParse(_stokController.text) ?? 0,
-        'updatedAt': FieldValue.serverTimestamp(),
-        'lastEditedBy': userId,
-        'lastEditedByName': userName,
-      });
-      AnimatedSnackBar.material(
-        'Produk berhasil diperbarui',
-        type: AnimatedSnackBarType.success,
-      ).show(context);
-      Navigator.pop(context);
+          'stok': stok,
+          'updatedAt': FieldValue.serverTimestamp(),
+          'lastEditedBy': userId,
+          'lastEditedByName': userName,
+        });
+        AnimatedSnackBar.material(
+          'Produk berhasil diperbarui',
+          type: AnimatedSnackBarType.success,
+        ).show(context);
+        Navigator.pop(context);
+      } else {
+        AnimatedSnackBar.material(
+          'Mohon isi harga dan stok dengan angka',
+          type: AnimatedSnackBarType.info,
+        ).show(context);
+      }
     } catch (e) {
       print('Error updating product details: $e');
     }
@@ -305,6 +318,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
                             style: TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaController,
                             decoration: InputDecoration(
+                              prefixIcon: Padding(
+                                  padding: EdgeInsets.all(11),
+                                  child: Text('Rp',
+                                      style: TextStyle(
+                                        color: DesignSystem.greyColor,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ))),
                               hintText: 'Harga',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
