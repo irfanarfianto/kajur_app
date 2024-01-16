@@ -4,8 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/menu_button.dart';
-import 'package:kajur_app/screens/products/add_products.dart';
+import 'package:intl/intl.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:flutter/services.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk.dart';
@@ -83,33 +84,78 @@ class _HomePageState extends State<HomePage> {
       automaticallyImplyLeading: false,
       title: Text("Manajemen Kajur"),
       actions: [
-        Builder(
-          builder: (context) => GestureDetector(
-            onTap: () {
-              Scaffold.of(context).openEndDrawer();
+        // notification icon
+        IconButton(
+            onPressed: () {
+              // TODO: implement notification icon
+              Navigator.pushNamed(context, '/comingsoon');
             },
-            child: _buildUserWidget(),
-          ),
-        ),
+            icon: Icon(
+              Icons.notifications_none_outlined,
+            ))
       ],
     );
   }
 
   Widget _buildUserWidget() {
     if (_currentUser == null) {
-      return CircularProgressIndicator();
+      return CircularProgressIndicator(
+        color: DesignSystem.whiteColor,
+      );
     } else {
       return Container(
-        margin: EdgeInsets.only(right: 10),
-        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-        alignment: Alignment.center,
-        child: Text(
-          "${_currentUser!.displayName}",
-          style: TextStyle(
-            fontWeight: FontWeight.w300,
-            fontSize: 15,
-            color: DesignSystem.blackColor,
-          ),
+        alignment: Alignment.topLeft,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(
+              child: CircleAvatar(
+                backgroundImage: AssetImage('images/avatar.png'),
+              ),
+            ),
+            SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${_currentUser!.displayName}",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                    color: DesignSystem.whiteColor,
+                  ),
+                ),
+                Skeleton.leaf(
+                  child: Container(
+                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    alignment: Alignment.center,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
+                      color: DesignSystem.greyColor.withOpacity(.50),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.email,
+                          color: Colors.white,
+                          size: 12,
+                        ),
+                        SizedBox(width: 2),
+                        Text(
+                          "${_currentUser!.email}",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ],
         ),
       );
     }
@@ -120,25 +166,7 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.zero,
       children: <Widget>[
         _buildDrawerHeader(),
-        ListTile(
-          title: Text('Tambah Produk'),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => AddDataPage()),
-            );
-          },
-        ),
-        ListTile(
-          title: Text('Daftar Produk'),
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => ListProdukPage()),
-            );
-          },
-        ),
-        SizedBox(height: 350),
+        Spacer(),
         Container(
           margin: EdgeInsets.only(left: 10, right: 10),
           child: ElevatedButton.icon(
@@ -150,6 +178,56 @@ class _HomePageState extends State<HomePage> {
         ),
       ],
     );
+  }
+
+  // Fungsi untuk mendapatkan ikon berdasarkan nilai action
+  Icon _getActionIcon(String? action) {
+    IconData iconData;
+    Color iconColor;
+
+    switch (action) {
+      case 'Tambah Produk':
+        iconData = Icons.add;
+        iconColor = Colors.green;
+        break;
+      case 'Edit Produk':
+        iconData = Icons.edit;
+        iconColor = Colors.orange;
+        break;
+      case 'Hapus Produk':
+        iconData = Icons.delete;
+        iconColor = Colors.red;
+        break;
+      default:
+        iconData = Icons.error;
+        iconColor = Colors.grey;
+    }
+
+    return Icon(
+      iconData,
+      color: iconColor,
+    );
+  }
+
+  // Fungsi untuk mendapatkan warna latar belakang ikon berdasarkan nilai action
+  Color _getActionIconBackgroundColor(String? action) {
+    Color backgroundColor;
+
+    switch (action) {
+      case 'Tambah Produk':
+        backgroundColor = Colors.green.withOpacity(0.1);
+        break;
+      case 'Edit Produk':
+        backgroundColor = Colors.orange.withOpacity(0.1);
+        break;
+      case 'Hapus Produk':
+        backgroundColor = Colors.red.withOpacity(0.1);
+        break;
+      default:
+        backgroundColor = Colors.grey.withOpacity(0.1);
+    }
+
+    return backgroundColor;
   }
 
   Widget _buildDrawerHeader() {
@@ -189,21 +267,26 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("Confirm Sign Out"),
-          content: Text("Are you sure you want to sign out?"),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          title: Text("Konfirmasi"),
+          content: Text("Aapakah kamu yakin untuk keluar?"),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Cancel"),
+              child: Text("Cancel",
+                  style: TextStyle(color: DesignSystem.greyColor)),
             ),
             TextButton(
               onPressed: () {
                 _signOut(); // Perform sign-out action
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Sign Out"),
+              child: Text("Keluar",
+                  style: TextStyle(color: DesignSystem.redAccent)),
             ),
           ],
         );
@@ -216,7 +299,7 @@ class _HomePageState extends State<HomePage> {
       await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
       Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-      showToast(message: "Successfully signed out");
+      showToast(message: "Berhasil keluar");
     } catch (e) {
       showToast(message: "Error signing out: $e");
     }
@@ -256,46 +339,27 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-        bottomNavigationBar: BottomAppBar(
-          color: Colors.transparent,
-          elevation: 0,
-          shape: const CircularNotchedRectangle(),
-          clipBehavior: Clip.antiAlias,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                )),
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return MenuButton();
-                    },
-                  );
+        floatingActionButton: FloatingActionButton.extended(
+            onPressed: () {
+              showModalBottomSheet(
+                context: context,
+                builder: (BuildContext context) {
+                  return MenuButton();
                 },
-                child: Row(
-                  children: [
-                    Text(
-                      'Menu',
-                      style: TextStyle(
-                        color: DesignSystem.whiteColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                    SizedBox(width: 8),
-                    Icon(Icons.rocket_launch_outlined),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+              );
+            },
+            extendedPadding: EdgeInsets.symmetric(horizontal: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(100),
+            ),
+            backgroundColor: DesignSystem.primaryColor,
+            foregroundColor: DesignSystem.whiteColor,
+            icon: Icon(Icons.rocket_launch_outlined),
+            label: Text('Menu',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ))),
       ),
     );
   }
@@ -306,7 +370,7 @@ class _HomePageState extends State<HomePage> {
       child: Center(
         child: Container(
           width: double.infinity,
-          height: 200,
+          height: 260,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
             color: DesignSystem.primaryColor,
@@ -319,118 +383,230 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          padding: EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: EdgeInsets.all(16),
+          child: Stack(
             children: [
-              StreamBuilder<QuerySnapshot>(
-                  stream: FirebaseFirestore.instance
-                      .collection('kantin')
-                      .snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    }
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('kantin')
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
 
-                    switch (snapshot.connectionState) {
-                      case ConnectionState.waiting:
-                        return CircularProgressIndicator();
-                      default:
-                        int totalProducts = snapshot.data!.size;
-                        int totalFoodProducts = snapshot.data!.docs
-                            .where((doc) => doc['kategori'] == 'Makanan')
-                            .toList()
-                            .length;
-                        int totalDrinkProducts = snapshot.data!.docs
-                            .where((doc) => doc['kategori'] == 'Minuman')
-                            .toList()
-                            .length;
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
+                        switch (snapshot.connectionState) {
+                          case ConnectionState.waiting:
+                            return CircularProgressIndicator();
+                          default:
+                            int totalProducts = snapshot.data!.size;
+                            int totalFoodProducts = snapshot.data!.docs
+                                .where((doc) => doc['kategori'] == 'Makanan')
+                                .toList()
+                                .length;
+                            int totalDrinkProducts = snapshot.data!.docs
+                                .where((doc) => doc['kategori'] == 'Minuman')
+                                .toList()
+                                .length;
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
-                                  '$totalProducts',
-                                  style: TextStyle(
-                                    fontSize: 30,
-                                    fontWeight: FontWeight.bold,
-                                    color: DesignSystem.whiteColor,
-                                  ),
-                                ),
-                                SizedBox(width: 5),
-                                Text(
-                                  'Produk',
-                                  style: TextStyle(
-                                    fontSize: 22,
-                                    fontWeight: FontWeight.bold,
-                                    color: DesignSystem.whiteColor,
-                                  ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Builder(
+                                      builder: (context) => GestureDetector(
+                                        onTap: () {
+                                          Scaffold.of(context).openEndDrawer();
+                                        },
+                                        child: _buildUserWidget(),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 5,
+                                    ),
+                                    Divider(
+                                        color: DesignSystem.whiteColor
+                                            .withOpacity(.20)),
+                                    SizedBox(height: 5),
+                                    Text(
+                                      'Total Produk $totalProducts',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        color: DesignSystem.whiteColor,
+                                      ),
+                                    ),
+                                    SizedBox(height: 5),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 10),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                border: Border.all(
+                                                    color:
+                                                        DesignSystem.whiteColor,
+                                                    width: 0.8)),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.restaurant,
+                                                      color: DesignSystem
+                                                          .whiteColor,
+                                                      size: 25,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      '$totalFoodProducts',
+                                                      style: TextStyle(
+                                                        fontSize: 25,
+                                                        color: DesignSystem
+                                                            .whiteColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  'Makanan',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color:
+                                                        DesignSystem.whiteColor,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(width: 8),
+                                        Expanded(
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10, vertical: 10),
+                                            decoration: BoxDecoration(
+                                                borderRadius:
+                                                    BorderRadius.circular(15),
+                                                border: Border.all(
+                                                    color:
+                                                        DesignSystem.whiteColor,
+                                                    width: 0.8)),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Row(
+                                                  children: [
+                                                    Icon(
+                                                      Icons.local_cafe_outlined,
+                                                      color: DesignSystem
+                                                          .whiteColor,
+                                                      size: 25,
+                                                    ),
+                                                    SizedBox(width: 5),
+                                                    Text(
+                                                      '$totalDrinkProducts',
+                                                      style: TextStyle(
+                                                        fontSize: 25,
+                                                        color: DesignSystem
+                                                            .whiteColor,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Text(
+                                                  'Minuman',
+                                                  style: TextStyle(
+                                                    fontSize: 15,
+                                                    color:
+                                                        DesignSystem.whiteColor,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
                                 ),
                               ],
+                            );
+                        }
+                      })
+                ],
+              ),
+              Positioned(
+                bottom: 0,
+                right: 0,
+                child: InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) =>
+                            ListProdukPage(),
+                        transitionsBuilder:
+                            (context, animation, secondaryAnimation, child) {
+                          const begin = Offset(1.0, 0.0);
+                          const end = Offset.zero;
+                          const curve = Curves.easeInOut;
+
+                          var tween = Tween(begin: begin, end: end).chain(
+                            CurveTween(curve: curve),
+                          );
+
+                          var offsetAnimation = animation.drive(tween);
+
+                          return SlideTransition(
+                            position: offsetAnimation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: Skeleton.leaf(
+                    child: Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(100),
+                        color: DesignSystem.whiteColor.withOpacity(.20),
+                      ),
+                      child: Row(
+                        children: [
+                          Text(
+                            "Lihat semua",
+                            style: TextStyle(
+                              color: DesignSystem.whiteColor,
+                              fontWeight: FontWeight.normal,
                             ),
-                            SizedBox(
-                              height: 65,
-                            ),
-                            Divider(
-                                color:
-                                    DesignSystem.whiteColor.withOpacity(.20)),
-                            SizedBox(height: 10),
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ListProdukPage()));
-                              },
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.restaurant,
-                                        color: DesignSystem.whiteColor,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        '$totalFoodProducts Makanan',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: DesignSystem.whiteColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.local_cafe,
-                                        color: DesignSystem.whiteColor,
-                                        size: 20,
-                                      ),
-                                      SizedBox(width: 5),
-                                      Text(
-                                        '$totalDrinkProducts Minuman',
-                                        style: TextStyle(
-                                          fontSize: 15,
-                                          color: DesignSystem.whiteColor,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        );
-                    }
-                  })
+                          ),
+                          SizedBox(width: 5),
+                          Icon(
+                            Icons.east,
+                            color: DesignSystem.whiteColor,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ],
           ),
         ),
@@ -523,7 +699,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 10),
                 Container(
-                  height: 200,
+                  height: 150,
                   child: Scrollbar(
                     child: SingleChildScrollView(
                       physics: BouncingScrollPhysics(),
@@ -739,7 +915,30 @@ class _HomePageState extends State<HomePage> {
                       ),
                       GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, '/comingsoon');
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      AllActivitiesPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.easeInOut;
+
+                                var tween = Tween(begin: begin, end: end).chain(
+                                  CurveTween(curve: curve),
+                                );
+
+                                var offsetAnimation = animation.drive(tween);
+
+                                return SlideTransition(
+                                  position: offsetAnimation,
+                                  child: child,
+                                );
+                              },
+                            ),
+                          );
                         },
                         child: Row(
                           children: [
@@ -764,8 +963,94 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SizedBox(height: 5),
                 Container(
-                  height: 200,
-                  // isi aktivitas user
+                  height: 300,
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('activity_log')
+                        .orderBy('timestamp', descending: true)
+                        .limit(5)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(
+                          child: CircularProgressIndicator(
+                            color: DesignSystem.primaryColor,
+                          ),
+                        );
+                      }
+
+                      if (snapshot.data == null ||
+                          snapshot.data!.docs.isEmpty) {
+                        return Center(
+                          child: Text('Tidak ada aktivitas terbaru'),
+                        );
+                      }
+
+                      return Scrollbar(
+                        child: ListView(
+                          children:
+                              snapshot.data!.docs.map((DocumentSnapshot doc) {
+                            Map<String, dynamic> data =
+                                doc.data() as Map<String, dynamic>;
+
+                            return Column(
+                              children: [
+                                ListTile(
+                                  leading: Container(
+                                    padding: EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: _getActionIconBackgroundColor(
+                                          data['action']),
+                                    ),
+                                    child: _getActionIcon(data['action']),
+                                  ),
+                                  title: Flexible(
+                                    child: Text(
+                                      (data['action'] ?? '') +
+                                          (data['productName'] != null
+                                              ? ' - ${data['productName']}'
+                                              : ''),
+                                      maxLines: 1, // Hanya satu baris
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 16,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    (data['userName'] ?? '') +
+                                        ' pada ' +
+                                        (data['timestamp'] != null
+                                            ? DateFormat(
+                                                    'dd MMMM y • HH:mm ', 'id')
+                                                .format((data['timestamp']
+                                                        as Timestamp)
+                                                    .toDate())
+                                            : 'Timestamp tidak tersedia'),
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ),
+                                Divider(
+                                  color:
+                                      DesignSystem.greyColor.withOpacity(.10),
+                                ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
+                      );
+                    },
+                  ),
                 ),
               ],
             ),

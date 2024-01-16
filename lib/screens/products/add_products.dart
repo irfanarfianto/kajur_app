@@ -63,12 +63,11 @@ class _AddDataPageState extends State<AddDataPage> {
 
     String menu = _menuController.text;
     int harga = int.tryParse(_hargaController.text) ?? 0;
-    int stok = int.tryParse(_stokController.text) ??
-        0; // Ambil nilai stok dari TextFormField
+    int stok = int.tryParse(_stokController.text) ?? 0;
 
     if (menu.isNotEmpty &&
         harga > 0 &&
-        stok >= 0 && // Pastikan stok tidak negatif
+        stok >= 0 &&
         _selectedCategory.isNotEmpty &&
         _selectedImage != null) {
       String imageUrl = await _uploadImage();
@@ -76,41 +75,47 @@ class _AddDataPageState extends State<AddDataPage> {
       CollectionReference collectionRef =
           FirebaseFirestore.instance.collection('kantin');
 
-      // Get current user ID and name
       User? user = FirebaseAuth.instance.currentUser;
       String? userId = user?.uid;
       String? userName = user?.displayName ?? 'Unknown User';
 
-      await collectionRef.add({
+      // Tambahkan data produk
+      DocumentReference docRef = await collectionRef.add({
         'menu': menu,
         'harga': harga,
         'kategori': _selectedCategory,
         'image': imageUrl,
         'deskripsi': _deskripsiController.text,
-        'stok': stok, // Simpan nilai stok ke dalam database
+        'stok': stok,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'addedBy': userId,
         'addedByName': userName,
         'lastEditedBy': userId,
         'lastEditedByName': userName,
-      }).then((_) {
-        AnimatedSnackBar.material(
-          'Produk berhasil diperbarui',
-          type: AnimatedSnackBarType.success,
-        ).show(context);
-
-        Navigator.pushReplacementNamed(context, '/list_produk');
-      }).catchError((error) {
-        AnimatedSnackBar.material(
-          'Terjadi kesalahan: $error',
-          type: AnimatedSnackBarType.info,
-        ).show(context);
       });
+
+      // Tambahkan log aktivitas
+      CollectionReference activityLogRef =
+          FirebaseFirestore.instance.collection('activity_log');
+      await activityLogRef.add({
+        'userId': userId,
+        'userName': userName,
+        'action': 'Tambah Produk',
+        'productId': docRef.id,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+
+      AnimatedSnackBar.material(
+        'Produk berhasil ditambahkan',
+        type: AnimatedSnackBarType.success,
+      ).show(context);
+
+      Navigator.pushReplacementNamed(context, '/list_produk');
     } else {
       if (!isInfoSnackbarVisible) {
         AnimatedSnackBar.material(
-          'Mohon isi semuanya ya!',
+          'Mohon isi semua field yang diperlukan',
           type: AnimatedSnackBarType.info,
         ).show(context);
 
@@ -124,6 +129,7 @@ class _AddDataPageState extends State<AddDataPage> {
         });
       }
     }
+
     setState(() {
       _isLoading = false;
     });

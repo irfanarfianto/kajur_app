@@ -88,6 +88,25 @@ class _EditProdukPageState extends State<EditProdukPage> {
             _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
       }
 
+      // Mendapatkan detail produk sebelum diperbarui
+      DocumentSnapshot oldProductSnapshot =
+          await _produkCollection.doc(widget.documentId).get();
+      Map<String, dynamic> oldProductData =
+          oldProductSnapshot.data() as Map<String, dynamic>;
+
+      // Merekam log aktivitas
+      await _recordActivityLog(
+        action: 'Edit Produk',
+        oldProductData: oldProductData,
+        newProductData: {
+          'menu': _menuController.text,
+          'harga': int.tryParse(_hargaController.text) ?? 0,
+          'deskripsi': _deskripsiController.text,
+          'image': imageUrl,
+          'stok': int.tryParse(_stokController.text) ?? 0,
+        },
+      );
+
       await _produkCollection.doc(widget.documentId).update({
         'menu': _menuController.text,
         'harga': int.tryParse(_hargaController.text) ?? 0,
@@ -106,6 +125,30 @@ class _EditProdukPageState extends State<EditProdukPage> {
     } catch (e) {
       print('Error updating product details: $e');
     }
+  }
+
+  Future<void> _recordActivityLog({
+    required String action,
+    required Map<String, dynamic> oldProductData,
+    required Map<String, dynamic> newProductData,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId = user?.uid;
+    String? userName = user?.displayName ?? 'Unknown User';
+
+    // Membuat referensi ke koleksi log aktivitas
+    CollectionReference activityLogCollection =
+        FirebaseFirestore.instance.collection('activity_log');
+
+    // Merekam log aktivitas ke koleksi
+    await activityLogCollection.add({
+      'userId': userId,
+      'userName': userName,
+      'action': action,
+      'oldProductData': oldProductData,
+      'newProductData': newProductData,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<String?> _uploadImage() async {
