@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
@@ -31,12 +32,48 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
 
   void _deleteProduct(String documentId) async {
     try {
+      // Mendapatkan detail produk sebelum dihapus
+      DocumentSnapshot productSnapshot =
+          await _produkCollection.doc(documentId).get();
+      Map<String, dynamic> productData =
+          productSnapshot.data() as Map<String, dynamic>;
+
+      // Merekam log aktivitas
+      await _recordActivityLog(
+        action: 'Hapus Produk',
+        productName: productData['menu'], 
+        productData: productData,
+      );
+
+      // Menghapus produk dari Firestore
       await _produkCollection.doc(documentId).delete();
       showToast(message: 'Produk berhasil dihapus');
     } catch (e) {
       print('Error: $e');
       showToast(message: 'Terjadi kesalahan saat menghapus produk');
     }
+  }
+
+  Future<void> _recordActivityLog({
+    required String action,
+    required String productName,
+    required Map<String, dynamic> productData,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId = user?.uid;
+    String? userName = user?.displayName ?? 'Unknown User';
+
+    CollectionReference activityLogCollection =
+        FirebaseFirestore.instance.collection('activity_log');
+
+    await activityLogCollection.add({
+      'userId': userId,
+      'userName': userName,
+      'action': action,
+      'productName': productName,
+      'productData': productData,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<void> _refreshData() async {

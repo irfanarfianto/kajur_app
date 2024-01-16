@@ -23,6 +23,8 @@ class ListProdukPage extends StatefulWidget {
 }
 
 class _ListProdukPageState extends State<ListProdukPage> {
+  TextEditingController _searchController = TextEditingController();
+
   late CollectionReference _produkCollection;
   late bool _isRefreshing = false;
   CategoryFilter _categoryFilter = CategoryFilter.Semua;
@@ -324,6 +326,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                 alignment: Alignment.centerRight,
                 children: [
                   TextField(
+                    controller: _searchController,
                     style: TextStyle(
                       color: DesignSystem.blackColor,
                     ),
@@ -353,8 +356,10 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
-                          _searchQuery = '';
+                          _searchQuery = ''; // Clear the search query
                         });
+                        // Clear the text field
+                        _searchController.clear();
                       },
                       child: Container(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -387,51 +392,48 @@ class _ListProdukPageState extends State<ListProdukPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0.5,
-                    primary: _categoryFilter != CategoryFilter.Semua
-                        ? DesignSystem.primaryColor
-                        : DesignSystem.backgroundColor,
-                    onPrimary: _categoryFilter != CategoryFilter.Semua
-                        ? Colors.white
-                        : Colors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
+                TextButton(
+                    style: TextButton.styleFrom(
+                      elevation: 0.2,
+                      primary: _categoryFilter != CategoryFilter.Semua
+                          ? DesignSystem.primaryColor
+                          : DesignSystem.blackColor,
+
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 3), // Adjusted padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    _showFilterSortingOverlay();
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        _categoryFilter != CategoryFilter.Semua
-                            ? '${_categoryFilter.toString().split('.').last}'
-                            : 'Filter',
-                        style: TextStyle(
-                          fontSize: 16,
+                    onPressed: () {
+                      _showFilterSortingOverlay();
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          _categoryFilter != CategoryFilter.Semua
+                              ? '${_categoryFilter.toString().split('.').last}'
+                              : 'Filter',
+                          style: TextStyle(
+                            fontSize: 14, // Adjusted font size
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 8),
-                      Icon(
-                        Icons.expand_more_outlined,
-                      ),
-                    ],
-                  ),
-                ),
+                        SizedBox(width: 4),
+                        Icon(
+                          Icons.expand_more_outlined,
+                        ),
+                      ],
+                    )),
                 SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0.5,
+                TextButton(
+                  style: TextButton.styleFrom(
+                    elevation: 0.2,
                     primary: _sortingOption != SortingOption.Terbaru
                         ? DesignSystem.primaryColor
-                        : DesignSystem.backgroundColor,
-                    onPrimary: _sortingOption != SortingOption.Terbaru
-                        ? Colors.white
-                        : Colors.black,
-                    padding: EdgeInsets.symmetric(horizontal: 16),
+                        : DesignSystem.blackColor,
+
+                    padding: EdgeInsets.symmetric(
+                        horizontal: 10, vertical: 3), // Adjusted padding
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
                     ),
@@ -442,14 +444,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
                   child: Row(
                     children: [
                       Text(
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
                         _sortingOption != SortingOption.Terbaru
                             ? '${_sortingOption.toString().split('.').last}'
                             : 'Sort',
+                        style: TextStyle(
+                          fontSize: 14, // Adjusted font size
+                        ),
                       ),
-                      SizedBox(width: 8),
+                      SizedBox(width: 4), // Adjusted spacing
                       Icon(
                         Icons.expand_more_outlined,
                       ),
@@ -469,6 +471,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       'Reset',
                       style: TextStyle(
                         color: DesignSystem.primaryColor,
+                        fontSize: 14, // Adjusted font size
                       ),
                     ),
                   ),

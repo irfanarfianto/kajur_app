@@ -23,6 +23,14 @@
           }
         },
         {
+          "client_id": "92661859660-vv819n7vhfgth8ge75c33e7fp2glig6k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.test.kajur.app",
+            "certificate_hash": "8ab7dc4a0062ffeb4fedec8d56062cbc446faedc"
+          }
+        },
+        {
           "client_id": "92661859660-spt8sk6nvmc60iubndqjsr92fu4lgi6h.apps.googleusercontent.com",
           "client_type": 3
         }

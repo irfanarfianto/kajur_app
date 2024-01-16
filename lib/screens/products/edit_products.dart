@@ -76,36 +76,92 @@ class _EditProdukPageState extends State<EditProdukPage> {
         return;
       }
 
-      User? user = FirebaseAuth.instance.currentUser;
-      String? userId = user?.uid;
-      String? userName = user?.displayName ?? 'Unknown User';
+      String hargaText = _hargaController.text;
+      String stokText = _stokController.text;
+      int harga = int.tryParse(hargaText) ?? 0;
+      int stok = int.tryParse(stokText) ?? 0;
 
-      String? imageUrl;
-      if (_selectedImage != null) {
-        imageUrl = await _uploadImage();
+      // Validasi input
+      if (hargaText == harga.toString() && stokText == stok.toString()) {
+        User? user = FirebaseAuth.instance.currentUser;
+        String? userId = user?.uid;
+        String? userName = user?.displayName ?? 'Unknown User';
+
+        String? imageUrl;
+        if (_selectedImage != null) {
+          imageUrl = await _uploadImage();
+        } else {
+          imageUrl =
+              _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
+        }
+
+        // Mendapatkan detail produk sebelum diperbarui
+        DocumentSnapshot oldProductSnapshot =
+            await _produkCollection.doc(widget.documentId).get();
+        Map<String, dynamic> oldProductData =
+            oldProductSnapshot.data() as Map<String, dynamic>;
+
+        // Merekam log aktivitas
+        await _recordActivityLog(
+          action: 'Edit Produk',
+          oldProductData: oldProductData,
+          newProductData: {
+            'menu': _menuController.text,
+            'harga': harga,
+            'deskripsi': _deskripsiController.text,
+            'image': imageUrl,
+            'stok': stok,
+          },
+        );
+
+        await _produkCollection.doc(widget.documentId).update({
+          'menu': _menuController.text,
+          'harga': harga,
+          'deskripsi': _deskripsiController.text,
+          'image': imageUrl,
+          'stok': stok,
+          'updatedAt': FieldValue.serverTimestamp(),
+          'lastEditedBy': userId,
+          'lastEditedByName': userName,
+        });
+        AnimatedSnackBar.material(
+          'Produk berhasil diperbarui',
+          type: AnimatedSnackBarType.success,
+        ).show(context);
+        Navigator.pop(context);
       } else {
-        imageUrl =
-            _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
+        AnimatedSnackBar.material(
+          'Mohon isi harga dan stok dengan angka',
+          type: AnimatedSnackBarType.info,
+        ).show(context);
       }
-
-      await _produkCollection.doc(widget.documentId).update({
-        'menu': _menuController.text,
-        'harga': int.tryParse(_hargaController.text) ?? 0,
-        'deskripsi': _deskripsiController.text,
-        'image': imageUrl,
-        'stok': int.tryParse(_stokController.text) ?? 0,
-        'updatedAt': FieldValue.serverTimestamp(),
-        'lastEditedBy': userId,
-        'lastEditedByName': userName,
-      });
-      AnimatedSnackBar.material(
-        'Produk berhasil diperbarui',
-        type: AnimatedSnackBarType.success,
-      ).show(context);
-      Navigator.pop(context);
     } catch (e) {
       print('Error updating product details: $e');
     }
+  }
+
+  Future<void> _recordActivityLog({
+    required String action,
+    required Map<String, dynamic> oldProductData,
+    required Map<String, dynamic> newProductData,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId = user?.uid;
+    String? userName = user?.displayName ?? 'Unknown User';
+
+    // Membuat referensi ke koleksi log aktivitas
+    CollectionReference activityLogCollection =
+        FirebaseFirestore.instance.collection('activity_log');
+
+    // Merekam log aktivitas ke koleksi
+    await activityLogCollection.add({
+      'userId': userId,
+      'userName': userName,
+      'action': action,
+      'oldProductData': oldProductData,
+      'newProductData': newProductData,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 
   Future<String?> _uploadImage() async {
@@ -262,6 +318,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
                             style: TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaController,
                             decoration: InputDecoration(
+                              prefixIcon: Padding(
+                                  padding: EdgeInsets.all(11),
+                                  child: Text('Rp',
+                                      style: TextStyle(
+                                        color: DesignSystem.greyColor,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ))),
                               hintText: 'Harga',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,

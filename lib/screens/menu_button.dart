@@ -13,7 +13,7 @@ class MenuButton extends StatelessWidget {
       width: double.infinity,
       padding: EdgeInsets.all(16),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         color: DesignSystem.backgroundColor,
       ),
       child: Column(
