@@ -454,9 +454,9 @@ class _HomePageState extends State<HomePage> {
                                                 borderRadius:
                                                     BorderRadius.circular(15),
                                                 border: Border.all(
-                                                    color:
-                                                        DesignSystem.whiteColor,
-                                                    width: 0.8)),
+                                                  color: DesignSystem.whiteColor
+                                                      .withOpacity(.20),
+                                                )),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -501,9 +501,9 @@ class _HomePageState extends State<HomePage> {
                                                 borderRadius:
                                                     BorderRadius.circular(15),
                                                 border: Border.all(
-                                                    color:
-                                                        DesignSystem.whiteColor,
-                                                    width: 0.8)),
+                                                  color: DesignSystem.whiteColor
+                                                      .withOpacity(.20),
+                                                )),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,

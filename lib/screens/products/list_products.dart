@@ -392,51 +392,46 @@ class _ListProdukPageState extends State<ListProdukPage> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0.2,
-                    primary: _categoryFilter != CategoryFilter.Semua
-                        ? DesignSystem.primaryColor
-                        : DesignSystem.backgroundColor,
-                    onPrimary: _categoryFilter != CategoryFilter.Semua
-                        ? Colors.white
-                        : Colors.black,
-                    padding: EdgeInsets.symmetric(
-                        horizontal: 12, vertical: 3), // Adjusted padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
+                TextButton(
+                    style: TextButton.styleFrom(
+                      elevation: 0.2,
+                      primary: _categoryFilter != CategoryFilter.Semua
+                          ? DesignSystem.primaryColor
+                          : DesignSystem.blackColor,
+
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 3), // Adjusted padding
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(100),
+                      ),
                     ),
-                  ),
-                  onPressed: () {
-                    _showFilterSortingOverlay();
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        _categoryFilter != CategoryFilter.Semua
-                            ? '${_categoryFilter.toString().split('.').last}'
-                            : 'Filter',
-                        style: TextStyle(
-                          fontSize: 14, // Adjusted font size
+                    onPressed: () {
+                      _showFilterSortingOverlay();
+                    },
+                    child: Row(
+                      children: [
+                        Text(
+                          _categoryFilter != CategoryFilter.Semua
+                              ? '${_categoryFilter.toString().split('.').last}'
+                              : 'Filter',
+                          style: TextStyle(
+                            fontSize: 14, // Adjusted font size
+                          ),
                         ),
-                      ),
-                      SizedBox(width: 4), // Adjusted spacing
-                      Icon(
-                        Icons.expand_more_outlined,
-                      ),
-                    ],
-                  ),
-                ),
+                        SizedBox(width: 4),
+                        Icon(
+                          Icons.expand_more_outlined,
+                        ),
+                      ],
+                    )),
                 SizedBox(width: 8),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
+                TextButton(
+                  style: TextButton.styleFrom(
                     elevation: 0.2,
                     primary: _sortingOption != SortingOption.Terbaru
                         ? DesignSystem.primaryColor
-                        : DesignSystem.backgroundColor,
-                    onPrimary: _sortingOption != SortingOption.Terbaru
-                        ? Colors.white
-                        : Colors.black,
+                        : DesignSystem.blackColor,
+
                     padding: EdgeInsets.symmetric(
                         horizontal: 10, vertical: 3), // Adjusted padding
                     shape: RoundedRectangleBorder(
