@@ -54,6 +54,7 @@ dependencies:
   readmore: ^2.2.0
   skeletonizer: ^1.0.1
   cached_network_image: ^3.3.1
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:

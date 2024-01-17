@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -22,8 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   final FirebaseAuthService _auth = FirebaseAuthService();
   late final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -40,39 +39,35 @@ class _LoginPageState extends State<LoginPage> {
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   "Login",
                   style: TextStyle(
                       fontSize: 27,
                       fontWeight: FontWeight.bold,
                       color: DesignSystem.blackColor),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Email',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
+                      style: DesignSystem.titleTextStyle,
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _emailController,
                       textCapitalization: TextCapitalization.words,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
-                      style: TextStyle(color: DesignSystem.blackColor),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: DesignSystem.blackColor),
+                      decoration: const InputDecoration(
                         hintText: 'Email',
                         hintStyle: TextStyle(
                           color: DesignSystem.greyColor,
@@ -84,27 +79,20 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(
-                  height: 10,
+                const SizedBox(
+                  height: 15,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Password',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
-                    ),
-                    SizedBox(height: 8.0),
+                    const Text('Password', style: DesignSystem.titleTextStyle),
+                    const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _passwordController,
-                      style: TextStyle(color: DesignSystem.blackColor),
+                      style: const TextStyle(color: DesignSystem.blackColor),
                       decoration: InputDecoration(
                         hintText: 'Password',
-                        hintStyle: TextStyle(
+                        hintStyle: const TextStyle(
                           color: DesignSystem.greyColor,
                           fontWeight: FontWeight.normal,
                         ),
@@ -133,42 +121,40 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 30,
                 ),
                 ElevatedButton(
                   onPressed: () {
                     _signIn();
                   },
-                  child: Container(
-                    child: Center(
-                      child: _isSigning
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2,
-                              ))
-                          : Text(
-                              "Login",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  child: Center(
+                    child: _isSigning
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ))
+                        : const Text(
+                            "Login",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
-                    ),
+                          ),
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text("Belum punya akun?",
+                    const Text("Belum punya akun?",
                         style: TextStyle(color: DesignSystem.blackColor)),
-                    SizedBox(
+                    const SizedBox(
                       width: 5,
                     ),
                     GestureDetector(
@@ -177,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                           PageRouteBuilder(
                             pageBuilder:
                                 (context, animation, secondaryAnimation) =>
-                                    SignUpPage(),
+                                    const SignUpPage(),
                             transitionsBuilder: (context, animation,
                                 secondaryAnimation, child) {
                               const begin = Offset(1.0, 0.0);
@@ -198,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         "Daftar",
                         style: TextStyle(
                           color: Colors.blue,
@@ -208,7 +194,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 40,
                 ),
                 Padding(
@@ -222,8 +208,8 @@ class _LoginPageState extends State<LoginPage> {
                           height: 0.5,
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 8.0),
                         child: Text("Atau"),
                       ),
                       Expanded(
@@ -235,7 +221,7 @@ class _LoginPageState extends State<LoginPage> {
                     ],
                   ),
                 ),
-                SizedBox(
+                const SizedBox(
                   height: 20,
                 ),
                 ElevatedButton(
@@ -243,33 +229,31 @@ class _LoginPageState extends State<LoginPage> {
                     _signInWithGoogle();
                   },
                   style: ElevatedButton.styleFrom(
-                      primary: DesignSystem.whiteColor,
+                      backgroundColor: DesignSystem.whiteColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: DesignSystem.greyColor),
+                        side: const BorderSide(color: DesignSystem.greyColor),
                       )),
-                  child: Container(
-                    child: Center(
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            FontAwesomeIcons.google,
+                  child: const Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          FontAwesomeIcons.google,
+                          color: DesignSystem.blackColor,
+                          size: 20,
+                        ),
+                        SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          "Masuk dengan Google",
+                          style: TextStyle(
                             color: DesignSystem.blackColor,
-                            size: 20,
+                            fontWeight: FontWeight.bold,
                           ),
-                          SizedBox(
-                            width: 5,
-                          ),
-                          Text(
-                            "Masuk dengan Google",
-                            style: TextStyle(
-                              color: DesignSystem.blackColor,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -306,18 +290,17 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       showToast(message: "Selamat datang");
+      // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, "/home");
-    } else {
-      print('Ada yang error nih');
-    }
+    } else {}
   }
 
   _signInWithGoogle() async {
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
       final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
+          await googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
@@ -330,6 +313,7 @@ class _LoginPageState extends State<LoginPage> {
 
         await _firebaseAuth.signInWithCredential(credential);
         showToast(message: "Login dengan Google berhasil");
+        // ignore: use_build_context_synchronously
         Navigator.pushNamed(context, "/home");
       } else {
         showToast(message: "Login dengan Google dibatalkan.");

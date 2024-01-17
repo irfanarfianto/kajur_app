@@ -14,7 +14,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   late User? _currentUser;
-  String _defaultAvatar =
+  final String _defaultAvatar =
       'https://example.com/default_avatar.png'; // URL gambar default
 
   @override
@@ -52,11 +52,11 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
       ),
       body: _currentUser != null
           ? Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -66,12 +66,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     },
                     child: _buildProfileImage(),
                   ),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   _buildUserInfo(),
                 ],
               ),
             )
-          : Center(
+          : const Center(
               child: CircularProgressIndicator(),
             ),
     );
@@ -92,12 +92,12 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         Text(
           _currentUser!.displayName ?? 'No Name',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         Text(
           _currentUser!.email ?? 'No Email',
           style: TextStyle(
@@ -105,12 +105,12 @@ class _ProfilePageState extends State<ProfilePage> {
             color: Colors.grey[600],
           ),
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         ElevatedButton(
           onPressed: () {
             // Implement action for editing profile
           },
-          child: Text('Edit Profile'),
+          child: const Text('Edit Profile'),
         ),
       ],
     );

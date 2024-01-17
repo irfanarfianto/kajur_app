@@ -12,7 +12,7 @@ import 'package:kajur_app/design/system.dart';
 class EditProdukPage extends StatefulWidget {
   final String documentId;
 
-  const EditProdukPage({Key? key, required this.documentId}) : super(key: key);
+  const EditProdukPage({super.key, required this.documentId});
 
   @override
   _EditProdukPageState createState() => _EditProdukPageState();
@@ -125,6 +125,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
           'lastEditedBy': userId,
           'lastEditedByName': userName,
         });
+        // ignore: use_build_context_synchronously
         AnimatedSnackBar.material(
           'Produk berhasil diperbarui',
           type: AnimatedSnackBarType.success,
@@ -194,13 +195,13 @@ class _EditProdukPageState extends State<EditProdukPage> {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Text('Edit Produk'),
+        title: const Text('Edit Produk'),
       ),
       body: Scrollbar(
         child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -210,14 +211,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
                       context: context,
                       builder: (BuildContext context) {
                         return AlertDialog(
-                          title: Text("Pilih Sumber Gambar"),
+                          title: const Text("Pilih Sumber Gambar"),
                           actions: <Widget>[
                             TextButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
                                 _getImage(ImageSource.gallery);
                               },
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Icon(Icons.photo_library),
                                   SizedBox(width: 8),
@@ -230,7 +231,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                                 Navigator.of(context).pop();
                                 _getImage(ImageSource.camera);
                               },
-                              child: Row(
+                              child: const Row(
                                 children: [
                                   Icon(Icons.camera_alt),
                                   SizedBox(width: 8),
@@ -266,16 +267,16 @@ class _EditProdukPageState extends State<EditProdukPage> {
                                   fit: BoxFit.cover,
                                 ),
                               )
-                            : Center(
+                            : const Center(
                                 child: Icon(Icons.add_a_photo),
                               ),
                   ),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Nama Produk *',
                       style: TextStyle(
                         fontSize: 16,
@@ -283,14 +284,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         color: DesignSystem.blackColor,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _menuController,
                       keyboardType: TextInputType.name,
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
-                      style: TextStyle(color: DesignSystem.blackColor),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: DesignSystem.blackColor),
+                      decoration: const InputDecoration(
                         hintText: 'Nama produk',
                         hintStyle: TextStyle(
                           color: DesignSystem.greyColor,
@@ -300,7 +301,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -308,7 +309,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Harga *',
                             style: TextStyle(
                               fontSize: 16,
@@ -316,11 +317,11 @@ class _EditProdukPageState extends State<EditProdukPage> {
                               color: DesignSystem.blackColor,
                             ),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           TextFormField(
-                            style: TextStyle(color: DesignSystem.blackColor),
+                            style: const TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               prefixIcon: Padding(
                                   padding: EdgeInsets.all(11),
                                   child: Text('Rp',
@@ -340,12 +341,12 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         ],
                       ),
                     ),
-                    SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Stok *',
                             style: TextStyle(
                               fontSize: 16,
@@ -353,11 +354,11 @@ class _EditProdukPageState extends State<EditProdukPage> {
                               color: DesignSystem.blackColor,
                             ),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           TextFormField(
                             controller: _stokController,
-                            style: TextStyle(color: DesignSystem.blackColor),
-                            decoration: InputDecoration(
+                            style: const TextStyle(color: DesignSystem.blackColor),
+                            decoration: const InputDecoration(
                               hintText: 'Stok',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
@@ -371,11 +372,11 @@ class _EditProdukPageState extends State<EditProdukPage> {
                     )
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Deskripsi',
                       style: TextStyle(
                         fontSize: 16,
@@ -383,10 +384,10 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         color: DesignSystem.blackColor,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _deskripsiController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Masukan deskripsi produk',
                         hintStyle: TextStyle(
                           color: DesignSystem.greyColor,
@@ -395,18 +396,18 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 10.0),
                       ),
-                      style: TextStyle(color: DesignSystem.blackColor),
+                      style: const TextStyle(color: DesignSystem.blackColor),
                       keyboardType: TextInputType.multiline,
                       maxLines: 3,
                     ),
                   ],
                 ),
-                SizedBox(height: 24.0),
+                const SizedBox(height: 24.0),
                 ElevatedButton(
                   onPressed: () {
                     _updateProductDetails();
                   },
-                  child: Text('Update'),
+                  child: const Text('Update'),
                 ),
               ],
             ),

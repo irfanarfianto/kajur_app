@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
-import 'package:flutter/services.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
@@ -18,7 +17,10 @@ enum SortingOption {
 }
 
 class ListProdukPage extends StatefulWidget {
+  const ListProdukPage({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _ListProdukPageState createState() => _ListProdukPageState();
 }
 
@@ -30,7 +32,6 @@ class _ListProdukPageState extends State<ListProdukPage> {
   CategoryFilter _categoryFilter = CategoryFilter.Semua;
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
-  late AsyncSnapshot<QuerySnapshot> _currentSnapshot;
   bool _enabled = false;
 
   @override
@@ -53,9 +54,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
   }
 
   void _updateSnapshot(AsyncSnapshot<QuerySnapshot> newSnapshot) {
-    setState(() {
-      _currentSnapshot = newSnapshot;
-    });
+    setState(() {});
   }
 
   Future<void> _deleteProduct(String documentId) async {
@@ -82,7 +81,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
       });
 
       // Fetch or refresh data here (e.g., refetch Firestore data)
-      await Future.delayed(Duration(seconds: 2)); // Simulating a delay
+      await Future.delayed(const Duration(seconds: 2)); // Simulating a delay
     } catch (error) {
       // Handle error in case of any issues during refresh
       print('Error refreshing data: $error');
@@ -109,8 +108,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
           minChildSize: 0.1,
           builder: (BuildContext context, ScrollController scrollController) {
             return Container(
-              padding: EdgeInsets.all(16),
-              decoration: BoxDecoration(
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
                 color: DesignSystem.backgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
@@ -125,11 +124,11 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       color: DesignSystem.greyColor.withOpacity(.50),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Kategori',
                         style: TextStyle(
                           fontSize: 20,
@@ -148,7 +147,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                           },
                           isActive: _categoryFilter == CategoryFilter.Semua,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         buildSortingAndFilteringButton(
                           label: 'Makanan',
                           icon: Icons.restaurant,
@@ -158,7 +157,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                           },
                           isActive: _categoryFilter == CategoryFilter.Makanan,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         buildSortingAndFilteringButton(
                           label: 'Minuman',
                           icon: Icons.local_drink_outlined,
@@ -169,8 +168,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                           isActive: _categoryFilter == CategoryFilter.Minuman,
                         ),
                       ]),
-                      SizedBox(height: 20),
-                      Text(
+                      const SizedBox(height: 20),
+                      const Text(
                         'Urutkan berdasarkan',
                         style: TextStyle(
                           fontSize: 20,
@@ -188,7 +187,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                           },
                           isActive: _sortingOption == SortingOption.Terbaru,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         buildSortingAndFilteringButton(
                           label: 'A-Z',
                           icon: Icons.sort_by_alpha,
@@ -198,7 +197,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                           },
                           isActive: _sortingOption == SortingOption.AZ,
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         buildSortingAndFilteringButton(
                           label: 'Z-A',
                           icon: Icons.sort_by_alpha_outlined,
@@ -229,26 +228,26 @@ class _ListProdukPageState extends State<ListProdukPage> {
     return ElevatedButton(
       style: isActive
           ? ElevatedButton.styleFrom(
-              primary: DesignSystem.primaryColor,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              backgroundColor: DesignSystem.primaryColor,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
             )
           : ElevatedButton.styleFrom(
-              primary: DesignSystem.backgroundColor,
-              padding: EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              foregroundColor: DesignSystem.greyColor,
+              backgroundColor: DesignSystem.backgroundColor,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(100),
               ),
               elevation: 0,
-              onPrimary: DesignSystem.greyColor,
             ),
       onPressed: onPressed,
       child: Row(
         children: [
           Icon(icon, size: 20),
-          SizedBox(width: 5),
+          const SizedBox(width: 5),
           Text(label),
         ],
       ),
@@ -318,7 +317,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
         surfaceTintColor: Colors.transparent,
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 5.0),
+            padding: const EdgeInsets.only(right: 5.0),
             child: SizedBox(
               width: MediaQuery.of(context).size.width * 0.75,
               height: 40,
@@ -327,19 +326,19 @@ class _ListProdukPageState extends State<ListProdukPage> {
                 children: [
                   TextField(
                     controller: _searchController,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: DesignSystem.blackColor,
                     ),
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: DesignSystem.greyColor.withOpacity(0.1),
-                      contentPadding: EdgeInsets.all(8.0),
+                      contentPadding: const EdgeInsets.all(8.0),
                       hintText: 'Cari produk',
-                      hintStyle: TextStyle(
+                      hintStyle: const TextStyle(
                         color: DesignSystem.greyColor,
                         fontSize: 14.0,
                       ),
-                      prefixIcon: Icon(Icons.search),
+                      prefixIcon: const Icon(Icons.search),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                         borderSide: BorderSide.none,
@@ -352,7 +351,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     },
                   ),
                   Visibility(
-                    visible: _searchQuery != null && _searchQuery.isNotEmpty,
+                    visible: _searchQuery.isNotEmpty,
                     child: GestureDetector(
                       onTap: () {
                         setState(() {
@@ -362,8 +361,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         _searchController.clear();
                       },
                       child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 10),
-                        child: Icon(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: const Icon(
                           Icons.clear,
                           color: DesignSystem.greyColor,
                         ),
@@ -374,13 +373,11 @@ class _ListProdukPageState extends State<ListProdukPage> {
               ),
             ),
           ),
-          Container(
-            child: IconButton(
-              onPressed: () {
-                Navigator.pushNamed(context, '/comingsoon');
-              },
-              icon: Icon(Icons.history),
-            ),
+          IconButton(
+            onPressed: () {
+              Navigator.pushNamed(context, '/comingsoon');
+            },
+            icon: const Icon(Icons.history),
           ),
         ],
       ),
@@ -388,18 +385,18 @@ class _ListProdukPageState extends State<ListProdukPage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 TextButton(
                     style: TextButton.styleFrom(
-                      elevation: 0.2,
-                      primary: _categoryFilter != CategoryFilter.Semua
+                      foregroundColor: _categoryFilter != CategoryFilter.Semua
                           ? DesignSystem.primaryColor
                           : DesignSystem.blackColor,
+                      elevation: 0.2,
 
-                      padding: EdgeInsets.symmetric(
+                      padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 3), // Adjusted padding
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(100),
@@ -412,27 +409,27 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       children: [
                         Text(
                           _categoryFilter != CategoryFilter.Semua
-                              ? '${_categoryFilter.toString().split('.').last}'
+                              ? _categoryFilter.toString().split('.').last
                               : 'Filter',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 14, // Adjusted font size
                           ),
                         ),
-                        SizedBox(width: 4),
-                        Icon(
+                        const SizedBox(width: 4),
+                        const Icon(
                           Icons.expand_more_outlined,
                         ),
                       ],
                     )),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 TextButton(
                   style: TextButton.styleFrom(
-                    elevation: 0.2,
-                    primary: _sortingOption != SortingOption.Terbaru
+                    foregroundColor: _sortingOption != SortingOption.Terbaru
                         ? DesignSystem.primaryColor
                         : DesignSystem.blackColor,
+                    elevation: 0.2,
 
-                    padding: EdgeInsets.symmetric(
+                    padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 3), // Adjusted padding
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(100),
@@ -445,14 +442,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     children: [
                       Text(
                         _sortingOption != SortingOption.Terbaru
-                            ? '${_sortingOption.toString().split('.').last}'
+                            ? _sortingOption.toString().split('.').last
                             : 'Sort',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14, // Adjusted font size
                         ),
                       ),
-                      SizedBox(width: 4), // Adjusted spacing
-                      Icon(
+                      const SizedBox(width: 4), // Adjusted spacing
+                      const Icon(
                         Icons.expand_more_outlined,
                       ),
                     ],
@@ -460,14 +457,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
                 ),
                 if (_categoryFilter != CategoryFilter.Semua ||
                     _sortingOption != SortingOption.Terbaru)
-                  SizedBox(width: 8),
+                  const SizedBox(width: 8),
                 if (_categoryFilter != CategoryFilter.Semua ||
                     _sortingOption != SortingOption.Terbaru)
                   TextButton(
                     onPressed: () {
                       _resetFilters();
                     },
-                    child: Text(
+                    child: const Text(
                       'Reset',
                       style: TextStyle(
                         color: DesignSystem.primaryColor,
@@ -504,7 +501,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     }
 
                     if (snapshot.data!.docs.isEmpty) {
-                      return Center(
+                      return const Center(
                         child: Text(
                           'Tidak ada produk',
                           style: TextStyle(color: DesignSystem.whiteColor),
@@ -519,9 +516,10 @@ class _ListProdukPageState extends State<ListProdukPage> {
 
                     return Scrollbar(
                       child: GridView.builder(
-                        padding: EdgeInsets.symmetric(horizontal: 8.0),
-                        physics: BouncingScrollPhysics(),
-                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        physics: const BouncingScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 2,
                           crossAxisSpacing: 15.0,
                           mainAxisSpacing: 10.0,
@@ -563,7 +561,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                               BoxShadow(
                                                 color: DesignSystem.greyColor
                                                     .withOpacity(.10),
-                                                offset: Offset(0, 5),
+                                                offset: const Offset(0, 5),
                                                 blurRadius: 10,
                                               ),
                                             ],
@@ -577,7 +575,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                             ),
                                           ),
                                         ),
-                                        SizedBox(height: 5),
+                                        const SizedBox(height: 5),
                                         Padding(
                                           padding: const EdgeInsets.symmetric(
                                               horizontal: 8.0),
@@ -587,8 +585,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                             children: [
                                               Text(
                                                 data['menu'],
-                                                style: DesignSystem
-                                                    .titleTextStyle,
+                                                style:
+                                                    DesignSystem.titleTextStyle,
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                               ),
@@ -602,7 +600,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                       right: 8,
                                       child: Skeleton.unite(
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical: 5, horizontal: 10),
                                           decoration: BoxDecoration(
                                             color: data['stok'] == 0
@@ -620,7 +618,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                             data['stok'] == 0
                                                 ? 'Stok habis'
                                                 : '${data['stok'] ?? 0}',
-                                            style: TextStyle(
+                                            style: const TextStyle(
                                               fontSize: 12,
                                               color: DesignSystem.whiteColor,
                                             ),

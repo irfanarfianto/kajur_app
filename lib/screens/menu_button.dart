@@ -6,13 +6,15 @@ import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk.dart';
 
 class MenuButton extends StatelessWidget {
+  const MenuButton({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       height: MediaQuery.of(context).size.height * 0.5,
       width: double.infinity,
-      padding: EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      padding: const EdgeInsets.all(16),
+      decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
         color: DesignSystem.backgroundColor,
       ),
@@ -27,53 +29,53 @@ class MenuButton extends StatelessWidget {
               color: DesignSystem.greyColor.withOpacity(.50),
             ),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Container(
-              margin: EdgeInsets.symmetric(horizontal: 16.0),
+              margin: const EdgeInsets.symmetric(horizontal: 16.0),
               height: 80,
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: DesignSystem.greyColor.withOpacity(.10),
               )),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Expanded(
                 child: buildCircularButton(
-                    context, "List Produk", Icons.list, ListProdukPage()),
+                    context, "List Produk", Icons.list, const ListProdukPage()),
               ),
               Expanded(
                 child: buildCircularButton(
-                    context, "Tambah", Icons.add, AddDataPage()),
+                    context, "Tambah", Icons.add, const AddDataPage()),
               ),
               Expanded(
                 child: buildCircularButton(
-                    context, "Edit", Icons.edit, ListProdukPage()),
+                    context, "Edit", Icons.edit, const ListProdukPage()),
               ),
             ],
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Expanded(
                 child: buildCircularButton(
-                    context, "Stok", Icons.inventory, StockPage()),
+                    context, "Stok", Icons.inventory, const StockPage()),
               ),
               Expanded(
                 child: buildCircularButton(
-                    context, "Pengeluaran", Icons.money_off, ComingSoonPage()),
+                    context, "Pengeluaran", Icons.money_off, const ComingSoonPage()),
               ),
               Expanded(
                 child: buildCircularButton(
-                    context, "Pemasukan", Icons.attach_money, ComingSoonPage()),
+                    context, "Pemasukan", Icons.attach_money, const ComingSoonPage()),
               ),
             ],
           ),
 
-          Spacer(), // Spacer to push the close button to the bottom
+          const Spacer(), // Spacer to push the close button to the bottom
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
@@ -83,7 +85,7 @@ class MenuButton extends StatelessWidget {
               onPressed: () {
                 Navigator.pop(context); // Close the bottom sheet
               },
-              icon: Icon(Icons.close),
+              icon: const Icon(Icons.close),
               iconSize: 25,
               color: DesignSystem.blackColor,
             ),
@@ -120,10 +122,10 @@ class MenuButton extends StatelessWidget {
               color: Colors.white,
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           Text(
             label,
-            style: TextStyle(fontSize: 14),
+            style: const TextStyle(fontSize: 14),
           ),
         ],
       ),

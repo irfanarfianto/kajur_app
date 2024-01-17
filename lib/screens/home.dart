@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -47,7 +49,6 @@ class _HomePageState extends State<HomePage> {
 
       return querySnapshot.size;
     } catch (e) {
-      print('Error: $e');
       return 0;
     }
   }
@@ -59,13 +60,12 @@ class _HomePageState extends State<HomePage> {
       });
 
       // Simulate fetching new data from your data source
-      await Future.delayed(Duration(seconds: 2));
+      await Future.delayed(const Duration(seconds: 2));
 
       // After fetching new data, you can setState or update your variables
       // Example: setState(() { yourData = fetchedData; });
     } catch (error) {
       // Handle error if it occurs during data refresh
-      print('Error refreshing data: $error');
     } finally {
       setState(() {
         _enabled = false;
@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
-      title: Text("Manajemen Kajur", style: TextStyle(fontFamily: 'Roboto')),
+      title: const Text("Manajemen Kajur", style: TextStyle(fontFamily: 'Roboto')),
       actions: [
         // notification icon
         IconButton(
@@ -90,7 +90,7 @@ class _HomePageState extends State<HomePage> {
               // TODO: implement notification icon
               Navigator.pushNamed(context, '/comingsoon');
             },
-            icon: Icon(
+            icon: const Icon(
               Icons.notifications_none_outlined,
             ))
       ],
@@ -99,7 +99,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildUserWidget() {
     if (_currentUser == null) {
-      return CircularProgressIndicator(
+      return const CircularProgressIndicator(
         color: DesignSystem.whiteColor,
       );
     } else {
@@ -108,18 +108,16 @@ class _HomePageState extends State<HomePage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              child: CircleAvatar(
-                backgroundImage: AssetImage('images/avatar.png'),
-              ),
+            const CircleAvatar(
+              backgroundImage: AssetImage('images/avatar.png'),
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   "${_currentUser!.displayName}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
                     color: DesignSystem.whiteColor,
@@ -127,7 +125,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 Skeleton.leaf(
                   child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
                     alignment: Alignment.center,
                     height: 20,
                     decoration: BoxDecoration(
@@ -136,15 +134,15 @@ class _HomePageState extends State<HomePage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.email,
                           color: Colors.white,
                           size: 12,
                         ),
-                        SizedBox(width: 2),
+                        const SizedBox(width: 2),
                         Text(
                           "${_currentUser!.email}",
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 10,
                           ),
@@ -166,14 +164,14 @@ class _HomePageState extends State<HomePage> {
       padding: EdgeInsets.zero,
       children: <Widget>[
         _buildDrawerHeader(),
-        Spacer(),
+        const Spacer(),
         Container(
-          margin: EdgeInsets.only(left: 10, right: 10),
+          margin: const EdgeInsets.only(left: 10, right: 10),
           child: ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(primary: DesignSystem.redAccent),
+            style: ElevatedButton.styleFrom(backgroundColor: DesignSystem.redAccent),
             onPressed: _confirmSignOut,
-            label: Text('Keluar'),
-            icon: Icon(Icons.exit_to_app),
+            label: const Text('Keluar'),
+            icon: const Icon(Icons.exit_to_app),
           ),
         ),
       ],
@@ -232,31 +230,31 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildDrawerHeader() {
     return DrawerHeader(
-      decoration: BoxDecoration(color: DesignSystem.primaryColor),
+      decoration: const BoxDecoration(color: DesignSystem.primaryColor),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           _currentUser != null
               ? Text(
                   "${_currentUser!.displayName}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 18,
                   ),
                 )
-              : CircularProgressIndicator(), // Show loading indicator while fetching user data
-          SizedBox(height: 5),
+              : const CircularProgressIndicator(), // Show loading indicator while fetching user data
+          const SizedBox(height: 5),
           _currentUser != null
               ? Text(
                   "${_currentUser!.email}",
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 14,
                   ),
                 )
-              : CircularProgressIndicator(), // Show loading indicator while fetching user data
+              : const CircularProgressIndicator(), // Show loading indicator while fetching user data
         ],
       ),
     );
@@ -270,14 +268,14 @@ class _HomePageState extends State<HomePage> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          title: Text("Konfirmasi"),
-          content: Text("Aapakah kamu yakin untuk keluar?"),
+          title: const Text("Konfirmasi"),
+          content: const Text("Aapakah kamu yakin untuk keluar?"),
           actions: <Widget>[
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Cancel",
+              child: const Text("Cancel",
                   style: TextStyle(color: DesignSystem.greyColor)),
             ),
             TextButton(
@@ -285,7 +283,7 @@ class _HomePageState extends State<HomePage> {
                 _signOut(); // Perform sign-out action
                 Navigator.of(context).pop(); // Close the dialog
               },
-              child: Text("Keluar",
+              child: const Text("Keluar",
                   style: TextStyle(color: DesignSystem.redAccent)),
             ),
           ],
@@ -298,6 +296,7 @@ class _HomePageState extends State<HomePage> {
     try {
       await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
+      // ignore: use_build_context_synchronously
       Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
       showToast(message: "Berhasil keluar");
     } catch (e) {
@@ -314,7 +313,7 @@ class _HomePageState extends State<HomePage> {
       },
       child: Scaffold(
         appBar: PreferredSize(
-          preferredSize: Size.fromHeight(kToolbarHeight),
+          preferredSize: const Size.fromHeight(kToolbarHeight),
           child: _buildAppBar(),
         ),
         endDrawer: Drawer(child: _buildDrawer()),
@@ -326,7 +325,7 @@ class _HomePageState extends State<HomePage> {
               child: Skeletonizer(
                 enabled: _enabled,
                 child: SingleChildScrollView(
-                  physics: BouncingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   child: Column(
                     children: [
                       _buildTotalProductsWidget(),
@@ -344,18 +343,18 @@ class _HomePageState extends State<HomePage> {
               showModalBottomSheet(
                 context: context,
                 builder: (BuildContext context) {
-                  return MenuButton();
+                  return const MenuButton();
                 },
               );
             },
-            extendedPadding: EdgeInsets.symmetric(horizontal: 20),
+            extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(100),
             ),
             backgroundColor: DesignSystem.primaryColor,
             foregroundColor: DesignSystem.whiteColor,
-            icon: Icon(Icons.rocket_launch_outlined),
-            label: Text('Menu',
+            icon: const Icon(Icons.rocket_launch_outlined),
+            label: const Text('Menu',
                 style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -366,7 +365,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildTotalProductsWidget() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Center(
         child: Container(
           width: double.infinity,
@@ -378,12 +377,12 @@ class _HomePageState extends State<HomePage> {
             boxShadow: [
               BoxShadow(
                 color: DesignSystem.greyColor.withOpacity(.10),
-                offset: Offset(0, 5),
+                offset: const Offset(0, 5),
                 blurRadius: 10,
               ),
             ],
           ),
-          padding: EdgeInsets.all(16),
+          padding: const EdgeInsets.all(16),
           child: Stack(
             children: [
               Column(
@@ -401,7 +400,7 @@ class _HomePageState extends State<HomePage> {
 
                         switch (snapshot.connectionState) {
                           case ConnectionState.waiting:
-                            return CircularProgressIndicator();
+                            return const CircularProgressIndicator();
                           default:
                             int totalProducts = snapshot.data!.size;
                             int totalFoodProducts = snapshot.data!.docs
@@ -426,29 +425,29 @@ class _HomePageState extends State<HomePage> {
                                         child: _buildUserWidget(),
                                       ),
                                     ),
-                                    SizedBox(
+                                    const SizedBox(
                                       height: 5,
                                     ),
                                     Divider(
                                         color: DesignSystem.whiteColor
                                             .withOpacity(.20)),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text(
                                       'Total Produk $totalProducts',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                         fontSize: 16,
                                         fontWeight: DesignSystem.regular,
                                         color: DesignSystem.whiteColor,
                                       ),
                                     ),
-                                    SizedBox(height: 5),
+                                    const SizedBox(height: 5),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceEvenly,
                                       children: [
                                         Expanded(
                                           child: Container(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 10),
                                             decoration: BoxDecoration(
                                                 borderRadius:
@@ -463,16 +462,16 @@ class _HomePageState extends State<HomePage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.restaurant,
                                                       color: DesignSystem
                                                           .whiteColor,
                                                       size: 25,
                                                     ),
-                                                    SizedBox(width: 5),
+                                                    const SizedBox(width: 5),
                                                     Text(
                                                       '$totalFoodProducts',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: 25,
                                                         color: DesignSystem
                                                             .whiteColor,
@@ -480,7 +479,7 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                   ],
                                                 ),
-                                                Text(
+                                                const Text(
                                                   'Makanan',
                                                   style: TextStyle(
                                                     fontSize: 15,
@@ -492,10 +491,10 @@ class _HomePageState extends State<HomePage> {
                                             ),
                                           ),
                                         ),
-                                        SizedBox(width: 8),
+                                        const SizedBox(width: 8),
                                         Expanded(
                                           child: Container(
-                                            padding: EdgeInsets.symmetric(
+                                            padding: const EdgeInsets.symmetric(
                                                 horizontal: 10, vertical: 10),
                                             decoration: BoxDecoration(
                                                 borderRadius:
@@ -510,16 +509,16 @@ class _HomePageState extends State<HomePage> {
                                               children: [
                                                 Row(
                                                   children: [
-                                                    Icon(
+                                                    const Icon(
                                                       Icons.local_cafe_outlined,
                                                       color: DesignSystem
                                                           .whiteColor,
                                                       size: 25,
                                                     ),
-                                                    SizedBox(width: 5),
+                                                    const SizedBox(width: 5),
                                                     Text(
                                                       '$totalDrinkProducts',
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: 25,
                                                         color: DesignSystem
                                                             .whiteColor,
@@ -527,7 +526,7 @@ class _HomePageState extends State<HomePage> {
                                                     ),
                                                   ],
                                                 ),
-                                                Text(
+                                                const Text(
                                                   'Minuman',
                                                   style: TextStyle(
                                                     fontSize: 15,
@@ -557,7 +556,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.of(context).push(
                       PageRouteBuilder(
                         pageBuilder: (context, animation, secondaryAnimation) =>
-                            ListProdukPage(),
+                            const ListProdukPage(),
                         transitionsBuilder:
                             (context, animation, secondaryAnimation, child) {
                           const begin = Offset(1.0, 0.0);
@@ -581,12 +580,12 @@ class _HomePageState extends State<HomePage> {
                   child: Skeleton.leaf(
                     child: Container(
                       padding:
-                          EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                          const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(100),
                         color: DesignSystem.whiteColor.withOpacity(.20),
                       ),
-                      child: Row(
+                      child: const Row(
                         children: [
                           Text(
                             "Lihat semua",
@@ -619,8 +618,8 @@ class _HomePageState extends State<HomePage> {
       children: [
         Center(
           child: Container(
-            margin: EdgeInsets.all(16.0),
-            padding: EdgeInsets.all(16.0),
+            margin: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
               color: DesignSystem.secondaryColor,
@@ -629,7 +628,7 @@ class _HomePageState extends State<HomePage> {
               boxShadow: [
                 BoxShadow(
                   color: DesignSystem.greyColor.withOpacity(.10),
-                  offset: Offset(0, 5),
+                  offset: const Offset(0, 5),
                   blurRadius: 10,
                 ),
               ],
@@ -637,65 +636,63 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Info Stok 📢',
-                        style: DesignSystem.titleTextStyle,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Info Stok 📢',
+                      style: DesignSystem.titleTextStyle,
+                    ),
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const StockPage(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+
+                              var tween = Tween(begin: begin, end: end).chain(
+                                CurveTween(curve: curve),
+                              );
+
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: const Row(
+                        children: [
+                          Text(
+                            "Lihat semua",
+                            style: DesignSystem.bodyTextStyle,
+                          ),
+                          SizedBox(width: 5),
+                          Icon(
+                            Icons.east,
+                            color: DesignSystem.blackColor,
+                            size: 16,
+                          ),
+                        ],
                       ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      StockPage(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                const begin = Offset(1.0, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.easeInOut;
-
-                                var tween = Tween(begin: begin, end: end).chain(
-                                  CurveTween(curve: curve),
-                                );
-
-                                var offsetAnimation = animation.drive(tween);
-
-                                return SlideTransition(
-                                  position: offsetAnimation,
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              "Lihat semua",
-                              style: DesignSystem.bodyTextStyle,
-                            ),
-                            SizedBox(width: 5),
-                            Icon(
-                              Icons.east,
-                              color: DesignSystem.blackColor,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                SizedBox(height: 10),
-                Container(
+                const SizedBox(height: 10),
+                SizedBox(
                   height: 150,
                   child: Scrollbar(
                     child: SingleChildScrollView(
-                      physics: BouncingScrollPhysics(),
+                      physics: const BouncingScrollPhysics(),
                       child: Column(
                         children: [
                           StreamBuilder<QuerySnapshot>(
@@ -712,12 +709,12 @@ class _HomePageState extends State<HomePage> {
 
                               switch (snapshot.connectionState) {
                                 case ConnectionState.waiting:
-                                  return Center(
+                                  return const Center(
                                     child: CircularProgressIndicator(),
                                   );
                                 default:
                                   if (snapshot.data!.docs.isEmpty) {
-                                    return Column(
+                                    return const Column(
                                       children: [
                                         Center(
                                           child: Text(
@@ -741,10 +738,10 @@ class _HomePageState extends State<HomePage> {
                                     if (stok == 0) {
                                       return Skeleton.leaf(
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 20),
                                           margin:
-                                              EdgeInsets.symmetric(vertical: 5),
+                                              const EdgeInsets.symmetric(vertical: 5),
                                           decoration: BoxDecoration(
                                             color: Colors.red.withOpacity(.10),
                                             borderRadius:
@@ -761,7 +758,7 @@ class _HomePageState extends State<HomePage> {
                                               Flexible(
                                                 child: Text(
                                                   'Produk $namaProduk sudah habis!',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color:
                                                         DesignSystem.blackColor,
                                                     fontWeight:
@@ -777,10 +774,10 @@ class _HomePageState extends State<HomePage> {
                                     } else if (stok <= 10 && stok > 4) {
                                       return Skeleton.leaf(
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 20),
                                           margin:
-                                              EdgeInsets.symmetric(vertical: 5),
+                                              const EdgeInsets.symmetric(vertical: 5),
                                           decoration: BoxDecoration(
                                             color:
                                                 Colors.yellow.withOpacity(.30),
@@ -798,7 +795,7 @@ class _HomePageState extends State<HomePage> {
                                               Flexible(
                                                 child: Text(
                                                   'Pantau terus! $namaProduk sisa $stok, segera restock ya!',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color:
                                                         DesignSystem.blackColor,
                                                     fontWeight:
@@ -814,10 +811,10 @@ class _HomePageState extends State<HomePage> {
                                     } else if (stok < 5) {
                                       return Skeleton.leaf(
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical: 10, horizontal: 20),
                                           margin:
-                                              EdgeInsets.symmetric(vertical: 5),
+                                              const EdgeInsets.symmetric(vertical: 5),
                                           decoration: BoxDecoration(
                                             color: Colors.red.withOpacity(.10),
                                             borderRadius:
@@ -834,7 +831,7 @@ class _HomePageState extends State<HomePage> {
                                               Flexible(
                                                 child: Text(
                                                   'Woy! $namaProduk mau abis, sisa $stok!',
-                                                  style: TextStyle(
+                                                  style: const TextStyle(
                                                     color:
                                                         DesignSystem.blackColor,
                                                     fontWeight:
@@ -849,7 +846,7 @@ class _HomePageState extends State<HomePage> {
                                       );
                                     }
 
-                                    return SizedBox.shrink();
+                                    return const SizedBox.shrink();
                                   }).toList();
 
                                   return Column(
@@ -873,13 +870,13 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildRecentActivityWidget() {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Column(
         children: [
           Center(
             child: Container(
               height: 335,
-              padding: EdgeInsets.only(
+              padding: const EdgeInsets.only(
                 top: 16,
                 bottom: 10,
                 left: 16,
@@ -894,7 +891,7 @@ class _HomePageState extends State<HomePage> {
                 boxShadow: [
                   BoxShadow(
                     color: DesignSystem.greyColor.withOpacity(.10),
-                    offset: Offset(0, 5),
+                    offset: const Offset(0, 5),
                     blurRadius: 10,
                   ),
                 ],
@@ -902,146 +899,142 @@ class _HomePageState extends State<HomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          'Aktivitas Terbaru',
-                          style: DesignSystem.titleTextStyle,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              PageRouteBuilder(
-                                pageBuilder:
-                                    (context, animation, secondaryAnimation) =>
-                                        AllActivitiesPage(),
-                                transitionsBuilder: (context, animation,
-                                    secondaryAnimation, child) {
-                                  const begin = Offset(1.0, 0.0);
-                                  const end = Offset.zero;
-                                  const curve = Curves.easeInOut;
-
-                                  var tween = Tween(begin: begin, end: end)
-                                      .chain(CurveTween(curve: curve));
-
-                                  var offsetAnimation = animation.drive(tween);
-
-                                  return SlideTransition(
-                                    position: offsetAnimation,
-                                    child: child,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Text(
-                                "Lihat semua",
-                                style: DesignSystem.bodyTextStyle,
-                              ),
-                              SizedBox(width: 5),
-                              Icon(
-                                Icons.east,
-                                color: DesignSystem.blackColor,
-                                size: 16,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 5),
-                  Container(
-                    child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('activity_log')
-                          .orderBy('timestamp', descending: true)
-                          .limit(3)
-                          .snapshots(),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-                        if (snapshot.hasError) {
-                          return Text('Error: ${snapshot.error}');
-                        }
-
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return Center(
-                            child: CircularProgressIndicator(
-                              color: DesignSystem.primaryColor,
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Aktivitas Terbaru',
+                        style: DesignSystem.titleTextStyle,
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const AllActivitiesPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(1.0, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.easeInOut;
+                  
+                                var tween = Tween(begin: begin, end: end)
+                                    .chain(CurveTween(curve: curve));
+                  
+                                var offsetAnimation = animation.drive(tween);
+                  
+                                return SlideTransition(
+                                  position: offsetAnimation,
+                                  child: child,
+                                );
+                              },
                             ),
                           );
-                        }
-
-                        if (snapshot.data == null ||
-                            snapshot.data!.docs.isEmpty) {
-                          return Center(
-                            child: Text('Tidak ada aktivitas terbaru'),
-                          );
-                        }
-
-                        // Use ListView.builder instead of ListView
-                        return Column(
-                          children:
-                              snapshot.data!.docs.map((DocumentSnapshot doc) {
-                            Map<String, dynamic> data =
-                                doc.data() as Map<String, dynamic>;
-
-                            return Column(
-                              children: [
-                                ListTile(
-                                  leading: Container(
-                                    padding: EdgeInsets.all(8),
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: _getActionIconBackgroundColor(
-                                          data['action']),
-                                    ),
-                                    child: _getActionIcon(data['action']),
-                                  ),
-                                  title: Flexible(
-                                    child: Text(
-                                      (data['action'] ?? '') +
-                                          (data['productName'] != null
-                                              ? ' - ${data['productName']}'
-                                              : ''),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          DesignSystem.emphasizedBodyTextStyle,
-                                    ),
-                                  ),
-                                  subtitle: Text(
-                                    (data['userName'] ?? '') +
-                                        ' pada ' +
-                                        (data['timestamp'] != null
-                                            ? DateFormat(
-                                                    'dd MMMM y • HH:mm ', 'id')
-                                                .format((data['timestamp']
-                                                        as Timestamp)
-                                                    .toDate())
-                                            : 'Timestamp tidak tersedia'),
-                                    style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      fontSize: 14,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
-                                Divider(
-                                  color:
-                                      DesignSystem.greyColor.withOpacity(.10),
-                                ),
-                              ],
-                            );
-                          }).toList(),
+                        },
+                        child: const Row(
+                          children: [
+                            Text(
+                              "Lihat semua",
+                              style: DesignSystem.bodyTextStyle,
+                            ),
+                            SizedBox(width: 5),
+                            Icon(
+                              Icons.east,
+                              color: DesignSystem.blackColor,
+                              size: 16,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 5),
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('activity_log')
+                        .orderBy('timestamp', descending: true)
+                        .limit(3)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.hasError) {
+                        return Text('Error: ${snapshot.error}');
+                      }
+                  
+                      if (snapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(
+                            color: DesignSystem.primaryColor,
+                          ),
                         );
-                      },
-                    ),
+                      }
+                  
+                      if (snapshot.data == null ||
+                          snapshot.data!.docs.isEmpty) {
+                        return const Center(
+                          child: Text('Tidak ada aktivitas terbaru'),
+                        );
+                      }
+                  
+                      // Use ListView.builder instead of ListView
+                      return Column(
+                        children:
+                            snapshot.data!.docs.map((DocumentSnapshot doc) {
+                          Map<String, dynamic> data =
+                              doc.data() as Map<String, dynamic>;
+                  
+                          return Column(
+                            children: [
+                              ListTile(
+                                leading: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: _getActionIconBackgroundColor(
+                                        data['action']),
+                                  ),
+                                  child: _getActionIcon(data['action']),
+                                ),
+                                title: Flexible(
+                                  child: Text(
+                                    (data['action'] ?? '') +
+                                        (data['productName'] != null
+                                            ? ' - ${data['productName']}'
+                                            : ''),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style:
+                                        DesignSystem.emphasizedBodyTextStyle,
+                                  ),
+                                ),
+                                subtitle: Text(
+                                  (data['userName'] ?? '') +
+                                      ' pada ' +
+                                      (data['timestamp'] != null
+                                          ? DateFormat(
+                                                  'dd MMMM y • HH:mm ', 'id')
+                                              .format((data['timestamp']
+                                                      as Timestamp)
+                                                  .toDate())
+                                          : 'Timestamp tidak tersedia'),
+                                  style: const TextStyle(
+                                    fontFamily: 'Roboto',
+                                    fontSize: 14,
+                                    color: Colors.grey,
+                                  ),
+                                ),
+                              ),
+                              Divider(
+                                color:
+                                    DesignSystem.greyColor.withOpacity(.10),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      );
+                    },
                   ),
                 ],
               ),

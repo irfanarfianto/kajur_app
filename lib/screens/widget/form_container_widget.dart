@@ -26,7 +26,7 @@ class FormContainerWidget extends StatefulWidget {
       this.inputType});
 
   @override
-  _FormContainerWidgetState createState() => new _FormContainerWidgetState();
+  _FormContainerWidgetState createState() => _FormContainerWidgetState();
 }
 
 class _FormContainerWidgetState extends State<FormContainerWidget> {
@@ -41,8 +41,8 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
         color: DesignSystem.blackColor,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: new TextFormField(
-        style: TextStyle(color: Colors.black),
+      child: TextFormField(
+        style: const TextStyle(color: Colors.black),
         controller: widget.controller,
         keyboardType: widget.inputType,
         key: widget.fieldKey,
@@ -50,12 +50,12 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
         onSaved: widget.onSaved,
         validator: widget.validator,
         onFieldSubmitted: widget.onFieldSubmitted,
-        decoration: new InputDecoration(
+        decoration: InputDecoration(
           border: InputBorder.none,
           filled: true,
           hintText: widget.hintText,
-          hintStyle: TextStyle(color: Colors.black45),
-          suffixIcon: new GestureDetector(
+          hintStyle: const TextStyle(color: Colors.black45),
+          suffixIcon: GestureDetector(
             onTap: () {
               setState(() {
                 _obscureText = !_obscureText;
@@ -66,7 +66,7 @@ class _FormContainerWidgetState extends State<FormContainerWidget> {
                     _obscureText ? Icons.visibility_off : Icons.visibility,
                     color: _obscureText == false ? Colors.blue : Colors.grey,
                   )
-                : Text(""),
+                : const Text(""),
           ),
         ),
       ),

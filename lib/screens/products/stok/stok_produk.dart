@@ -7,26 +7,19 @@ import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
 class StockPage extends StatefulWidget {
+  const StockPage({super.key});
+
   @override
   State<StockPage> createState() => _StockPageState();
 }
 
 class _StockPageState extends State<StockPage> {
   bool _enabled = false;
-  late CollectionReference _produkCollection;
-  late AsyncSnapshot<QuerySnapshot> _currentSnapshot;
 
   @override
   void initState() {
     super.initState();
-    _produkCollection = FirebaseFirestore.instance.collection('kantin');
     _refreshData();
-  }
-
-  void _updateSnapshot(AsyncSnapshot<QuerySnapshot> newSnapshot) {
-    setState(() {
-      _currentSnapshot = newSnapshot;
-    });
   }
 
   Future<void> _refreshData() async {
@@ -41,10 +34,9 @@ class _StockPageState extends State<StockPage> {
 
     try {
       // Fetch or refresh data here (e.g., refetch Firestore data)
-      await Future.delayed(Duration(seconds: 1)); // Simulating a delay
+      await Future.delayed(const Duration(seconds: 1)); // Simulating a delay
     } catch (error) {
       // Handle error in case of any issues during refresh
-      print('Error refreshing data: $error');
     } finally {
       // Disable skeleton loading after data has been fetched or in case of an error
       if (mounted) {
@@ -61,12 +53,12 @@ class _StockPageState extends State<StockPage> {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Center(child: Text('Info Stok 📢')),
+        title: const Center(child: Text('Info Stok 📢')),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: IconButton(
-              icon: Icon(Icons.share),
+              icon: const Icon(Icons.share),
               onPressed: () {
                 Navigator.pushNamed(context, '/comingsoon');
               },
@@ -95,12 +87,12 @@ class _StockPageState extends State<StockPage> {
 
                 switch (snapshot.connectionState) {
                   case ConnectionState.waiting:
-                    return Center(
+                    return const Center(
                       child: CircularProgressIndicator(),
                     );
                   default:
                     if (snapshot.data!.docs.isEmpty) {
-                      return Center(
+                      return const Center(
                         child: Text(
                           'Belum ada info baru',
                           style: TextStyle(color: DesignSystem.blackColor),
@@ -207,7 +199,7 @@ class _StockPageState extends State<StockPage> {
 
                     if (stockContainers.isNotEmpty) {
                       return ListView(
-                        physics: AlwaysScrollableScrollPhysics(
+                        physics: const AlwaysScrollableScrollPhysics(
                           parent: BouncingScrollPhysics(),
                         ),
                         children: stockContainers,
@@ -217,7 +209,7 @@ class _StockPageState extends State<StockPage> {
                         children: [
                           SizedBox(
                               height: MediaQuery.of(context).size.height / 3),
-                          Center(
+                          const Center(
                             child: Text(
                               'Belum ada info stok',
                               style: TextStyle(color: DesignSystem.blackColor),
@@ -242,7 +234,7 @@ class _StockPageState extends State<StockPage> {
         alignment: Alignment.centerLeft,
         child: Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
           ),
@@ -289,8 +281,8 @@ class _StockPageState extends State<StockPage> {
       },
       child: Skeleton.leaf(
         child: Container(
-          padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          margin: EdgeInsets.symmetric(vertical: 5),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+          margin: const EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
             color: containerColor,
             borderRadius: BorderRadius.circular(10),
@@ -306,17 +298,17 @@ class _StockPageState extends State<StockPage> {
               Flexible(
                 child: Text(
                   getStockMessage(namaProduk, stok),
-                  style: TextStyle(
+                  style: const TextStyle(
                     color: DesignSystem.blackColor,
                     fontWeight: FontWeight.normal,
                     fontSize: 12,
                   ),
                 ),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Text(
-                '${timeago.format(updatedAt.toDate(), locale: 'id')}',
-                style: TextStyle(
+                timeago.format(updatedAt.toDate(), locale: 'id'),
+                style: const TextStyle(
                   color: DesignSystem.blackColor,
                   fontSize: 12,
                 ),

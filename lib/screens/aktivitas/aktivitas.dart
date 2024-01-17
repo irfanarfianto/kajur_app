@@ -9,6 +9,8 @@ enum SortOrder { Terbaru, Terlama }
 // enum FilterOrder { Hapus, Tambah, Edit }
 
 class AllActivitiesPage extends StatefulWidget {
+  const AllActivitiesPage({super.key});
+
   @override
   State<AllActivitiesPage> createState() => _AllActivitiesPageState();
 }
@@ -33,9 +35,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     });
 
     try {
-      await Future.delayed(Duration(seconds: 2));
-    } catch (error) {
-      print('Error fetching data: $error');
+      await Future.delayed(const Duration(seconds: 2));
     } finally {
       if (mounted) {
         setState(() {
@@ -103,11 +103,11 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: DesignSystem.backgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
@@ -120,15 +120,15 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                       color: DesignSystem.greyColor.withOpacity(.50),
                     ),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Urutkan', style: DesignSystem.titleTextStyle),
-                      SizedBox(height: 16),
+                      const Text('Urutkan', style: DesignSystem.titleTextStyle),
+                      const SizedBox(height: 16),
                       CheckboxListTile(
                         activeColor: DesignSystem.primaryColor,
-                        title: Text(
+                        title: const Text(
                           'Terbaru',
                           style: DesignSystem.subtitleTextStyle,
                         ),
@@ -142,7 +142,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                       ),
                       CheckboxListTile(
                         activeColor: DesignSystem.primaryColor,
-                        title: Text(
+                        title: const Text(
                           'Terlama',
                           style: DesignSystem.subtitleTextStyle,
                         ),
@@ -156,14 +156,14 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       TextButton(
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.transparent,
-                          onPrimary: DesignSystem.greyColor,
+                          foregroundColor: DesignSystem.greyColor,
+                          backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
                           // Reset Filters
@@ -172,9 +172,9 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                             isSelectedTerlama = false;
                           });
                         },
-                        child: Text('Reset'),
+                        child: const Text('Reset'),
                       ),
-                      SizedBox(width: 16),
+                      const SizedBox(width: 16),
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
@@ -187,7 +187,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                             _refreshData();
                             Navigator.pop(context);
                           },
-                          child: Text('Pilih filter'),
+                          child: const Text('Pilih filter'),
                         ),
                       ),
                     ],
@@ -207,7 +207,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
       appBar: AppBar(
         elevation: 2,
         surfaceTintColor: DesignSystem.backgroundColor,
-        title: Text('Semua Aktivitas'),
+        title: const Text('Semua Aktivitas'),
       ),
       body: Scrollbar(
         child: RefreshIndicator(
@@ -225,7 +225,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
               builder: (BuildContext context,
                   AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                     child: CircularProgressIndicator(
                       color: DesignSystem.primaryColor,
                     ),
@@ -246,7 +246,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                 }).toList();
 
                 return ListView.builder(
-                  physics: ClampingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(),
                   itemCount: _activitiesData.length,
                   itemBuilder: (BuildContext context, int index) {
                     Map<String, dynamic> data = _activitiesData[index];
@@ -276,7 +276,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                   horizontal: 16, vertical: 10),
                               child: Text(
                                 formattedDate,
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
                                   color: DesignSystem.blackColor,
@@ -287,7 +287,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                         ListTile(
                           leading: Skeleton.leaf(
                             child: Container(
-                              padding: EdgeInsets.all(8),
+                              padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: _getActionIconBackgroundColor(
@@ -315,7 +315,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                         .format((data['timestamp'] as Timestamp)
                                             .toDate())
                                     : 'Timestamp tidak tersedia'),
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: Colors.grey,
                             ),
                           ),
@@ -335,11 +335,11 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
           ),
         ),
       ),
-      bottomNavigationBar: Container(
+      bottomNavigationBar: SizedBox(
         height: 60, // Set the desired height here
         child: BottomAppBar(
           color: DesignSystem.whiteColor,
-          shape: CircularNotchedRectangle(),
+          shape: const CircularNotchedRectangle(),
           notchMargin: 8,
           elevation: 1,
           child: Row(
@@ -347,21 +347,21 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
             children: [
               TextButton.icon(
                 style: TextButton.styleFrom(
-                  primary: DesignSystem.primaryColor,
+                  foregroundColor: DesignSystem.primaryColor,
                 ),
                 label: Text(
                     'Urutkan "${_currentSortOrder == SortOrder.Terbaru ? 'Terbaru' : 'Terlama'}"'),
-                icon: Icon(Icons.sort_outlined),
+                icon: const Icon(Icons.sort_outlined),
                 onPressed: () {
                   _showSortOptions(context);
                 },
               ),
               TextButton.icon(
                 style: TextButton.styleFrom(
-                  primary: DesignSystem.primaryColor,
+                  foregroundColor: DesignSystem.primaryColor,
                 ),
-                label: Text('Filter'),
-                icon: Icon(Icons.filter_list),
+                label: const Text('Filter'),
+                icon: const Icon(Icons.filter_list),
                 onPressed: () {
                   // _showFilterOptions(context);
                 },

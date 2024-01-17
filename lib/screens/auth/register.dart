@@ -19,9 +19,9 @@ class SignUpPage extends StatefulWidget {
 class _SignUpPageState extends State<SignUpPage> {
   final FirebaseAuthService _auth = FirebaseAuthService();
 
-  TextEditingController _usernameController = TextEditingController();
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   bool isSigningUp = false;
   bool _passwordVisible = false;
@@ -39,14 +39,14 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       key: UniqueKey(),
       appBar: AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle(
+          systemOverlayStyle: const SystemUiOverlayStyle(
             statusBarColor: DesignSystem.backgroundColor,
             statusBarIconBrightness: Brightness.dark,
             statusBarBrightness: Brightness.light,
           ),
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
-              icon: Icon(
+              icon: const Icon(
                 Icons.arrow_back,
               ),
               onPressed: () {
@@ -57,11 +57,11 @@ class _SignUpPageState extends State<SignUpPage> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: SingleChildScrollView(
-              physics: BouncingScrollPhysics(),
+              physics: const BouncingScrollPhysics(),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
+                  const Text(
                     "Daftar",
                     style: TextStyle(
                       fontSize: 27,
@@ -69,28 +69,24 @@ class _SignUpPageState extends State<SignUpPage> {
                       color: DesignSystem.blackColor,
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Email',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       TextFormField(
                         controller: _usernameController,
                         textCapitalization: TextCapitalization.words,
                         keyboardType: TextInputType.name,
                         textInputAction: TextInputAction.next,
-                        style: TextStyle(color: DesignSystem.blackColor),
-                        decoration: InputDecoration(
+                        style: const TextStyle(color: DesignSystem.blackColor),
+                        decoration: const InputDecoration(
                           hintText: 'Username',
                           hintStyle: TextStyle(
                             color: DesignSystem.greyColor,
@@ -102,28 +98,24 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Email',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       TextFormField(
                         controller: _emailController,
                         textCapitalization: TextCapitalization.words,
                         keyboardType: TextInputType.emailAddress,
                         textInputAction: TextInputAction.next,
-                        style: TextStyle(color: DesignSystem.blackColor),
-                        decoration: InputDecoration(
+                        style: const TextStyle(color: DesignSystem.blackColor),
+                        decoration: const InputDecoration(
                           hintText: 'Email',
                           hintStyle: TextStyle(
                             color: DesignSystem.greyColor,
@@ -135,33 +127,29 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 10,
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Password',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
-                      SizedBox(height: 8.0),
+                      const SizedBox(height: 8.0),
                       TextFormField(
                         controller: _passwordController,
-                        style: TextStyle(color: DesignSystem.blackColor),
+                        style: const TextStyle(color: DesignSystem.blackColor),
                         decoration: InputDecoration(
                           hintText: 'Password',
-                          hintStyle: TextStyle(
+                          hintStyle: const TextStyle(
                             color: DesignSystem.greyColor,
                             fontWeight: FontWeight.normal,
                           ),
                           helperText:
                               'Minimal 8 karakter, termasuk huruf dan angka',
-                          helperStyle: TextStyle(
+                          helperStyle: const TextStyle(
                             color: DesignSystem.greyColor,
                             fontStyle: FontStyle.italic,
                           ),
@@ -191,31 +179,29 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ],
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 30,
                   ),
                   ElevatedButton(
                     onPressed: () {
                       _signUp();
                     },
-                    child: Container(
-                      child: Center(
-                        child: isSigningUp
-                            ? SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: DesignSystem.whiteColor,
-                                ),
-                              )
-                            : Text(
-                                "Daftar akun",
-                                style: TextStyle(
-                                  color: DesignSystem.whiteColor,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                    child: Center(
+                      child: isSigningUp
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: DesignSystem.whiteColor,
                               ),
-                      ),
+                            )
+                          : const Text(
+                              "Daftar akun",
+                              style: TextStyle(
+                                color: DesignSystem.whiteColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
                     ),
                   ),
 
@@ -243,7 +229,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   //     ),
                   //   ],
                   // ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   Padding(
@@ -257,8 +243,8 @@ class _SignUpPageState extends State<SignUpPage> {
                             height: 0.5,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 8.0),
                           child: Text("Atau"),
                         ),
                         Expanded(
@@ -270,7 +256,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ],
                     ),
                   ),
-                  SizedBox(
+                  const SizedBox(
                     height: 20,
                   ),
                   ElevatedButton(
@@ -278,34 +264,32 @@ class _SignUpPageState extends State<SignUpPage> {
                       _signUpWithGoogle();
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: DesignSystem.whiteColor,
+                      backgroundColor: DesignSystem.whiteColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: BorderSide(color: DesignSystem.greyColor),
+                        side: const BorderSide(color: DesignSystem.greyColor),
                       ),
                     ),
-                    child: Container(
-                      child: Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.google,
+                    child: const Center(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            FontAwesomeIcons.google,
+                            color: DesignSystem.blackColor,
+                            size: 20,
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "Daftar dengan Google",
+                            style: TextStyle(
                               color: DesignSystem.blackColor,
-                              size: 20,
+                              fontWeight: FontWeight.bold,
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "Daftar dengan Google",
-                              style: TextStyle(
-                                color: DesignSystem.blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -319,11 +303,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   void _signUpWithGoogle() async {
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
       final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
+          await googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
@@ -338,18 +322,17 @@ class _SignUpPageState extends State<SignUpPage> {
 
         if (user != null) {
           try {
+            // ignore: deprecated_member_use
             await user.updateProfile(displayName: user.displayName);
             showToast(message: "Berhasil daftar akun dengan Google");
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => HomePage()),
+              MaterialPageRoute(builder: (context) => const HomePage()),
             );
           } catch (e) {
             showToast(message: "Error setting username: $e");
           }
-        } else {
-          print("Ada kesalahan nih");
-        }
+        } else {}
       } else {
         showToast(message: "Pendaftaran dengan Google dibatalkan.");
       }
@@ -407,18 +390,17 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (user != null) {
       try {
+        // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
         showToast(message: "Berhasil daftar akun");
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       } catch (e) {
         showToast(message: "Error setting username: $e");
       }
-    } else {
-      print("Ada kesalahan nih");
-    }
+    } else {}
   }
 
   bool _isPasswordValid(String password) {

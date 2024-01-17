@@ -13,8 +13,7 @@ import 'package:skeletonizer/skeletonizer.dart';
 class DetailProdukPage extends StatefulWidget {
   final String documentId;
 
-  const DetailProdukPage({Key? key, required this.documentId})
-      : super(key: key);
+  const DetailProdukPage({super.key, required this.documentId});
 
   @override
   State<DetailProdukPage> createState() => _DetailProdukPageState();
@@ -89,10 +88,9 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
 
     try {
       // Fetch or refresh data here (e.g., refetch Firestore data)
-      await Future.delayed(Duration(seconds: 1)); // Simulating a delay
+      await Future.delayed(const Duration(seconds: 1)); // Simulating a delay
     } catch (error) {
       // Handle error in case of any issues during refresh
-      print('Error refreshing data: $error');
     } finally {
       // Disable skeleton loading after data has been fetched or in case of an error
       if (mounted) {
@@ -109,7 +107,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     return Scaffold(
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Text('Detail Produk'),
+        title: const Text('Detail Produk'),
       ),
       body: SingleChildScrollView(
           child: Container(child: _buildProductDetails())),
@@ -187,7 +185,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           Flexible(
                             child: Text(
                               data['menu'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontWeight: FontWeight.normal,
                                 fontSize: 18,
                                 color: DesignSystem.blackColor,
@@ -196,7 +194,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          SizedBox(width: 8),
+                          const SizedBox(width: 8),
                           Row(
                             children: [
                               Skeleton.leaf(
@@ -213,7 +211,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                           : Colors.grey,
                                 ),
                               ),
-                              SizedBox(width: 8),
+                              const SizedBox(width: 8),
                               Skeleton.leaf(
                                 child: StatusBadge(
                                   label: data['stok'] == 0
@@ -236,17 +234,17 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           symbol: 'Rp',
                           decimalDigits: 0,
                         ).format(data['harga']),
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                           color: DesignSystem.blackColor,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Deskripsi produk',
+                          const Text('Deskripsi produk',
                               style: DesignSystem.subtitleTextStyle),
                           ReadMoreText(
                               '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
@@ -256,29 +254,29 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               trimMode: TrimMode.Line,
                               trimCollapsedText: 'Baca selengkapnya',
                               trimExpandedText: 'Tutup',
-                              moreStyle: TextStyle(
+                              moreStyle: const TextStyle(
                                 fontSize: 14,
                                 color: DesignSystem.greyColor,
                                 fontWeight: DesignSystem.regular,
                               ),
-                              lessStyle: TextStyle(
+                              lessStyle: const TextStyle(
                                 fontSize: 12,
                                 color: DesignSystem.primaryColor,
                                 fontWeight: FontWeight.bold,
                               )),
                         ],
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       if (data.containsKey('addedByName'))
                         ListTile(
-                          contentPadding: EdgeInsets.all(0),
+                          contentPadding: const EdgeInsets.all(0),
                           leading: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.green.withOpacity(0.1),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.add,
                               color: Colors.green,
                             ),
@@ -289,14 +287,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               Text('Ditambah oleh ${data['addedByName']}',
                                   style: DesignSystem.emphasizedBodyTextStyle),
                               IconButton(
-                                padding: EdgeInsets.all(0),
+                                padding: const EdgeInsets.all(0),
                                 visualDensity: VisualDensity.compact,
                                 onPressed: () {
                                   Navigator.of(context).pushReplacement(
                                     PageRouteBuilder(
                                       pageBuilder: (context, animation,
                                               secondaryAnimation) =>
-                                          AllActivitiesPage(),
+                                          const AllActivitiesPage(),
                                       transitionsBuilder: (context, animation,
                                           secondaryAnimation, child) {
                                         const begin = Offset(1.0, 0.0);
@@ -317,29 +315,29 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                     ),
                                   );
                                 },
-                                icon: Icon(
+                                icon: const Icon(
                                   Icons.east,
                                 ),
                               )
                             ],
                           ),
                           subtitle: Text(
-                            '${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(createdAt.toDate())}',
-                            style: TextStyle(
+                            DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(createdAt.toDate()),
+                            style: const TextStyle(
                               color: Colors.grey,
                             ),
                           ),
                         ),
                       if (data.containsKey('lastEditedByName'))
                         ListTile(
-                          contentPadding: EdgeInsets.all(0),
+                          contentPadding: const EdgeInsets.all(0),
                           leading: Container(
-                            padding: EdgeInsets.all(8),
+                            padding: const EdgeInsets.all(8),
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
                               color: Colors.orange.withOpacity(0.1),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.edit,
                               color: Colors.orange,
                             ),
@@ -349,8 +347,8 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             style: DesignSystem.emphasizedBodyTextStyle,
                           ),
                           subtitle: Text(
-                            '${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate())}',
-                            style: TextStyle(
+                            DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate()),
+                            style: const TextStyle(
                               color: Colors.grey,
                             ),
                           ),
@@ -381,24 +379,24 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                 backgroundColor: DesignSystem.redAccent,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
-                  side: BorderSide(color: DesignSystem.redAccent),
+                  side: const BorderSide(color: DesignSystem.redAccent),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
               ),
               onPressed: () {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: Text('Hapus Produk'),
+                      title: const Text('Hapus Produk'),
                       content:
-                          Text('Apakah Anda yakin ingin menghapus produk ini?'),
+                          const Text('Apakah Anda yakin ingin menghapus produk ini?'),
                       actions: [
                         TextButton(
                           onPressed: () {
                             Navigator.pop(context);
                           },
-                          child: Text('Batal'),
+                          child: const Text('Batal'),
                         ),
                         TextButton(
                           onPressed: () {
@@ -406,7 +404,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             Navigator.pop(context);
                             Navigator.pop(context);
                           },
-                          child: Text('Hapus'),
+                          child: const Text('Hapus'),
                         ),
                       ],
                     );
@@ -414,14 +412,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                 );
               },
               icon:
-                  Icon(Icons.delete, color: DesignSystem.whiteColor, size: 20),
+                  const Icon(Icons.delete, color: DesignSystem.whiteColor, size: 20),
               tooltip: 'Hapus',
             ),
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Expanded(
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 ),
                 onPressed: () async {
                   await Navigator.push(
@@ -433,7 +431,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   );
                   setState(() {});
                 },
-                child: Text('Edit'),
+                child: const Text('Edit'),
               ),
             ),
           ],
@@ -447,7 +445,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          child: Container(
+          child: SizedBox(
             height: 400,
             width: 400,
             child: Image.network(
@@ -465,7 +463,7 @@ class StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
 
-  const StatusBadge({
+  const StatusBadge({super.key, 
     required this.label,
     required this.color,
   });
@@ -473,14 +471,14 @@ class StatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 12),
       decoration: BoxDecoration(
         color: color.withOpacity(.50),
         borderRadius: BorderRadius.circular(50),
       ),
       child: Text(
         label,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 10,
           color: Colors.white,
         ),
