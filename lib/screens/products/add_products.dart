@@ -16,6 +16,7 @@ class AddDataPage extends StatefulWidget {
 }
 
 class _AddDataPageState extends State<AddDataPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _menuController = TextEditingController();
   final TextEditingController _hargaController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
@@ -104,8 +105,8 @@ class _AddDataPageState extends State<AddDataPage> {
       // Tambahkan log aktivitas
       await _recordActivityLog(
         action: 'Tambah Produk',
-        productName: menu, // Add product name to activity log
-        productId: docRef.id, // Add product ID to activity log
+        productName: menu,
+        productId: docRef.id,
       );
 
       AnimatedSnackBar.material(
@@ -115,27 +116,22 @@ class _AddDataPageState extends State<AddDataPage> {
 
       Navigator.pushReplacementNamed(context, '/list_produk');
     } else {
-      if (!isInfoSnackbarVisible) {
-        AnimatedSnackBar.material(
-          'Mohon isi semua field yang diperlukan dan pastikan harga dan stok valid',
-          type: AnimatedSnackBarType.info,
-        ).show(context);
+      AnimatedSnackBar.material(
+        'Mohon isi semua field yang diperlukan dan pastikan harga dan stok valid',
+        type: AnimatedSnackBarType.info,
+      ).show(context);
 
-        isInfoSnackbarVisible = true;
-
-        // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
-        Future.delayed(Duration(seconds: 5), () {
+      // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
+      Future.delayed(Duration(seconds: 5), () {
+        if (mounted) {
           setState(() {
-            isInfoSnackbarVisible = false;
+            _isLoading = false;
           });
-        });
-      }
+        }
+      });
     }
-
-    setState(() {
-      _isLoading = false;
-    });
   }
+
 
   Future<void> _recordActivityLog({
     required String action,
@@ -164,6 +160,7 @@ class _AddDataPageState extends State<AddDataPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         title: Text('Tambah Produk'),

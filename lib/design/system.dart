@@ -50,6 +50,6 @@ class DesignSystem {
     color: DesignSystem.blackColor,
     fontFamily: 'Roboto',
     fontSize: 14,
-    fontWeight: DesignSystem.bold,
+    fontWeight: DesignSystem.medium,
   );
 }
