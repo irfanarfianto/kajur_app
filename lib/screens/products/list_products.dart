@@ -506,7 +506,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
                     if (snapshot.data!.docs.isEmpty) {
                       return Center(
                         child: Text(
-                          'No Products Available',
+                          'Tidak ada produk',
                           style: TextStyle(color: DesignSystem.whiteColor),
                         ),
                       );
@@ -587,12 +587,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
                                             children: [
                                               Text(
                                                 data['menu'],
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 16,
-                                                  color:
-                                                      DesignSystem.blackColor,
-                                                ),
+                                                style: DesignSystem
+                                                    .titleTextStyle,
                                                 overflow: TextOverflow.ellipsis,
                                                 maxLines: 1,
                                               ),

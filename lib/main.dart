@@ -32,9 +32,9 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        fontFamily: 'Inter',
+        backgroundColor: DesignSystem.backgroundColor,
+        fontFamily: 'Roboto',
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        brightness: Brightness.light,
         scaffoldBackgroundColor: DesignSystem.backgroundColor,
         primaryColor: DesignSystem.primaryColor,
         dialogBackgroundColor: DesignSystem.backgroundColor,

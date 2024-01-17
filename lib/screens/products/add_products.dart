@@ -16,6 +16,7 @@ class AddDataPage extends StatefulWidget {
 }
 
 class _AddDataPageState extends State<AddDataPage> {
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _menuController = TextEditingController();
   final TextEditingController _hargaController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
@@ -102,15 +103,11 @@ class _AddDataPageState extends State<AddDataPage> {
       });
 
       // Tambahkan log aktivitas
-      CollectionReference activityLogRef =
-          FirebaseFirestore.instance.collection('activity_log');
-      await activityLogRef.add({
-        'userId': userId,
-        'userName': userName,
-        'action': 'Tambah Produk',
-        'productId': docRef.id,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _recordActivityLog(
+        action: 'Tambah Produk',
+        productName: menu,
+        productId: docRef.id,
+      );
 
       AnimatedSnackBar.material(
         'Produk berhasil ditambahkan',
@@ -119,31 +116,51 @@ class _AddDataPageState extends State<AddDataPage> {
 
       Navigator.pushReplacementNamed(context, '/list_produk');
     } else {
-      if (!isInfoSnackbarVisible) {
-        AnimatedSnackBar.material(
-          'Mohon isi semua field yang diperlukan dan pastikan harga dan stok valid',
-          type: AnimatedSnackBarType.info,
-        ).show(context);
+      AnimatedSnackBar.material(
+        'Mohon isi semua field yang diperlukan dan pastikan harga dan stok valid',
+        type: AnimatedSnackBarType.info,
+      ).show(context);
 
-        isInfoSnackbarVisible = true;
-
-        // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
-        Future.delayed(Duration(seconds: 5), () {
+      // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
+      Future.delayed(Duration(seconds: 5), () {
+        if (mounted) {
           setState(() {
-            isInfoSnackbarVisible = false;
+            _isLoading = false;
           });
-        });
-      }
+        }
+      });
     }
+  }
 
-    setState(() {
-      _isLoading = false;
+
+  Future<void> _recordActivityLog({
+    required String action,
+    required String productName,
+    required String productId,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId = user?.uid;
+    String? userName = user?.displayName ?? 'Unknown User';
+
+    // Membuat referensi ke koleksi log aktivitas
+    CollectionReference activityLogCollection =
+        FirebaseFirestore.instance.collection('activity_log');
+
+    // Merekam log aktivitas ke koleksi
+    await activityLogCollection.add({
+      'userId': userId,
+      'userName': userName,
+      'action': action,
+      'productName': productName, // Add product name to activity log
+      'productId': productId, // Add product ID to activity log
+      'timestamp': FieldValue.serverTimestamp(),
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
         title: Text('Tambah Produk'),

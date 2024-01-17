@@ -7,7 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/global/common/toast.dart';
+
 
 class EditProdukPage extends StatefulWidget {
   final String documentId;
@@ -105,6 +105,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
         await _recordActivityLog(
           action: 'Edit Produk',
           oldProductData: oldProductData,
+          productName: _menuController.text,
           newProductData: {
             'menu': _menuController.text,
             'harga': harga,
@@ -144,6 +145,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
     required String action,
     required Map<String, dynamic> oldProductData,
     required Map<String, dynamic> newProductData,
+    required String productName,
   }) async {
     User? user = FirebaseAuth.instance.currentUser;
     String? userId = user?.uid;
@@ -158,6 +160,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
       'userId': userId,
       'userName': userName,
       'action': action,
+      'productName': productName,
       'oldProductData': oldProductData,
       'newProductData': newProductData,
       'timestamp': FieldValue.serverTimestamp(),
