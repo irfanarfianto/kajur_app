@@ -58,11 +58,7 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     const Text(
                       'Email',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
+                      style: DesignSystem.titleTextStyle,
                     ),
                     const SizedBox(height: 8.0),
                     TextFormField(
@@ -84,19 +80,12 @@ class _LoginPageState extends State<LoginPage> {
                   ],
                 ),
                 const SizedBox(
-                  height: 10,
+                  height: 15,
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Password',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
-                    ),
+                    const Text('Password', style: DesignSystem.titleTextStyle),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _passwordController,
@@ -303,8 +292,7 @@ class _LoginPageState extends State<LoginPage> {
       showToast(message: "Selamat datang");
       // ignore: use_build_context_synchronously
       Navigator.pushNamed(context, "/home");
-    } else {
-    }
+    } else {}
   }
 
   _signInWithGoogle() async {

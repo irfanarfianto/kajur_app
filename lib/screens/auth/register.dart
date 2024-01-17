@@ -77,11 +77,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       const Text(
                         'Email',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -110,11 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       const Text(
                         'Email',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -143,11 +135,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       const Text(
                         'Password',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -344,8 +332,7 @@ class _SignUpPageState extends State<SignUpPage> {
           } catch (e) {
             showToast(message: "Error setting username: $e");
           }
-        } else {
-        }
+        } else {}
       } else {
         showToast(message: "Pendaftaran dengan Google dibatalkan.");
       }
@@ -413,8 +400,7 @@ class _SignUpPageState extends State<SignUpPage> {
       } catch (e) {
         showToast(message: "Error setting username: $e");
       }
-    } else {
-    }
+    } else {}
   }
 
   bool _isPasswordValid(String password) {
