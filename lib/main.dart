@@ -19,7 +19,7 @@ void main() async {
   );
   initializeDateFormatting('id', null).then((_) {
     // Jalankan aplikasi Flutter
-    runApp(MyApp());
+    runApp(const MyApp());
   });
 }
 
@@ -47,30 +47,30 @@ class MyApp extends StatelessWidget {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 backgroundColor: DesignSystem.primaryColor,
                 foregroundColor: DesignSystem.backgroundColor)),
         inputDecorationTheme: InputDecorationTheme(
           contentPadding:
-              EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: BorderSide(color: DesignSystem.primaryColor, width: 1),
+            borderSide: const BorderSide(color: DesignSystem.primaryColor, width: 1),
           ),
         ),
       ),
       routes: {
-        '/': (context) => SplashScreen(
+        '/': (context) => const SplashScreen(
               child: LoginPage(),
             ),
-        '/login': (context) => LoginPage(),
-        '/signUp': (context) => SignUpPage(),
-        '/home': (context) => HomePage(),
-        '/list_produk': (context) => ListProdukPage(),
-        '/comingsoon': (context) => ComingSoonPage(),
+        '/login': (context) => const LoginPage(),
+        '/signUp': (context) => const SignUpPage(),
+        '/home': (context) => const HomePage(),
+        '/list_produk': (context) => const ListProdukPage(),
+        '/comingsoon': (context) => const ComingSoonPage(),
       },
     );
   }

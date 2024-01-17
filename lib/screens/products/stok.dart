@@ -10,11 +10,11 @@ class EditStockPage extends StatefulWidget {
   final int stok;
 
   const EditStockPage({
-    Key? key,
+    super.key,
     required this.documentId,
     required this.namaProduk,
     required this.stok,
-  }) : super(key: key);
+  });
 
   @override
   _EditStockPageState createState() => _EditStockPageState();
@@ -74,19 +74,19 @@ class _EditStockPageState extends State<EditStockPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              '${widget.namaProduk}',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              widget.namaProduk,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Text(
               'Stok Saat Ini: ${widget.stok}',
-              style: TextStyle(fontSize: 18),
+              style: const TextStyle(fontSize: 18),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                const Text(
                   'Stok Baru',
                   style: TextStyle(
                     fontSize: 16,
@@ -94,13 +94,13 @@ class _EditStockPageState extends State<EditStockPage> {
                     color: DesignSystem.blackColor,
                   ),
                 ),
-                SizedBox(height: 8.0),
+                const SizedBox(height: 8.0),
                 TextFormField(
                   controller: _stokController,
                   keyboardType: TextInputType.number,
                   textInputAction: TextInputAction.next,
-                  style: TextStyle(color: DesignSystem.blackColor),
-                  decoration: InputDecoration(
+                  style: const TextStyle(color: DesignSystem.blackColor),
+                  decoration: const InputDecoration(
                     hintText: 'Masukkan Stok Baru',
                     hintStyle: TextStyle(
                       color: DesignSystem.greyColor,
@@ -110,7 +110,7 @@ class _EditStockPageState extends State<EditStockPage> {
                 ),
               ],
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 int newStock =
@@ -118,7 +118,7 @@ class _EditStockPageState extends State<EditStockPage> {
                 updateStock(newStock);
                 Navigator.of(context).pop();
               },
-              child: Text('Simpan Perubahan'),
+              child: const Text('Simpan Perubahan'),
             ),
           ],
         ),

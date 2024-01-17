@@ -4,7 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import '../../../global/common/toast.dart';
 
 class FirebaseAuthService {
-  FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<User?> signUpWithGoogle(AuthCredential credential) async {
     try {

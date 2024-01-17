@@ -1,3 +1,5 @@
+// ignore_for_file: library_private_types_in_public_api
+
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
@@ -11,6 +13,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class AddDataPage extends StatefulWidget {
+  const AddDataPage({super.key});
+
   @override
   _AddDataPageState createState() => _AddDataPageState();
 }
@@ -109,6 +113,7 @@ class _AddDataPageState extends State<AddDataPage> {
         productId: docRef.id,
       );
 
+      // ignore: use_build_context_synchronously
       AnimatedSnackBar.material(
         'Produk berhasil ditambahkan',
         type: AnimatedSnackBarType.success,
@@ -122,7 +127,7 @@ class _AddDataPageState extends State<AddDataPage> {
       ).show(context);
 
       // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
-      Future.delayed(Duration(seconds: 5), () {
+      Future.delayed(const Duration(seconds: 5), () {
         if (mounted) {
           setState(() {
             _isLoading = false;
@@ -163,13 +168,13 @@ class _AddDataPageState extends State<AddDataPage> {
       key: _scaffoldKey,
       appBar: AppBar(
         surfaceTintColor: Colors.transparent,
-        title: Text('Tambah Produk'),
+        title: const Text('Tambah Produk'),
       ),
       body: Scrollbar(
         child: Padding(
-          padding: EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(10.0),
           child: SingleChildScrollView(
-            physics: BouncingScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -203,7 +208,7 @@ class _AddDataPageState extends State<AddDataPage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: Text("Pilih Sumber Gambar"),
+                                title: const Text("Pilih Sumber Gambar"),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
@@ -211,7 +216,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                       _getImage(ImageSource
                                           .gallery); // Ambil gambar dari galeri
                                     },
-                                    child: Row(
+                                    child: const Row(
                                       children: [
                                         Icon(
                                             Icons.photo_library), // Icon galeri
@@ -228,7 +233,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                       _getImage(ImageSource
                                           .camera); // Ambil gambar dari kamera
                                     },
-                                    child: Row(
+                                    child: const Row(
                                       children: [
                                         Icon(Icons.camera_alt), // Icon kamera
                                         SizedBox(
@@ -244,7 +249,7 @@ class _AddDataPageState extends State<AddDataPage> {
                           );
                         },
                         child: Container(
-                          padding: EdgeInsets.all(10),
+                          padding: const EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -268,8 +273,8 @@ class _AddDataPageState extends State<AddDataPage> {
                                         color: DesignSystem.greyColor
                                             .withOpacity(.20),
                                       ),
-                                      SizedBox(height: 8),
-                                      Text(
+                                      const SizedBox(height: 8),
+                                      const Text(
                                         'Upload Foto',
                                         style: TextStyle(
                                           fontSize: 16,
@@ -284,11 +289,11 @@ class _AddDataPageState extends State<AddDataPage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Nama Produk *',
                       style: TextStyle(
                         fontSize: 16,
@@ -296,14 +301,14 @@ class _AddDataPageState extends State<AddDataPage> {
                         color: DesignSystem.blackColor,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _menuController,
                       keyboardType: TextInputType.name,
                       textCapitalization: TextCapitalization.words,
                       textInputAction: TextInputAction.next,
-                      style: TextStyle(color: DesignSystem.blackColor),
-                      decoration: InputDecoration(
+                      style: const TextStyle(color: DesignSystem.blackColor),
+                      decoration: const InputDecoration(
                         hintText: 'Nama produk',
                         hintStyle: TextStyle(
                           color: DesignSystem.greyColor,
@@ -313,7 +318,7 @@ class _AddDataPageState extends State<AddDataPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -321,7 +326,7 @@ class _AddDataPageState extends State<AddDataPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Harga *',
                             style: TextStyle(
                               fontSize: 16,
@@ -329,11 +334,11 @@ class _AddDataPageState extends State<AddDataPage> {
                               color: DesignSystem.blackColor,
                             ),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           TextFormField(
-                            style: TextStyle(color: DesignSystem.blackColor),
+                            style: const TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               prefixIcon: Padding(
                                   padding: EdgeInsets.all(11),
                                   child: Text('Rp',
@@ -353,12 +358,12 @@ class _AddDataPageState extends State<AddDataPage> {
                         ],
                       ),
                     ),
-                    SizedBox(width: 16.0),
+                    const SizedBox(width: 16.0),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             'Stok *',
                             style: TextStyle(
                               fontSize: 16,
@@ -366,11 +371,11 @@ class _AddDataPageState extends State<AddDataPage> {
                               color: DesignSystem.blackColor,
                             ),
                           ),
-                          SizedBox(height: 8.0),
+                          const SizedBox(height: 8.0),
                           TextFormField(
                             controller: _stokController,
-                            style: TextStyle(color: DesignSystem.blackColor),
-                            decoration: InputDecoration(
+                            style: const TextStyle(color: DesignSystem.blackColor),
+                            decoration: const InputDecoration(
                               hintText: 'Stok',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
@@ -384,9 +389,9 @@ class _AddDataPageState extends State<AddDataPage> {
                     )
                   ],
                 ),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  Text(
+                  const Text(
                     'Pilih kategori *',
                     style: TextStyle(
                       fontSize: 16,
@@ -394,13 +399,13 @@ class _AddDataPageState extends State<AddDataPage> {
                       color: DesignSystem.blackColor,
                     ),
                   ),
-                  SizedBox(height: 8.0),
+                  const SizedBox(height: 8.0),
                   DropdownButtonFormField2<String>(
                     isExpanded: true,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       contentPadding: EdgeInsets.symmetric(vertical: 12),
                     ),
-                    hint: Text(
+                    hint: const Text(
                       'Pilih kategori',
                       style: TextStyle(
                         color: DesignSystem.greyColor,
@@ -410,8 +415,8 @@ class _AddDataPageState extends State<AddDataPage> {
                     ),
                     value:
                         _selectedCategory.isNotEmpty ? _selectedCategory : null,
-                    style: TextStyle(color: DesignSystem.greyColor),
-                    items: [
+                    style: const TextStyle(color: DesignSystem.greyColor),
+                    items: const [
                       DropdownMenuItem<String>(
                         value: 'Makanan',
                         child: Text(
@@ -457,11 +462,11 @@ class _AddDataPageState extends State<AddDataPage> {
                     },
                   ),
                 ]),
-                SizedBox(height: 16.0),
+                const SizedBox(height: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Deskripsi *',
                       style: TextStyle(
                         fontSize: 16,
@@ -469,10 +474,10 @@ class _AddDataPageState extends State<AddDataPage> {
                         color: DesignSystem.blackColor,
                       ),
                     ),
-                    SizedBox(height: 8.0),
+                    const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _deskripsiController,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         hintText: 'Masukan deskripsi produk',
                         hintStyle: TextStyle(
                           color: DesignSystem.greyColor,
@@ -481,31 +486,29 @@ class _AddDataPageState extends State<AddDataPage> {
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 10.0),
                       ),
-                      style: TextStyle(color: DesignSystem.blackColor),
+                      style: const TextStyle(color: DesignSystem.blackColor),
                       keyboardType: TextInputType.multiline,
                       maxLines: 3,
                     ),
                   ],
                 ),
-                SizedBox(height: 24.0),
+                const SizedBox(height: 24.0),
                 ElevatedButton(
                   onPressed: _isLoading ? null : () => _submitData(context),
-                  child: Container(
-                    child: Center(
-                      child: _isLoading
-                          ? SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                  color: Colors.white))
-                          : Text(
-                              "Tambah",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  child: Center(
+                    child: _isLoading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                                color: Colors.white))
+                        : const Text(
+                            "Tambah",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
                             ),
-                    ),
+                          ),
                   ),
                 ),
               ],

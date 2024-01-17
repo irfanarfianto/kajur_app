@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ComingSoonPage extends StatefulWidget {
+  const ComingSoonPage({super.key});
+
   @override
   State<ComingSoonPage> createState() => _ComingSoonPageState();
 }
@@ -36,24 +38,24 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
             ),
             Text(
               'Coming Soon ya ${_currentUser!.displayName}!',
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Nih, aplikasi kita lagi dipoles nih. Tungguin ya, ada update keren lagi!',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 16),
             ),
-            SizedBox(height: 40),
+            const SizedBox(height: 40),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(
                     context); // Ini akan mengarahkan ke halaman sebelumnya
               },
-              child: Text('Kembali'),
+              child: const Text('Kembali'),
             ),
           ],
         ),

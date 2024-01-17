@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class SplashScreen extends StatefulWidget {
   final Widget? child;
 
-  const SplashScreen({Key? key, this.child}) : super(key: key);
+  const SplashScreen({super.key, this.child});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   void _navigateToNextScreen() {
-    Future.delayed(Duration(seconds: 3), () async {
+    Future.delayed(const Duration(seconds: 3), () async {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
@@ -35,14 +35,14 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        constraints: BoxConstraints.expand(),
-        decoration: BoxDecoration(
+        constraints: const BoxConstraints.expand(),
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('images/splash.png'),
             fit: BoxFit.cover,
           ),
         ),
-        child: Center(),
+        child: const Center(),
       ),
     );
   }
