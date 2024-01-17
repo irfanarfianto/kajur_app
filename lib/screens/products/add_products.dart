@@ -102,15 +102,11 @@ class _AddDataPageState extends State<AddDataPage> {
       });
 
       // Tambahkan log aktivitas
-      CollectionReference activityLogRef =
-          FirebaseFirestore.instance.collection('activity_log');
-      await activityLogRef.add({
-        'userId': userId,
-        'userName': userName,
-        'action': 'Tambah Produk',
-        'productId': docRef.id,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
+      await _recordActivityLog(
+        action: 'Tambah Produk',
+        productName: menu, // Add product name to activity log
+        productId: docRef.id, // Add product ID to activity log
+      );
 
       AnimatedSnackBar.material(
         'Produk berhasil ditambahkan',
@@ -138,6 +134,30 @@ class _AddDataPageState extends State<AddDataPage> {
 
     setState(() {
       _isLoading = false;
+    });
+  }
+
+  Future<void> _recordActivityLog({
+    required String action,
+    required String productName,
+    required String productId,
+  }) async {
+    User? user = FirebaseAuth.instance.currentUser;
+    String? userId = user?.uid;
+    String? userName = user?.displayName ?? 'Unknown User';
+
+    // Membuat referensi ke koleksi log aktivitas
+    CollectionReference activityLogCollection =
+        FirebaseFirestore.instance.collection('activity_log');
+
+    // Merekam log aktivitas ke koleksi
+    await activityLogCollection.add({
+      'userId': userId,
+      'userName': userName,
+      'action': action,
+      'productName': productName, // Add product name to activity log
+      'productId': productId, // Add product ID to activity log
+      'timestamp': FieldValue.serverTimestamp(),
     });
   }
 

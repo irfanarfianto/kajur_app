@@ -82,7 +82,7 @@ class _HomePageState extends State<HomePage> {
     return AppBar(
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
-      title: Text("Manajemen Kajur"),
+      title: Text("Manajemen Kajur", style: TextStyle(fontFamily: 'Roboto')),
       actions: [
         // notification icon
         IconButton(
@@ -432,12 +432,12 @@ class _HomePageState extends State<HomePage> {
                                     Divider(
                                         color: DesignSystem.whiteColor
                                             .withOpacity(.20)),
-                                    SizedBox(height: 5),
+                                    SizedBox(height: 8),
                                     Text(
                                       'Total Produk $totalProducts',
                                       style: TextStyle(
                                         fontSize: 16,
-                                        fontWeight: FontWeight.bold,
+                                        fontWeight: DesignSystem.regular,
                                         color: DesignSystem.whiteColor,
                                       ),
                                     ),
@@ -623,7 +623,7 @@ class _HomePageState extends State<HomePage> {
             padding: EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              color: DesignSystem.backgroundColor,
+              color: DesignSystem.secondaryColor,
               border:
                   Border.all(color: DesignSystem.greyColor.withOpacity(.10)),
               boxShadow: [
@@ -643,11 +643,7 @@ class _HomePageState extends State<HomePage> {
                     children: [
                       Text(
                         'Info Stok 📢',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: DesignSystem.blackColor,
-                        ),
+                        style: DesignSystem.titleTextStyle,
                       ),
                       InkWell(
                         onTap: () {
@@ -680,10 +676,7 @@ class _HomePageState extends State<HomePage> {
                           children: [
                             Text(
                               "Lihat semua",
-                              style: TextStyle(
-                                color: DesignSystem.blackColor,
-                                fontWeight: FontWeight.normal,
-                              ),
+                              style: DesignSystem.bodyTextStyle,
                             ),
                             SizedBox(width: 5),
                             Icon(
@@ -879,120 +872,120 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildRecentActivityWidget() {
-    return Column(
-      children: [
-        Center(
-          child: Container(
-            margin: EdgeInsets.all(16.0),
-            padding: EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: DesignSystem.backgroundColor,
-              border:
-                  Border.all(color: DesignSystem.greyColor.withOpacity(.10)),
-              boxShadow: [
-                BoxShadow(
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.0),
+      child: Column(
+        children: [
+          Center(
+            child: Container(
+              height: 335,
+              padding: EdgeInsets.only(
+                top: 16,
+                bottom: 10,
+                left: 16,
+                right: 16,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: DesignSystem.secondaryColor,
+                border: Border.all(
                   color: DesignSystem.greyColor.withOpacity(.10),
-                  offset: Offset(0, 5),
-                  blurRadius: 10,
                 ),
-              ],
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        'Aktivitas Terbaru',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: DesignSystem.blackColor,
+                boxShadow: [
+                  BoxShadow(
+                    color: DesignSystem.greyColor.withOpacity(.10),
+                    offset: Offset(0, 5),
+                    blurRadius: 10,
+                  ),
+                ],
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Aktivitas Terbaru',
+                          style: DesignSystem.titleTextStyle,
                         ),
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      AllActivitiesPage(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                const begin = Offset(1.0, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.easeInOut;
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        AllActivitiesPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const begin = Offset(1.0, 0.0);
+                                  const end = Offset.zero;
+                                  const curve = Curves.easeInOut;
 
-                                var tween = Tween(begin: begin, end: end).chain(
-                                  CurveTween(curve: curve),
-                                );
+                                  var tween = Tween(begin: begin, end: end)
+                                      .chain(CurveTween(curve: curve));
 
-                                var offsetAnimation = animation.drive(tween);
+                                  var offsetAnimation = animation.drive(tween);
 
-                                return SlideTransition(
-                                  position: offsetAnimation,
-                                  child: child,
-                                );
-                              },
+                                  return SlideTransition(
+                                    position: offsetAnimation,
+                                    child: child,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Text(
+                                "Lihat semua",
+                                style: DesignSystem.bodyTextStyle,
+                              ),
+                              SizedBox(width: 5),
+                              Icon(
+                                Icons.east,
+                                color: DesignSystem.blackColor,
+                                size: 16,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 5),
+                  Container(
+                    child: StreamBuilder<QuerySnapshot>(
+                      stream: FirebaseFirestore.instance
+                          .collection('activity_log')
+                          .orderBy('timestamp', descending: true)
+                          .limit(3)
+                          .snapshots(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<QuerySnapshot> snapshot) {
+                        if (snapshot.hasError) {
+                          return Text('Error: ${snapshot.error}');
+                        }
+
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return Center(
+                            child: CircularProgressIndicator(
+                              color: DesignSystem.primaryColor,
                             ),
                           );
-                        },
-                        child: Row(
-                          children: [
-                            Text(
-                              "Lihat semua",
-                              style: TextStyle(
-                                color: DesignSystem.blackColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            SizedBox(width: 5),
-                            Icon(
-                              Icons.east,
-                              color: DesignSystem.blackColor,
-                              size: 16,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(height: 5),
-                Container(
-                  height: 300,
-                  child: StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('activity_log')
-                        .orderBy('timestamp', descending: true)
-                        .limit(5)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
+                        }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(
-                          child: CircularProgressIndicator(
-                            color: DesignSystem.primaryColor,
-                          ),
-                        );
-                      }
+                        if (snapshot.data == null ||
+                            snapshot.data!.docs.isEmpty) {
+                          return Center(
+                            child: Text('Tidak ada aktivitas terbaru'),
+                          );
+                        }
 
-                      if (snapshot.data == null ||
-                          snapshot.data!.docs.isEmpty) {
-                        return Center(
-                          child: Text('Tidak ada aktivitas terbaru'),
-                        );
-                      }
-
-                      return Scrollbar(
-                        child: ListView(
+                        // Use ListView.builder instead of ListView
+                        return Column(
                           children:
                               snapshot.data!.docs.map((DocumentSnapshot doc) {
                             Map<String, dynamic> data =
@@ -1016,13 +1009,10 @@ class _HomePageState extends State<HomePage> {
                                           (data['productName'] != null
                                               ? ' - ${data['productName']}'
                                               : ''),
-                                      maxLines: 1, // Hanya satu baris
+                                      maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: Colors.black87,
-                                      ),
+                                      style:
+                                          DesignSystem.emphasizedBodyTextStyle,
                                     ),
                                   ),
                                   subtitle: Text(
@@ -1036,6 +1026,8 @@ class _HomePageState extends State<HomePage> {
                                                     .toDate())
                                             : 'Timestamp tidak tersedia'),
                                     style: TextStyle(
+                                      fontFamily: 'Roboto',
+                                      fontSize: 14,
                                       color: Colors.grey,
                                     ),
                                   ),
@@ -1047,16 +1039,16 @@ class _HomePageState extends State<HomePage> {
                               ],
                             );
                           }).toList(),
-                        ),
-                      );
-                    },
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

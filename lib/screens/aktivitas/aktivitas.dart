@@ -6,7 +6,7 @@ import 'package:kajur_app/design/system.dart';
 
 enum SortOrder { Terbaru, Terlama }
 
-enum FilterOrder { Hapus, Tambah, Edit }
+// enum FilterOrder { Hapus, Tambah, Edit }
 
 class AllActivitiesPage extends StatefulWidget {
   @override
@@ -16,8 +16,7 @@ class AllActivitiesPage extends StatefulWidget {
 class _AllActivitiesPageState extends State<AllActivitiesPage> {
   bool _enabled = true;
   SortOrder _currentSortOrder = SortOrder.Terbaru;
-  FilterOrder _currentFilterOrder = FilterOrder.Edit;
-  // DateTimeRange? _selectedDateRange;
+  // FilterOrder _currentFilterOrder = FilterOrder.Edit;
 
   @override
   void initState() {
@@ -25,22 +24,25 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     _refreshData();
   }
 
-  void _toggleSortOrder() {
+  Future<void> _refreshData() async {
+    if (!mounted) {
+      return;
+    }
     setState(() {
-      _currentSortOrder = _currentSortOrder == SortOrder.Terbaru
-          ? SortOrder.Terlama
-          : SortOrder.Terbaru;
-      _refreshData();
+      _enabled = true;
     });
-  }
 
-  void _toggleFilterOrder() {
-    setState(() {
-      _currentFilterOrder = _currentFilterOrder == FilterOrder.Hapus
-          ? FilterOrder.Tambah
-          : FilterOrder.Edit;
-      _refreshData();
-    });
+    try {
+      await Future.delayed(Duration(seconds: 2));
+    } catch (error) {
+      print('Error fetching data: $error');
+    } finally {
+      if (mounted) {
+        setState(() {
+          _enabled = false;
+        });
+      }
+    }
   }
 
   Icon _getActionIcon(String? action) {
@@ -91,43 +93,6 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     return backgroundColor;
   }
 
-  List<Map<String, dynamic>> _activitiesData = [];
-
-  Future<void> _refreshData() async {
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      _enabled = true;
-    });
-
-    try {
-      await Future.delayed(Duration(seconds: 2));
-
-      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('activity_log')
-          .orderBy('timestamp',
-              descending: _currentSortOrder == SortOrder.Terbaru)
-          .get();
-
-      setState(() {
-        _activitiesData.clear();
-        querySnapshot.docs.forEach((DocumentSnapshot doc) {
-          Map<String, dynamic> data = doc.data() as Map<String, dynamic>;
-          _activitiesData.add(data);
-        });
-      });
-    } catch (error) {
-      print('Error fetching data: $error');
-    } finally {
-      if (mounted) {
-        setState(() {
-          _enabled = false;
-        });
-      }
-    }
-  }
-
   void _showSortOptions(BuildContext context) {
     bool isSelectedTerbaru = _currentSortOrder == SortOrder.Terbaru;
     bool isSelectedTerlama = _currentSortOrder == SortOrder.Terlama;
@@ -139,6 +104,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
           builder: (BuildContext context, StateSetter setState) {
             return Container(
               decoration: BoxDecoration(
+                color: DesignSystem.backgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
               padding: EdgeInsets.all(16),
@@ -158,19 +124,13 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Urutkan berdasarkan',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
+                      Text('Urutkan', style: DesignSystem.titleTextStyle),
                       SizedBox(height: 16),
                       CheckboxListTile(
                         activeColor: DesignSystem.primaryColor,
                         title: Text(
                           'Terbaru',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: DesignSystem.subtitleTextStyle,
                         ),
                         value: isSelectedTerbaru,
                         onChanged: (value) {
@@ -184,7 +144,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                         activeColor: DesignSystem.primaryColor,
                         title: Text(
                           'Terlama',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: DesignSystem.subtitleTextStyle,
                         ),
                         value: isSelectedTerlama,
                         onChanged: (value) {
@@ -202,8 +162,9 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     children: [
                       TextButton(
                         style: ElevatedButton.styleFrom(
-                            primary: Colors.transparent,
-                            onPrimary: DesignSystem.greyColor),
+                          primary: Colors.transparent,
+                          onPrimary: DesignSystem.greyColor,
+                        ),
                         onPressed: () {
                           // Reset Filters
                           setState(() {
@@ -240,270 +201,139 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     );
   }
 
-  // void _showFilterOptions(BuildContext context) {
-  //   bool isSelectedHapus = _currentFilterOrder == FilterOrder.Hapus;
-  //   bool isSelectedTambah = _currentFilterOrder == FilterOrder.Tambah;
-  //   bool isSelectedEdit = _currentFilterOrder == FilterOrder.Edit;
-  //   DateTimeRange? pickedDateRange = _selectedDateRange;
-
-  //   showModalBottomSheet(
-  //     context: context,
-  //     builder: (BuildContext context) {
-  //       return StatefulBuilder(
-  //         builder: (BuildContext context, StateSetter setState) {
-  //           return Container(
-  //             decoration: BoxDecoration(
-  //               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-  //             ),
-  //             padding: EdgeInsets.all(16),
-  //             child: Column(
-  //               crossAxisAlignment: CrossAxisAlignment.center,
-  //               mainAxisSize: MainAxisSize.min,
-  //               children: [
-  //                 Container(
-  //                   height: 5,
-  //                   width: 40,
-  //                   decoration: BoxDecoration(
-  //                     borderRadius: BorderRadius.circular(100),
-  //                     color: DesignSystem.greyColor.withOpacity(.50),
-  //                   ),
-  //                 ),
-  //                 SizedBox(height: 16),
-  //                 Column(
-  //                   crossAxisAlignment: CrossAxisAlignment.start,
-  //                   children: [
-  //                     Text(
-  //                       'Filter',
-  //                       style: TextStyle(
-  //                         fontSize: 18,
-  //                         fontWeight: FontWeight.bold,
-  //                       ),
-  //                     ),
-  //                     SizedBox(height: 16),
-  //                     ElevatedButton(
-  //                       onPressed: () async {
-  //                         // Show date range picker
-  //                         DateTimeRange? picked = await showDateRangePicker(
-  //                           context: context,
-  //                           firstDate: DateTime(2000),
-  //                           lastDate: DateTime(2101),
-  //                           initialDateRange: pickedDateRange,
-  //                         );
-
-  //                         // Update selected date range
-  //                         if (picked != null && picked != pickedDateRange) {
-  //                           setState(() {
-  //                             pickedDateRange = picked;
-  //                           });
-  //                         }
-  //                       },
-  //                       child: Text(
-  //                         'Pilih Rentang Tanggal',
-  //                         style: TextStyle(color: Colors.white),
-  //                       ),
-  //                     ),
-  //                     SizedBox(height: 16),
-  //                     CheckboxListTile(
-  //                       activeColor: DesignSystem.primaryColor,
-  //                       title: Text(
-  //                         'Hapus Produk',
-  //                         style: TextStyle(fontWeight: FontWeight.bold),
-  //                       ),
-  //                       value: isSelectedHapus,
-  //                       onChanged: (value) {
-  //                         setState(() {
-  //                           isSelectedHapus = value!;
-  //                           isSelectedTambah = false;
-  //                           isSelectedEdit = false;
-  //                         });
-  //                       },
-  //                     ),
-  //                     CheckboxListTile(
-  //                       activeColor: DesignSystem.primaryColor,
-  //                       title: Text(
-  //                         'Tambah Produk',
-  //                         style: TextStyle(fontWeight: FontWeight.bold),
-  //                       ),
-  //                       value: isSelectedTambah,
-  //                       onChanged: (value) {
-  //                         setState(() {
-  //                           isSelectedTambah = value!;
-  //                           isSelectedHapus = false;
-  //                           isSelectedEdit = false;
-  //                         });
-  //                       },
-  //                     ),
-  //                     CheckboxListTile(
-  //                       activeColor: DesignSystem.primaryColor,
-  //                       title: Text(
-  //                         'Edit Produk',
-  //                         style: TextStyle(fontWeight: FontWeight.bold),
-  //                       ),
-  //                       value: isSelectedEdit,
-  //                       onChanged: (value) {
-  //                         setState(() {
-  //                           isSelectedEdit = value!;
-  //                           isSelectedHapus = false;
-  //                           isSelectedTambah = false;
-  //                         });
-  //                       },
-  //                     ),
-  //                   ],
-  //                 ),
-  //                 SizedBox(height: 16),
-  //                 Row(
-  //                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //                   children: [
-  //                     TextButton(
-  //                       style: ElevatedButton.styleFrom(
-  //                           primary: Colors.transparent,
-  //                           onPrimary: DesignSystem.greyColor),
-  //                       onPressed: () {
-  //                         // Reset Filters
-  //                         setState(() {
-  //                           isSelectedHapus = false;
-  //                           isSelectedTambah = false;
-  //                           isSelectedEdit = false;
-  //                           pickedDateRange = null;
-  //                         });
-  //                       },
-  //                       child: Text('Reset'),
-  //                     ),
-  //                     SizedBox(width: 16),
-  //                     Expanded(
-  //                       child: ElevatedButton(
-  //                         onPressed: () {
-  //                           if (isSelectedHapus) {
-  //                             _currentFilterOrder = FilterOrder.Hapus;
-  //                           } else if (isSelectedTambah) {
-  //                             _currentFilterOrder = FilterOrder.Tambah;
-  //                           } else if (isSelectedEdit) {
-  //                             _currentFilterOrder = FilterOrder.Edit;
-  //                           }
-  //                           _selectedDateRange = pickedDateRange;
-  //                           _refreshData();
-  //                           Navigator.pop(context);
-  //                         },
-  //                         child: Text('Pilih filter'),
-  //                       ),
-  //                     ),
-  //                   ],
-  //                 ),
-  //               ],
-  //             ),
-  //           );
-  //         },
-  //       );
-  //     },
-  //   );
-  // }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        // shadowColor: DesignSystem.greyColor,
-        elevation: 5,
-        scrolledUnderElevation: 3,
+        elevation: 2,
         surfaceTintColor: DesignSystem.backgroundColor,
         title: Text('Semua Aktivitas'),
       ),
       body: Scrollbar(
         child: RefreshIndicator(
-            color: DesignSystem.primaryColor,
-            backgroundColor: DesignSystem.backgroundColor,
-            onRefresh: _refreshData,
-            child: Skeletonizer(
-              enabled: _enabled,
-              child: ListView.builder(
-                itemCount: _activitiesData.length,
-                itemBuilder: (BuildContext context, int index) {
-                  Map<String, dynamic> data = _activitiesData[index];
+          color: DesignSystem.primaryColor,
+          backgroundColor: DesignSystem.backgroundColor,
+          onRefresh: _refreshData,
+          child: Skeletonizer(
+            enabled: _enabled,
+            child: StreamBuilder<QuerySnapshot>(
+              stream: FirebaseFirestore.instance
+                  .collection('activity_log')
+                  .orderBy('timestamp',
+                      descending: _currentSortOrder == SortOrder.Terbaru)
+                  .snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(
+                    child: CircularProgressIndicator(
+                      color: DesignSystem.primaryColor,
+                    ),
+                  );
+                }
 
-                  DateTime activityDate =
-                      (data['timestamp'] as Timestamp).toDate();
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
 
-                  String formattedDate =
-                      DateFormat('dd MMMM y', 'id').format(activityDate);
+                List<Map<String, dynamic>> _activitiesData =
+                    snapshot.data!.docs.map((DocumentSnapshot doc) {
+                  Map<String, dynamic> data =
+                      doc.data() as Map<String, dynamic>;
+                  return data;
+                }).toList();
 
-                  bool isFirstActivityWithDate = index == 0 ||
-                      formattedDate !=
-                          DateFormat('dd MMMM y', 'id').format(
-                              (_activitiesData[index - 1]['timestamp']
-                                      as Timestamp)
-                                  .toDate());
+                return ListView.builder(
+                  physics: ClampingScrollPhysics(),
+                  itemCount: _activitiesData.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    Map<String, dynamic> data = _activitiesData[index];
 
-                  return Column(
-                    children: [
-                      if (isFirstActivityWithDate)
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          width: double.infinity,
-                          color: DesignSystem.greyColor.withOpacity(.10),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            child: Text(
-                              formattedDate,
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: DesignSystem.blackColor,
+                    DateTime activityDate =
+                        (data['timestamp'] as Timestamp).toDate();
+
+                    String formattedDate =
+                        DateFormat('dd MMMM y', 'id').format(activityDate);
+
+                    bool isFirstActivityWithDate = index == 0 ||
+                        formattedDate !=
+                            DateFormat('dd MMMM y', 'id').format(
+                                (_activitiesData[index - 1]['timestamp']
+                                        as Timestamp)
+                                    .toDate());
+
+                    return Column(
+                      children: [
+                        if (isFirstActivityWithDate)
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            width: double.infinity,
+                            color: DesignSystem.greyColor.withOpacity(.10),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16, vertical: 10),
+                              child: Text(
+                                formattedDate,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
+                                  color: DesignSystem.blackColor,
+                                ),
                               ),
                             ),
                           ),
-                        ),
-                      ListTile(
-                        leading: Skeleton.leaf(
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color:
-                                  _getActionIconBackgroundColor(data['action']),
+                        ListTile(
+                          leading: Skeleton.leaf(
+                            child: Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _getActionIconBackgroundColor(
+                                    data['action']),
+                              ),
+                              child: _getActionIcon(data['action']),
                             ),
-                            child: _getActionIcon(data['action']),
                           ),
-                        ),
-                        title: Flexible(
-                          child: Text(
-                            (data['action'] ?? '') +
-                                (data['productName'] != null
-                                    ? ' - ${data['productName']}'
-                                    : ''),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          title: Flexible(
+                            child: Text(
+                              (data['action'] ?? '') +
+                                  (data['productName'] != null
+                                      ? ' - ${data['productName']}'
+                                      : ''),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: DesignSystem.emphasizedBodyTextStyle,
+                            ),
+                          ),
+                          subtitle: Text(
+                            (data['userName'] ?? '') +
+                                ' pada ' +
+                                (data['timestamp'] != null
+                                    ? DateFormat('dd MMMM y • HH:mm ', 'id')
+                                        .format((data['timestamp'] as Timestamp)
+                                            .toDate())
+                                    : 'Timestamp tidak tersedia'),
                             style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.black87,
+                              color: Colors.grey,
                             ),
                           ),
                         ),
-                        subtitle: Text(
-                          (data['userName'] ?? '') +
-                              ' pada ' +
-                              (data['timestamp'] != null
-                                  ? DateFormat('dd MMMM y • HH:mm ', 'id')
-                                      .format((data['timestamp'] as Timestamp)
-                                          .toDate())
-                                  : 'Timestamp tidak tersedia'),
-                          style: TextStyle(
-                            color: Colors.grey,
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: Divider(
+                            color: DesignSystem.greyColor.withOpacity(.10),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: Divider(
-                          color: DesignSystem.greyColor.withOpacity(.10),
-                        ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            )),
+                      ],
+                    );
+                  },
+                );
+              },
+            ),
+          ),
+        ),
       ),
       bottomNavigationBar: Container(
         height: 60, // Set the desired height here

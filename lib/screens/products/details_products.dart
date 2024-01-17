@@ -41,7 +41,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       // Merekam log aktivitas
       await _recordActivityLog(
         action: 'Hapus Produk',
-        productName: productData['menu'], 
+        productName: productData['menu'],
         productData: productData,
       );
 
@@ -110,14 +110,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         surfaceTintColor: Colors.transparent,
         title: Text('Detail Produk'),
       ),
-      body: _buildProductDetails(),
+      body: SingleChildScrollView(child: _buildProductDetails()),
       bottomNavigationBar: _buildBottomAppBar(),
     );
   }
 
   Widget _buildProductDetails() {
     return StreamBuilder<QuerySnapshot>(
-      stream: _produkCollection.snapshots(), // Use snapshots() to get a stream
+      stream: _produkCollection.snapshots(),
       builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
         if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
@@ -135,171 +135,182 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         Timestamp createdAt = data['createdAt'] ?? Timestamp.now();
         Timestamp updatedAt = data['updatedAt'] ?? Timestamp.now();
 
-        return Column(
-          children: [
-            GestureDetector(
-              onTap: () {
-                _showImageDialog(context, data['image']);
-              },
-              child: Hero(
-                tag: 'product_image_${widget.documentId}',
-                child: GestureDetector(
-                  onTap: () {
-                    _showImageDialog(context, data['image']);
-                  },
-                  child: Skeleton.keep(
-                    child: Container(
-                      height: 350,
-                      width: double.infinity,
-                      child: ClipRRect(
-                        child: CachedNetworkImage(
-                          imageUrl: data['image'],
-                          fit: BoxFit.cover,
-                          placeholder: (context, url) =>
-                              CircularProgressIndicator(),
-                          errorWidget: (context, url, error) =>
-                              Icon(Icons.error),
+        return Card(
+          elevation: 4,
+          margin: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  _showImageDialog(context, data['image']);
+                },
+                child: Hero(
+                  tag: 'product_image_${widget.documentId}',
+                  child: SizedBox(
+                    height: 350,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(8),
+                        topRight: Radius.circular(8),
+                      ),
+                      child: CachedNetworkImage(
+                        imageUrl: data['image'],
+                        fit: BoxFit.cover,
+                        placeholder: (context, url) =>
+                            const CircularProgressIndicator(
+                          color: DesignSystem.primaryColor,
                         ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-            Skeletonizer(
-                enabled: _enabled,
-                child: Container(
-                  padding: EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Flexible(
-                            child: Text(
-                              data['menu'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.normal,
-                                fontSize: 18,
-                                color: DesignSystem.blackColor,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          SizedBox(width: 8),
-                          Row(children: [
-                            Skeleton.leaf(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 12),
-                                decoration: BoxDecoration(
-                                  color: data['kategori'] == 'Makanan'
-                                      ? Colors.green.withOpacity(.50)
-                                      : data['kategori'] == 'Minuman'
-                                          ? DesignSystem.primaryColor
-                                              .withOpacity(.50)
-                                          : Colors.grey,
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Text(
-                                  data['kategori'] == 'Makanan'
-                                      ? 'Makanan'
-                                      : data['kategori'] == 'Minuman'
-                                          ? 'Minuman'
-                                          : 'Kategori Tidak Diketahui',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: DesignSystem.whiteColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Skeleton.leaf(
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                    vertical: 5, horizontal: 12),
-                                decoration: BoxDecoration(
-                                  color: data['stok'] == 0
-                                      ? DesignSystem.redAccent.withOpacity(.50)
-                                      : data['stok'] < 5
-                                          ? DesignSystem.primaryColor
-                                              .withOpacity(.50)
-                                          : DesignSystem.primaryColor
-                                              .withOpacity(.50),
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: Text(
-                                  data['stok'] == 0
-                                      ? 'Stok habis'
-                                      : 'Stok ${data['stok'] ?? 0}',
-                                  style: TextStyle(
-                                    fontSize: 10,
-                                    color: DesignSystem.whiteColor,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ]),
-                        ],
-                      ),
-                      Text(
-                        NumberFormat.currency(
-                                locale: 'id', symbol: 'Rp', decimalDigits: 0)
-                            .format(data['harga']),
-                        style: TextStyle(
-                          fontSize: 20,
-                          color: DesignSystem.blackColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      SizedBox(height: 8),
-                      if (data.containsKey('addedByName'))
-                        Text(
-                          'Dibuat oleh ${data['addedByName']}, ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(createdAt.toDate())}',
-                          style: TextStyle(
-                            color: DesignSystem.blackColor,
-                          ),
-                        ),
-                      SizedBox(height: 8),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Deskripsi produk',
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Flexible(
+                          child: Text(
+                            data['menu'],
                             style: TextStyle(
+                              fontWeight: FontWeight.normal,
                               fontSize: 18,
                               color: DesignSystem.blackColor,
-                              fontWeight: FontWeight.w600,
                             ),
-                          ),
-                          ReadMoreText(
-                            '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
-                            trimLines: 2,
-                            colorClickableText: DesignSystem.primaryColor,
-                            trimMode: TrimMode.Line,
-                            trimCollapsedText: 'Baca selengkapnya',
-                            trimExpandedText: 'Tutup',
-                            moreStyle: TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 8),
-                      if (data.containsKey('lastEditedByName'))
-                        Text(
-                          'Diupdate pada ${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate())}, oleh ${data['lastEditedByName']}',
-                          style: TextStyle(
-                            color: DesignSystem.blackColor,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                    ],
-                  ),
-                )),
-          ],
+                        SizedBox(width: 8),
+                        Row(
+                          children: [
+                            StatusBadge(
+                              label: data['kategori'] == 'Makanan'
+                                  ? 'Makanan'
+                                  : data['kategori'] == 'Minuman'
+                                      ? 'Minuman'
+                                      : 'Kategori Tidak Diketahui',
+                              color: data['kategori'] == 'Makanan'
+                                  ? Colors.green
+                                  : data['kategori'] == 'Minuman'
+                                      ? DesignSystem.primaryColor
+                                      : Colors.grey,
+                            ),
+                            SizedBox(width: 8),
+                            StatusBadge(
+                              label: data['stok'] == 0
+                                  ? 'Stok habis'
+                                  : 'Stok ${data['stok'] ?? 0}',
+                              color: data['stok'] == 0
+                                  ? DesignSystem.redAccent
+                                  : data['stok'] < 5
+                                      ? DesignSystem.primaryColor
+                                      : DesignSystem.primaryColor,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'id',
+                        symbol: 'Rp',
+                        decimalDigits: 0,
+                      ).format(data['harga']),
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: DesignSystem.blackColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Deskripsi produk',
+                          style: TextStyle(
+                            fontSize: 18,
+                            color: DesignSystem.blackColor,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        ReadMoreText(
+                          '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
+                          trimLines: 2,
+                          colorClickableText: DesignSystem.primaryColor,
+                          trimMode: TrimMode.Line,
+                          trimCollapsedText: 'Baca selengkapnya',
+                          trimExpandedText: 'Tutup',
+                          moreStyle: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    if (data.containsKey('addedByName'))
+                      ListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        leading: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.green.withOpacity(0.1),
+                          ),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.green,
+                          ),
+                        ),
+                        title: Text('Ditambah oleh ${data['addedByName']}',
+                            style: DesignSystem.emphasizedBodyTextStyle),
+                        subtitle: Text(
+                          '${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(createdAt.toDate())}',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    if (data.containsKey('lastEditedByName'))
+                      ListTile(
+                        contentPadding: EdgeInsets.all(0),
+                        leading: Container(
+                          padding: EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: Colors.orange.withOpacity(0.1),
+                          ),
+                          child: Icon(
+                            Icons.edit,
+                            color: Colors.orange,
+                          ),
+                        ),
+                        title: Text(
+                          'Diupdate oleh ${data['lastEditedByName']}',
+                          style: DesignSystem.emphasizedBodyTextStyle,
+                        ),
+                        subtitle: Text(
+                          '${DateFormat('EEEE, dd MMMM y HH:mm', 'id').format(updatedAt.toDate())}',
+                          style: TextStyle(
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         );
       },
     );
@@ -396,6 +407,34 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
           ),
         );
       },
+    );
+  }
+}
+
+class StatusBadge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const StatusBadge({
+    required this.label,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(vertical: 5, horizontal: 12),
+      decoration: BoxDecoration(
+        color: color.withOpacity(.50),
+        borderRadius: BorderRadius.circular(50),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          fontSize: 10,
+          color: Colors.white,
+        ),
+      ),
     );
   }
 }
