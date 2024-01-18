@@ -25,7 +25,7 @@ class ListProdukPage extends StatefulWidget {
 }
 
 class _ListProdukPageState extends State<ListProdukPage> {
-  TextEditingController _searchController = TextEditingController();
+  final TextEditingController _searchController = TextEditingController();
 
   late CollectionReference _produkCollection;
   late bool _isRefreshing = false;
@@ -314,7 +314,8 @@ class _ListProdukPageState extends State<ListProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
+        backgroundColor: DesignSystem.secondaryColor,
+        surfaceTintColor: DesignSystem.secondaryColor,
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 5.0),
@@ -384,7 +385,10 @@ class _ListProdukPageState extends State<ListProdukPage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Padding(
+          Container(
+            decoration: const BoxDecoration(
+              color: DesignSystem.secondaryColor,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -515,123 +519,138 @@ class _ListProdukPageState extends State<ListProdukPage> {
                         _sortProducts(filteredProducts);
 
                     return Scrollbar(
-                      child: GridView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        physics: const BouncingScrollPhysics(),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 15.0,
-                          mainAxisSpacing: 10.0,
-                        ),
-                        itemCount: sortedProducts.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          DocumentSnapshot document = sortedProducts[index];
-                          Map<String, dynamic> data =
-                              document.data() as Map<String, dynamic>;
-                          String documentId = document.id;
+                      child: ScrollConfiguration(
+                        behavior:
+                            const ScrollBehavior().copyWith(overscroll: false),
+                        child: GridView.builder(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          physics: const ClampingScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 2,
+                            crossAxisSpacing: 15.0,
+                            mainAxisSpacing: 10.0,
+                          ),
+                          itemCount: sortedProducts.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            DocumentSnapshot document = sortedProducts[index];
+                            Map<String, dynamic> data =
+                                document.data() as Map<String, dynamic>;
+                            String documentId = document.id;
 
-                          return InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => DetailProdukPage(
-                                    documentId: documentId,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Hero(
-                              tag: 'product_image_$documentId',
-                              child: Card(
-                                elevation: 0,
-                                color: DesignSystem.backgroundColor,
-                                child: Stack(
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                            return Container(
+                              margin: const EdgeInsets.only(top: 5),
+                              child: InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => DetailProdukPage(
+                                        documentId: documentId,
+                                      ),
+                                    ),
+                                  );
+                                },
+                                child: Hero(
+                                  tag: 'product_image_$documentId',
+                                  child: Card(
+                                    elevation: 0,
+                                    color: DesignSystem.backgroundColor,
+                                    child: Stack(
                                       children: [
-                                        Container(
-                                          height: 150,
-                                          width: 300,
-                                          decoration: BoxDecoration(
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: DesignSystem.greyColor
-                                                    .withOpacity(.10),
-                                                offset: const Offset(0, 5),
-                                                blurRadius: 10,
+                                        Column(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                          children: [
+                                            Container(
+                                              height: 150,
+                                              width: double.infinity,
+                                              decoration: BoxDecoration(
+                                                boxShadow: [
+                                                  BoxShadow(
+                                                    color: DesignSystem
+                                                        .greyColor
+                                                        .withOpacity(.10),
+                                                    offset: const Offset(0, 5),
+                                                    blurRadius: 10,
+                                                  ),
+                                                ],
                                               ),
-                                            ],
-                                          ),
-                                          child: ClipRRect(
-                                            borderRadius:
-                                                BorderRadius.circular(8),
-                                            child: Image.network(
-                                              data['image'],
-                                              fit: BoxFit.cover,
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
+                                                child: Image.network(
+                                                  data['image'],
+                                                  fit: BoxFit.cover,
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        const SizedBox(height: 5),
-                                        Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 8.0),
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                data['menu'],
-                                                style:
-                                                    DesignSystem.titleTextStyle,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
+                                            const SizedBox(height: 3),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    data['menu'],
+                                                    style: DesignSystem
+                                                        .titleTextStyle,
+                                                    overflow:
+                                                        TextOverflow.ellipsis,
+                                                    maxLines: 1,
+                                                  ),
+                                                ],
                                               ),
-                                            ],
+                                            ),
+                                          ],
+                                        ),
+                                        Positioned(
+                                          top: 8,
+                                          right: 8,
+                                          child: Skeleton.unite(
+                                            child: Container(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      vertical: 5,
+                                                      horizontal: 10),
+                                              decoration: BoxDecoration(
+                                                color: data['stok'] == 0
+                                                    ? DesignSystem.redAccent
+                                                        .withOpacity(.80)
+                                                    : data['stok'] < 5
+                                                        ? DesignSystem
+                                                            .primaryColor
+                                                            .withOpacity(.80)
+                                                        : DesignSystem
+                                                            .primaryColor
+                                                            .withOpacity(.80),
+                                                borderRadius:
+                                                    BorderRadius.circular(100),
+                                              ),
+                                              child: Text(
+                                                data['stok'] == 0
+                                                    ? 'Stok habis'
+                                                    : '${data['stok'] ?? 0}',
+                                                style: const TextStyle(
+                                                  fontSize: 12,
+                                                  color:
+                                                      DesignSystem.whiteColor,
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                    Positioned(
-                                      top: 8,
-                                      right: 8,
-                                      child: Skeleton.unite(
-                                        child: Container(
-                                          padding: const EdgeInsets.symmetric(
-                                              vertical: 5, horizontal: 10),
-                                          decoration: BoxDecoration(
-                                            color: data['stok'] == 0
-                                                ? DesignSystem.redAccent
-                                                    .withOpacity(.80)
-                                                : data['stok'] < 5
-                                                    ? DesignSystem.primaryColor
-                                                        .withOpacity(.80)
-                                                    : DesignSystem.primaryColor
-                                                        .withOpacity(.80),
-                                            borderRadius:
-                                                BorderRadius.circular(100),
-                                          ),
-                                          child: Text(
-                                            data['stok'] == 0
-                                                ? 'Stok habis'
-                                                : '${data['stok'] ?? 0}',
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                              color: DesignSystem.whiteColor,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
-                            ),
-                          );
-                        },
+                            );
+                          },
+                        ),
                       ),
                     );
                   },

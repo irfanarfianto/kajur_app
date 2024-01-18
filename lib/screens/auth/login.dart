@@ -4,7 +4,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
-import 'package:kajur_app/screens/auth/firebase_auth/firebase_auth_services.dart';
+import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 import 'package:kajur_app/screens/auth/register.dart';
 
 class LoginPage extends StatefulWidget {
@@ -29,6 +29,64 @@ class _LoginPageState extends State<LoginPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _signIn() async {
+    setState(() {
+      _isSigning = true;
+    });
+
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    // Pemeriksaan apakah kedua kolom email dan password sudah diisi
+    if (email.isEmpty || password.isEmpty) {
+      showToast(message: "Email dan password harus diisi");
+      setState(() {
+        _isSigning = false;
+      });
+      return;
+    }
+
+    User? user = await _auth.signInWithEmailAndPassword(email, password);
+
+    setState(() {
+      _isSigning = false;
+    });
+
+    if (user != null) {
+      showToast(message: "Selamat datang");
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamed(context, "/home");
+    } else {}
+  }
+
+  _signInWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken,
+        );
+
+        await _firebaseAuth.signInWithCredential(credential);
+        showToast(message: "Login dengan Google berhasil");
+        // ignore: use_build_context_synchronously
+        Navigator.pushNamed(context, "/home");
+      } else {
+        showToast(message: "Login dengan Google dibatalkan.");
+      }
+    } catch (e) {
+      showToast(message: "Gagal login dengan Google, terjadi kesalahan: $e");
+    }
   }
 
   @override
@@ -265,61 +323,5 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  void _signIn() async {
-    setState(() {
-      _isSigning = true;
-    });
-
-    String email = _emailController.text;
-    String password = _passwordController.text;
-
-    // Pemeriksaan apakah kedua kolom email dan password sudah diisi
-    if (email.isEmpty || password.isEmpty) {
-      showToast(message: "Email dan password harus diisi");
-      setState(() {
-        _isSigning = false;
-      });
-      return;
-    }
-
-    User? user = await _auth.signInWithEmailAndPassword(email, password);
-
-    setState(() {
-      _isSigning = false;
-    });
-
-    if (user != null) {
-      showToast(message: "Selamat datang");
-      // ignore: use_build_context_synchronously
-      Navigator.pushNamed(context, "/home");
-    } else {}
-  }
-
-  _signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
-
-        await _firebaseAuth.signInWithCredential(credential);
-        showToast(message: "Login dengan Google berhasil");
-        // ignore: use_build_context_synchronously
-        Navigator.pushNamed(context, "/home");
-      } else {
-        showToast(message: "Login dengan Google dibatalkan.");
-      }
-    } catch (e) {
-      showToast(message: "Gagal login dengan Google, terjadi kesalahan: $e");
-    }
-  }
+  
 }

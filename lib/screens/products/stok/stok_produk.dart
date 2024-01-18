@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/products/stok.dart';
+import 'package:kajur_app/screens/products/stok/update_stok.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -50,176 +50,182 @@ class _StockPageState extends State<StockPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        surfaceTintColor: Colors.transparent,
-        title: const Center(child: Text('Info Stok 📢')),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: const Icon(Icons.share),
-              onPressed: () {
-                Navigator.pushNamed(context, '/comingsoon');
-              },
+    return ScrollConfiguration(
+      behavior: const ScrollBehavior().copyWith(overscroll: false),
+      child: Scaffold(
+        appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          title: const Center(child: Text('Info Stok 📢')),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: IconButton(
+                icon: const Icon(Icons.share),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/comingsoon');
+                },
+              ),
             ),
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
-        backgroundColor: DesignSystem.backgroundColor,
-        color: DesignSystem.primaryColor,
-        onRefresh: _refreshData,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Skeletonizer(
-            enabled: _enabled,
-            child: StreamBuilder<QuerySnapshot>(
-              stream:
-                  FirebaseFirestore.instance.collection('kantin').snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
-                if (snapshot.hasError) {
-                  return Center(
-                    child: Text('Error: ${snapshot.error}'),
-                  );
-                }
-
-                switch (snapshot.connectionState) {
-                  case ConnectionState.waiting:
-                    return const Center(
-                      child: CircularProgressIndicator(),
+          ],
+        ),
+        body: RefreshIndicator(
+          backgroundColor: DesignSystem.backgroundColor,
+          color: DesignSystem.primaryColor,
+          onRefresh: _refreshData,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Skeletonizer(
+              enabled: _enabled,
+              child: StreamBuilder<QuerySnapshot>(
+                stream:
+                    FirebaseFirestore.instance.collection('kantin').snapshots(),
+                builder: (BuildContext context,
+                    AsyncSnapshot<QuerySnapshot> snapshot) {
+                  if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
                     );
-                  default:
-                    if (snapshot.data!.docs.isEmpty) {
+                  }
+
+                  switch (snapshot.connectionState) {
+                    case ConnectionState.waiting:
                       return const Center(
-                        child: Text(
-                          'Belum ada info baru',
-                          style: TextStyle(color: DesignSystem.blackColor),
-                        ),
+                        child: CircularProgressIndicator(),
                       );
-                    }
-
-                    List<Widget> stockContainers = [];
-
-                    List<Widget> outOfStockContainers = snapshot.data!.docs
-                        .where((document) =>
-                            (document.data() as Map<String, dynamic>)['stok'] ==
-                            0)
-                        .map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-                      String namaProduk = data['menu'];
-                      int stok = data['stok'];
-                      String documentId = document.id;
-                      Timestamp updatedAt =
-                          data['updatedAt'] ?? Timestamp.now();
-
-                      return buildStockContainer(
-                        context,
-                        namaProduk,
-                        stok,
-                        documentId,
-                        Colors.red.withOpacity(.10),
-                        Colors.red.withOpacity(.50),
-                        updatedAt,
-                      );
-                    }).toList();
-
-                    List<Widget> criticalStockContainers = snapshot.data!.docs
-                        .where((document) =>
-                            (document.data() as Map<String, dynamic>)['stok'] <
-                                5 &&
-                            (document.data() as Map<String, dynamic>)['stok'] >
-                                0)
-                        .map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-                      String namaProduk = data['menu'];
-                      int stok = data['stok'];
-                      String documentId = document.id;
-                      Timestamp updatedAt =
-                          data['updatedAt'] ?? Timestamp.now();
-
-                      return buildStockContainer(
-                        context,
-                        namaProduk,
-                        stok,
-                        documentId,
-                        Colors.red.withOpacity(.10),
-                        Colors.red.withOpacity(.20),
-                        updatedAt,
-                      );
-                    }).toList();
-
-                    List<Widget> lowStockContainers = snapshot.data!.docs
-                        .where((document) =>
-                            (document.data() as Map<String, dynamic>)['stok'] <=
-                                10 &&
-                            (document.data() as Map<String, dynamic>)['stok'] >
-                                4)
-                        .map((DocumentSnapshot document) {
-                      Map<String, dynamic> data =
-                          document.data() as Map<String, dynamic>;
-                      String namaProduk = data['menu'];
-                      int stok = data['stok'];
-                      String documentId = document.id;
-                      Timestamp updatedAt =
-                          data['updatedAt'] ?? Timestamp.now();
-
-                      return buildStockContainer(
-                        context,
-                        namaProduk,
-                        stok,
-                        documentId,
-                        Colors.yellow.withOpacity(.30),
-                        Colors.yellow.withOpacity(.20),
-                        updatedAt,
-                      );
-                    }).toList();
-
-                    // Add the containers to the main list in the desired order
-                    if (outOfStockContainers.isNotEmpty) {
-                      stockContainers
-                          .add(buildCategoryTitle('Stok sudah habis'));
-                      stockContainers.addAll(outOfStockContainers);
-                    }
-
-                    if (criticalStockContainers.isNotEmpty) {
-                      stockContainers
-                          .add(buildCategoryTitle('Stok kurang dari 5'));
-                      stockContainers.addAll(criticalStockContainers);
-                    }
-
-                    if (lowStockContainers.isNotEmpty) {
-                      stockContainers
-                          .add(buildCategoryTitle('Stok kurang dari 10'));
-                      stockContainers.addAll(lowStockContainers);
-                    }
-
-                    if (stockContainers.isNotEmpty) {
-                      return ListView(
-                        physics: const AlwaysScrollableScrollPhysics(
-                          parent: BouncingScrollPhysics(),
-                        ),
-                        children: stockContainers,
-                      );
-                    } else {
-                      return ListView(
-                        children: [
-                          SizedBox(
-                              height: MediaQuery.of(context).size.height / 3),
-                          const Center(
-                            child: Text(
-                              'Belum ada info stok',
-                              style: TextStyle(color: DesignSystem.blackColor),
-                            ),
+                    default:
+                      if (snapshot.data!.docs.isEmpty) {
+                        return const Center(
+                          child: Text(
+                            'Belum ada info baru',
+                            style: TextStyle(color: DesignSystem.blackColor),
                           ),
-                        ],
-                      );
-                    }
-                }
-              },
+                        );
+                      }
+
+                      List<Widget> stockContainers = [];
+
+                      List<Widget> outOfStockContainers = snapshot.data!.docs
+                          .where((document) =>
+                              (document.data()
+                                  as Map<String, dynamic>)['stok'] ==
+                              0)
+                          .map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data() as Map<String, dynamic>;
+                        String namaProduk = data['menu'];
+                        int stok = data['stok'];
+                        String documentId = document.id;
+                        Timestamp updatedAt =
+                            data['updatedAt'] ?? Timestamp.now();
+
+                        return buildStockContainer(
+                          context,
+                          namaProduk,
+                          stok,
+                          documentId,
+                          Colors.red.withOpacity(.10),
+                          Colors.red.withOpacity(.50),
+                          updatedAt,
+                        );
+                      }).toList();
+
+                      List<Widget> criticalStockContainers = snapshot.data!.docs
+                          .where((document) =>
+                              (document.data()
+                                      as Map<String, dynamic>)['stok'] <
+                                  5 &&
+                              (document.data()
+                                      as Map<String, dynamic>)['stok'] >
+                                  0)
+                          .map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data() as Map<String, dynamic>;
+                        String namaProduk = data['menu'];
+                        int stok = data['stok'];
+                        String documentId = document.id;
+                        Timestamp updatedAt =
+                            data['updatedAt'] ?? Timestamp.now();
+
+                        return buildStockContainer(
+                          context,
+                          namaProduk,
+                          stok,
+                          documentId,
+                          Colors.red.withOpacity(.10),
+                          Colors.red.withOpacity(.20),
+                          updatedAt,
+                        );
+                      }).toList();
+
+                      List<Widget> lowStockContainers = snapshot.data!.docs
+                          .where((document) =>
+                              (document.data()
+                                      as Map<String, dynamic>)['stok'] <=
+                                  10 &&
+                              (document.data()
+                                      as Map<String, dynamic>)['stok'] >
+                                  4)
+                          .map((DocumentSnapshot document) {
+                        Map<String, dynamic> data =
+                            document.data() as Map<String, dynamic>;
+                        String namaProduk = data['menu'];
+                        int stok = data['stok'];
+                        String documentId = document.id;
+                        Timestamp updatedAt =
+                            data['updatedAt'] ?? Timestamp.now();
+
+                        return buildStockContainer(
+                          context,
+                          namaProduk,
+                          stok,
+                          documentId,
+                          Colors.yellow.withOpacity(.30),
+                          Colors.yellow.withOpacity(.20),
+                          updatedAt,
+                        );
+                      }).toList();
+
+                      // Add the containers to the main list in the desired order
+                      if (outOfStockContainers.isNotEmpty) {
+                        stockContainers
+                            .add(buildCategoryTitle('Stok sudah habis'));
+                        stockContainers.addAll(outOfStockContainers);
+                      }
+
+                      if (criticalStockContainers.isNotEmpty) {
+                        stockContainers
+                            .add(buildCategoryTitle('Stok kurang dari 5'));
+                        stockContainers.addAll(criticalStockContainers);
+                      }
+
+                      if (lowStockContainers.isNotEmpty) {
+                        stockContainers
+                            .add(buildCategoryTitle('Stok kurang dari 10'));
+                        stockContainers.addAll(lowStockContainers);
+                      }
+
+                      if (stockContainers.isNotEmpty) {
+                        return ListView(
+                          children: stockContainers,
+                        );
+                      } else {
+                        return ListView(
+                          children: [
+                            SizedBox(
+                                height: MediaQuery.of(context).size.height / 3),
+                            const Center(
+                              child: Text(
+                                'Belum ada info stok',
+                                style:
+                                    TextStyle(color: DesignSystem.blackColor),
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                  }
+                },
+              ),
             ),
           ),
         ),
