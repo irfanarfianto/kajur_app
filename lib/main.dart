@@ -4,7 +4,7 @@ import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/screens/auth/login.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:kajur_app/screens/auth/register.dart';
-import 'package:kajur_app/screens/home.dart';
+import 'package:kajur_app/screens/home/home.dart';
 import 'package:kajur_app/screens/splash_screen/splash_screen.dart';
 import 'firebase_options.dart';
 import 'design/system.dart';

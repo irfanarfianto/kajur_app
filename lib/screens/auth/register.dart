@@ -5,9 +5,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
-import 'package:kajur_app/screens/auth/firebase_auth/firebase_auth_services.dart';
+import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 import 'package:kajur_app/screens/auth/login.dart';
-import 'package:kajur_app/screens/home.dart';
+import 'package:kajur_app/screens/home/home.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -32,6 +32,117 @@ class _SignUpPageState extends State<SignUpPage> {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  void _signUpWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await googleSignIn.signIn();
+
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
+
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken,
+        );
+
+        User? user = await _auth.signUpWithGoogle(credential);
+
+        if (user != null) {
+          try {
+            // ignore: deprecated_member_use
+            await user.updateProfile(displayName: user.displayName);
+            showToast(message: "Berhasil daftar akun dengan Google");
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const HomePage()),
+            );
+          } catch (e) {
+            showToast(message: "Error setting username: $e");
+          }
+        } else {}
+      } else {
+        showToast(message: "Pendaftaran dengan Google dibatalkan.");
+      }
+    } catch (e) {
+      showToast(
+          message: "Gagal mendaftar dengan Google, terjadi kesalahan: $e");
+    }
+  }
+
+  void _signUp() async {
+    setState(() {
+      isSigningUp = true;
+    });
+
+    String username = _usernameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    // Pemeriksaan apakah semua form terisi
+    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+      showToast(message: "Semua form harus diisi");
+      setState(() {
+        isSigningUp = false;
+      });
+      return;
+    }
+
+    // Pemeriksaan apakah password memenuhi persyaratan
+    if (!_isPasswordValid(password)) {
+      showToast(
+        message: "Password minimal 8 karakter, termasuk huruf dan angka",
+      );
+      setState(() {
+        isSigningUp = false;
+      });
+      return;
+    }
+
+    bool isUsernameAvailable = await _auth.isUsernameAvailable(username);
+
+    if (!isUsernameAvailable) {
+      showToast(message: "Username sudah dipakai, pilih yang lain ya");
+      setState(() {
+        isSigningUp = false;
+      });
+      return;
+    }
+
+    User? user =
+        await _auth.signUpWithEmailAndPassword(email, password, username);
+
+    setState(() {
+      isSigningUp = false;
+    });
+
+    if (user != null) {
+      try {
+        // ignore: deprecated_member_use
+        await user.updateProfile(displayName: username);
+        showToast(message: "Berhasil daftar akun");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      } catch (e) {
+        showToast(message: "Error setting username: $e");
+      }
+    } else {}
+  }
+
+  bool _isPasswordValid(String password) {
+    // Pemeriksaan persyaratan password (minimal 8 karakter, termasuk huruf dan angka)
+    if (password.length < 8 ||
+        !password.contains(RegExp(r'[a-zA-Z]')) ||
+        !password.contains(RegExp(r'[0-9]'))) {
+      return false;
+    }
+    return true;
   }
 
   @override
@@ -204,31 +315,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             ),
                     ),
                   ),
-
-                  // Row(
-                  //   mainAxisAlignment: MainAxisAlignment.center,
-                  //   children: [
-                  //     Text(
-                  //       "Sudah punya akun?",
-                  //       style: TextStyle(color: DesignSystem.blackColor),
-                  //     ),
-                  //     SizedBox(
-                  //       width: 5,
-                  //     ),
-                  //     GestureDetector(
-                  //       onTap: () {
-                  //         Navigator.pop(context);
-                  //       },
-                  //       child: Text(
-                  //         "Login",
-                  //         style: TextStyle(
-                  //           color: Colors.blue,
-                  //           fontWeight: FontWeight.bold,
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ],
-                  // ),
                   const SizedBox(
                     height: 20,
                   ),
@@ -300,116 +386,5 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
       ),
     );
-  }
-
-  void _signUpWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
-
-        User? user = await _auth.signUpWithGoogle(credential);
-
-        if (user != null) {
-          try {
-            // ignore: deprecated_member_use
-            await user.updateProfile(displayName: user.displayName);
-            showToast(message: "Berhasil daftar akun dengan Google");
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
-          } catch (e) {
-            showToast(message: "Error setting username: $e");
-          }
-        } else {}
-      } else {
-        showToast(message: "Pendaftaran dengan Google dibatalkan.");
-      }
-    } catch (e) {
-      showToast(
-          message: "Gagal mendaftar dengan Google, terjadi kesalahan: $e");
-    }
-  }
-
-  void _signUp() async {
-    setState(() {
-      isSigningUp = true;
-    });
-
-    String username = _usernameController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
-
-    // Pemeriksaan apakah semua form terisi
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      showToast(message: "Semua form harus diisi");
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
-
-    // Pemeriksaan apakah password memenuhi persyaratan
-    if (!_isPasswordValid(password)) {
-      showToast(
-        message: "Password minimal 8 karakter, termasuk huruf dan angka",
-      );
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
-
-    bool isUsernameAvailable = await _auth.isUsernameAvailable(username);
-
-    if (!isUsernameAvailable) {
-      showToast(message: "Username sudah dipakai, pilih yang lain ya");
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
-
-    User? user =
-        await _auth.signUpWithEmailAndPassword(email, password, username);
-
-    setState(() {
-      isSigningUp = false;
-    });
-
-    if (user != null) {
-      try {
-        // ignore: deprecated_member_use
-        await user.updateProfile(displayName: username);
-        showToast(message: "Berhasil daftar akun");
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
-      } catch (e) {
-        showToast(message: "Error setting username: $e");
-      }
-    } else {}
-  }
-
-  bool _isPasswordValid(String password) {
-    // Pemeriksaan persyaratan password (minimal 8 karakter, termasuk huruf dan angka)
-    if (password.length < 8 ||
-        !password.contains(RegExp(r'[a-zA-Z]')) ||
-        !password.contains(RegExp(r'[0-9]'))) {
-      return false;
-    }
-    return true;
   }
 }

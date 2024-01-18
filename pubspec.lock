@@ -289,6 +289,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.6.17"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -420,10 +428,10 @@ packages:
     dependency: transitive
     description:
       name: google_sign_in_ios
-      sha256: b7d444abd3b4ef718e32d766c84b5a5d00d4e63a673075a435e6aad0e85e4d20
+      sha256: f3336d9e44d4d28063ac90271f6db5caf99f0480cb07281330e7a432edb95226
       url: "https://pub.dev"
     source: hosted
-    version: "5.7.2"
+    version: "5.7.3"
   google_sign_in_platform_interface:
     dependency: transitive
     description:
@@ -444,10 +452,10 @@ packages:
     dependency: transitive
     description:
       name: http
-      sha256: d4872660c46d929f6b8a9ef4e7a7eff7e49bbf0c4ec3f385ee32df5119175139
+      sha256: a2bbf9d017fcced29139daa8ed2bba4ece450ab222871df93ca9eec6f80c34ba
       url: "https://pub.dev"
     source: hosted
-    version: "1.1.2"
+    version: "1.2.0"
   http_parser:
     dependency: transitive
     description:
@@ -468,10 +476,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_android
-      sha256: "1a27bf4cc0330389cebe465bab08fe6dec97e44015b4899637344bb7297759ec"
+      sha256: "39f2bfe497e495450c81abcd44b62f56c2a36a37a175da7d137b4454977b51b1"
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.9+2"
+    version: "0.8.9+3"
   image_picker_for_web:
     dependency: transitive
     description:
@@ -484,10 +492,10 @@ packages:
     dependency: transitive
     description:
       name: image_picker_ios
-      sha256: eac0a62104fa12feed213596df0321f57ce5a572562f72a68c4ff81e9e4caacf
+      sha256: fadafce49e8569257a0cad56d24438a6fa1f0cbd7ee0af9b631f7492818a4ca3
       url: "https://pub.dev"
     source: hosted
-    version: "0.8.9"
+    version: "0.8.9+1"
   image_picker_linux:
     dependency: transitive
     description:
@@ -521,7 +529,7 @@ packages:
     source: hosted
     version: "0.2.1+1"
   intl:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: intl
       sha256: "3bc132a9dbce73a7e4a21a17d06e1878839ffbf975568bc875c60537824b0c4d"
@@ -612,10 +620,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: "19314d595120f82aca0ba62787d58dde2cc6b5df7d2f0daf72489e38d1b57f2d"
+      sha256: "5a7999be66e000916500be4f15a3633ebceb8302719b47b9cc49ce924125350f"
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.1"
+    version: "2.3.2"
   path_provider_linux:
     dependency: transitive
     description:
@@ -817,10 +825,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_ios
-      sha256: cdb7b6da34483f9b2c9f8b2b29bc468fa7271d92e2021607ca0c4d3bcb04cdd4
+      sha256: "75bb6fe3f60070407704282a2d295630cab232991eb52542b18347a8a941df03"
       url: "https://pub.dev"
     source: hosted
-    version: "6.2.3"
+    version: "6.2.4"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -865,10 +873,10 @@ packages:
     dependency: transitive
     description:
       name: uuid
-      sha256: "8c951c9cb6504b2aa6b3666e6de504032d9baec24bf4cbabd3eea9edd73d4d77"
+      sha256: cd210a09f7c18cbe5a02511718e0334de6559871052c90a90c0cca46a4aa81c8
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.2"
+    version: "4.3.3"
   vector_math:
     dependency: transitive
     description:

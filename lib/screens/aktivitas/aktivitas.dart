@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/screens/widget/action_icons.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:kajur_app/design/system.dart';
 
@@ -43,54 +44,6 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
         });
       }
     }
-  }
-
-  Icon _getActionIcon(String? action) {
-    IconData iconData;
-    Color iconColor;
-
-    switch (action) {
-      case 'Tambah Produk':
-        iconData = Icons.add;
-        iconColor = Colors.green;
-        break;
-      case 'Edit Produk':
-        iconData = Icons.edit;
-        iconColor = Colors.orange;
-        break;
-      case 'Hapus Produk':
-        iconData = Icons.delete;
-        iconColor = Colors.red;
-        break;
-      default:
-        iconData = Icons.error;
-        iconColor = Colors.grey;
-    }
-
-    return Icon(
-      iconData,
-      color: iconColor,
-    );
-  }
-
-  Color _getActionIconBackgroundColor(String? action) {
-    Color backgroundColor;
-
-    switch (action) {
-      case 'Tambah Produk':
-        backgroundColor = Colors.green.withOpacity(0.1);
-        break;
-      case 'Edit Produk':
-        backgroundColor = Colors.orange.withOpacity(0.1);
-        break;
-      case 'Hapus Produk':
-        backgroundColor = Colors.red.withOpacity(0.1);
-        break;
-      default:
-        backgroundColor = Colors.grey.withOpacity(0.1);
-    }
-
-    return backgroundColor;
   }
 
   void _showSortOptions(BuildContext context) {
@@ -246,7 +199,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                 }).toList();
 
                 return ListView.builder(
-                  physics: const ClampingScrollPhysics(),
+                  physics: const BouncingScrollPhysics(),
                   itemCount: _activitiesData.length,
                   itemBuilder: (BuildContext context, int index) {
                     Map<String, dynamic> data = _activitiesData[index];
@@ -286,26 +239,16 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                           ),
                         ListTile(
                           leading: Skeleton.leaf(
-                            child: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: _getActionIconBackgroundColor(
-                                    data['action']),
-                              ),
-                              child: _getActionIcon(data['action']),
-                            ),
+                            child: ActivityIcon(action: data['action']),
                           ),
-                          title: Flexible(
-                            child: Text(
-                              (data['action'] ?? '') +
-                                  (data['productName'] != null
-                                      ? ' - ${data['productName']}'
-                                      : ''),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: DesignSystem.emphasizedBodyTextStyle,
-                            ),
+                          title: Text(
+                            (data['action'] ?? '') +
+                                (data['productName'] != null
+                                    ? ' - ${data['productName']}'
+                                    : ''),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: DesignSystem.emphasizedBodyTextStyle,
                           ),
                           subtitle: Text(
                             (data['userName'] ?? '') +

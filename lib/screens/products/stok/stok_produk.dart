@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/products/stok.dart';
+import 'package:kajur_app/screens/products/stok/update_stok.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 

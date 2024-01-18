@@ -1,5 +1,3 @@
-// ignore_for_file: library_private_types_in_public_api
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
@@ -136,7 +134,6 @@ class _AddDataPageState extends State<AddDataPage> {
       });
     }
   }
-
 
   Future<void> _recordActivityLog({
     required String action,
@@ -336,7 +333,8 @@ class _AddDataPageState extends State<AddDataPage> {
                           ),
                           const SizedBox(height: 8.0),
                           TextFormField(
-                            style: const TextStyle(color: DesignSystem.blackColor),
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaController,
                             decoration: const InputDecoration(
                               prefixIcon: Padding(
@@ -374,7 +372,8 @@ class _AddDataPageState extends State<AddDataPage> {
                           const SizedBox(height: 8.0),
                           TextFormField(
                             controller: _stokController,
-                            style: const TextStyle(color: DesignSystem.blackColor),
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
                             decoration: const InputDecoration(
                               hintText: 'Stok',
                               hintStyle: TextStyle(
@@ -500,8 +499,8 @@ class _AddDataPageState extends State<AddDataPage> {
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child: CircularProgressIndicator(
-                                color: Colors.white))
+                            child:
+                                CircularProgressIndicator(color: Colors.white))
                         : const Text(
                             "Tambah",
                             style: TextStyle(
