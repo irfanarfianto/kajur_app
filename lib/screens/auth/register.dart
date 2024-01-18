@@ -150,11 +150,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       key: UniqueKey(),
       appBar: AppBar(
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: DesignSystem.backgroundColor,
-            statusBarIconBrightness: Brightness.dark,
-            statusBarBrightness: Brightness.light,
-          ),
+          backgroundColor: DesignSystem.backgroundColor,
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
               icon: const Icon(
@@ -176,7 +172,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     "Daftar",
                     style: TextStyle(
                       fontSize: 27,
-                      fontWeight: FontWeight.bold,
+                      fontWeight: DesignSystem.medium,
                       color: DesignSystem.blackColor,
                     ),
                   ),
@@ -187,8 +183,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text(
-                        'Email',
-                        style: DesignSystem.titleTextStyle,
+                        'Username',
+                        style: DesignSystem.bodyTextStyle,
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -217,7 +213,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       const Text(
                         'Email',
-                        style: DesignSystem.titleTextStyle,
+                        style: DesignSystem.bodyTextStyle,
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -246,7 +242,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     children: [
                       const Text(
                         'Password',
-                        style: DesignSystem.titleTextStyle,
+                        style: DesignSystem.bodyTextStyle,
                       ),
                       const SizedBox(height: 8.0),
                       TextFormField(
@@ -351,10 +347,6 @@ class _SignUpPageState extends State<SignUpPage> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: DesignSystem.whiteColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                        side: const BorderSide(color: DesignSystem.greyColor),
-                      ),
                     ),
                     child: const Center(
                       child: Row(

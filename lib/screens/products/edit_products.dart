@@ -8,7 +8,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 
-
 class EditProdukPage extends StatefulWidget {
   final String documentId;
 
@@ -20,7 +19,7 @@ class EditProdukPage extends StatefulWidget {
 
 class _EditProdukPageState extends State<EditProdukPage> {
   late TextEditingController _menuController;
-  late TextEditingController _hargaController;
+  late TextEditingController _hargaJualController;
   late TextEditingController _deskripsiController;
   late TextEditingController _stokController;
 
@@ -34,7 +33,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
     _oldImageUrl = '';
     _menuController = TextEditingController();
-    _hargaController = TextEditingController();
+    _hargaJualController = TextEditingController();
     _deskripsiController = TextEditingController();
     _stokController = TextEditingController();
 
@@ -51,7 +50,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
             documentSnapshot.data() as Map<String, dynamic>;
 
         _menuController.text = data['menu'];
-        _hargaController.text = data['harga'].toString();
+        _hargaJualController.text = data['hargaJual'].toString();
         _deskripsiController.text = data['deskripsi'];
         _stokController.text = data['stok']?.toString() ?? '0';
 
@@ -67,7 +66,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
   Future<void> _updateProductDetails() async {
     try {
       if (_menuController.text.isEmpty ||
-          _hargaController.text.isEmpty ||
+          _hargaJualController.text.isEmpty ||
           _stokController.text.isEmpty) {
         AnimatedSnackBar.material(
           'Eitss! Jangan ada kolom yang kosong ya',
@@ -76,13 +75,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
         return;
       }
 
-      String hargaText = _hargaController.text;
+      String hargaJualText = _hargaJualController.text;
       String stokText = _stokController.text;
-      int harga = int.tryParse(hargaText) ?? 0;
+      int hargaJual = int.tryParse(hargaJualText) ?? 0;
       int stok = int.tryParse(stokText) ?? 0;
 
       // Validasi input
-      if (hargaText == harga.toString() && stokText == stok.toString()) {
+      if (hargaJualText == hargaJual.toString() &&
+          stokText == stok.toString()) {
         User? user = FirebaseAuth.instance.currentUser;
         String? userId = user?.uid;
         String? userName = user?.displayName ?? 'Unknown User';
@@ -108,7 +108,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
           productName: _menuController.text,
           newProductData: {
             'menu': _menuController.text,
-            'harga': harga,
+            'hargaJual': hargaJual,
             'deskripsi': _deskripsiController.text,
             'image': imageUrl,
             'stok': stok,
@@ -117,7 +117,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
         await _produkCollection.doc(widget.documentId).update({
           'menu': _menuController.text,
-          'harga': harga,
+          'hargaJual': hargaJual,
           'deskripsi': _deskripsiController.text,
           'image': imageUrl,
           'stok': stok,
@@ -276,14 +276,8 @@ class _EditProdukPageState extends State<EditProdukPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Nama Produk *',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
-                    ),
+                    const Text('Nama Produk',
+                        style: DesignSystem.emphasizedBodyTextStyle),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _menuController,
@@ -309,18 +303,13 @@ class _EditProdukPageState extends State<EditProdukPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Harga *',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: DesignSystem.blackColor,
-                            ),
-                          ),
+                          const Text('Harga Jual',
+                              style: DesignSystem.emphasizedBodyTextStyle),
                           const SizedBox(height: 8.0),
                           TextFormField(
-                            style: const TextStyle(color: DesignSystem.blackColor),
-                            controller: _hargaController,
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            controller: _hargaJualController,
                             decoration: const InputDecoration(
                               prefixIcon: Padding(
                                   padding: EdgeInsets.all(11),
@@ -330,7 +319,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                                         fontWeight: FontWeight.normal,
                                         fontSize: 16,
                                       ))),
-                              hintText: 'Harga',
+                              hintText: 'Harga jual',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
                                 fontWeight: FontWeight.normal,
@@ -346,18 +335,13 @@ class _EditProdukPageState extends State<EditProdukPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Stok *',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: DesignSystem.blackColor,
-                            ),
-                          ),
+                          const Text('Stok',
+                              style: DesignSystem.emphasizedBodyTextStyle),
                           const SizedBox(height: 8.0),
                           TextFormField(
                             controller: _stokController,
-                            style: const TextStyle(color: DesignSystem.blackColor),
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
                             decoration: const InputDecoration(
                               hintText: 'Stok',
                               hintStyle: TextStyle(
@@ -376,14 +360,8 @@ class _EditProdukPageState extends State<EditProdukPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Deskripsi',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
-                    ),
+                    const Text('Deskripsi',
+                        style: DesignSystem.emphasizedBodyTextStyle),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _deskripsiController,
@@ -420,7 +398,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
   @override
   void dispose() {
     _menuController.dispose();
-    _hargaController.dispose();
+    _hargaJualController.dispose();
     _deskripsiController.dispose();
     _stokController.dispose();
     super.dispose();

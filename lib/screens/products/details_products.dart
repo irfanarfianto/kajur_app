@@ -226,10 +226,23 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         locale: 'id',
                         symbol: 'Rp',
                         decimalDigits: 0,
-                      ).format(data['harga']),
+                      ).format(data['hargaJual']),
                       style: const TextStyle(
                         fontSize: 20,
                         color: DesignSystem.blackColor,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      NumberFormat.currency(
+                        locale: 'id',
+                        symbol: 'Rp',
+                        decimalDigits: 0,
+                      ).format(data['profitSatuan'].toInt()),
+                      style: const TextStyle(
+                        fontSize: 20,
+                        color: DesignSystem.greenAccent,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -372,10 +385,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             IconButton(
               style: IconButton.styleFrom(
                 backgroundColor: DesignSystem.redAccent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                  side: const BorderSide(color: DesignSystem.redAccent),
-                ),
+                shape: const CircleBorder(),
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
               ),

@@ -159,6 +159,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
+        backgroundColor: DesignSystem.secondaryColor,
         appBar: AppBar(
           elevation: 2,
           surfaceTintColor: DesignSystem.backgroundColor,
@@ -167,7 +168,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
         body: Scrollbar(
           child: RefreshIndicator(
             color: DesignSystem.primaryColor,
-            backgroundColor: DesignSystem.backgroundColor,
+            backgroundColor: DesignSystem.secondaryColor,
             onRefresh: _refreshData,
             child: Skeletonizer(
               enabled: _enabled,
@@ -225,18 +226,12 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                             Container(
                               alignment: Alignment.centerLeft,
                               width: double.infinity,
-                              color: DesignSystem.greyColor.withOpacity(.10),
+                              color: DesignSystem.backgroundColor,
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 16, vertical: 10),
-                                child: Text(
-                                  formattedDate,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: DesignSystem.blackColor,
-                                  ),
-                                ),
+                                child: Text(formattedDate,
+                                    style: DesignSystem.titleTextStyle),
                               ),
                             ),
                           ListTile(
