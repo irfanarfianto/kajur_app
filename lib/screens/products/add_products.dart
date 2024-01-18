@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:kajur_app/screens/products/tambah%20produk/details_add_product.dart';
 
 class AddDataPage extends StatefulWidget {
   const AddDataPage({super.key});
@@ -20,9 +21,11 @@ class AddDataPage extends StatefulWidget {
 class _AddDataPageState extends State<AddDataPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _menuController = TextEditingController();
-  final TextEditingController _hargaController = TextEditingController();
+  final TextEditingController _hargaJualController = TextEditingController();
   final TextEditingController _deskripsiController = TextEditingController();
   final TextEditingController _stokController = TextEditingController();
+  final TextEditingController _hargaPokokController = TextEditingController();
+  final TextEditingController _jumlahIsiController = TextEditingController();
   String _selectedCategory = '';
   File? _selectedImage;
   bool _isLoading = false;
@@ -65,19 +68,33 @@ class _AddDataPageState extends State<AddDataPage> {
     });
 
     String menu = _menuController.text;
-    String hargaText = _hargaController.text;
+    String hargaJualText = _hargaJualController.text;
     String stokText = _stokController.text;
-    int harga = int.tryParse(hargaText) ?? 0;
+    String hargaPokokText = _hargaPokokController.text;
+    String jumlahIsiText = _jumlahIsiController.text;
+
+    int hargaJual = int.tryParse(hargaJualText) ?? 0;
     int stok = int.tryParse(stokText) ?? 0;
+    int hargaPokok = int.tryParse(hargaPokokText) ?? 0;
+    int jumlahIsi = int.tryParse(jumlahIsiText) ?? 0;
 
     // Validasi input
     if (menu.isNotEmpty &&
-        harga > 0 &&
+        hargaJual > 0 &&
         stok >= 0 &&
+        hargaPokok > 0 && // Validasi harga pokok
+        jumlahIsi > 0 && // Validasi jumlah isi
         _selectedCategory.isNotEmpty &&
         _selectedImage != null &&
-        hargaText == harga.toString() &&
-        stokText == stok.toString()) {
+        hargaJualText == hargaJual.toString() &&
+        stokText == stok.toString() &&
+        hargaPokokText == hargaPokok.toString() &&
+        jumlahIsiText == jumlahIsi.toString()) {
+      // Hitung keuntungan per produk
+      int totalProfit =
+          ((hargaJual - (hargaPokok / jumlahIsi)) * jumlahIsi).toInt();
+      int profitSatuan = (hargaJual - (hargaPokok / jumlahIsi)).toInt();
+
       // Lanjutkan dengan upload gambar
       String imageUrl = await _uploadImage();
 
@@ -91,11 +108,15 @@ class _AddDataPageState extends State<AddDataPage> {
       // Tambahkan data produk
       DocumentReference docRef = await collectionRef.add({
         'menu': menu,
-        'harga': harga,
+        'hargaJual': hargaJual,
+        'hargaPokok': hargaPokok,
+        'jumlahIsi': jumlahIsi,
         'kategori': _selectedCategory,
         'image': imageUrl,
         'deskripsi': _deskripsiController.text,
         'stok': stok,
+        'totalProfit': totalProfit,
+        'profitSatuan': profitSatuan,
         'createdAt': FieldValue.serverTimestamp(),
         'updatedAt': FieldValue.serverTimestamp(),
         'addedBy': userId,
@@ -111,13 +132,35 @@ class _AddDataPageState extends State<AddDataPage> {
         productId: docRef.id,
       );
 
-      // ignore: use_build_context_synchronously
-      AnimatedSnackBar.material(
-        'Produk berhasil ditambahkan',
-        type: AnimatedSnackBarType.success,
-      ).show(context);
+      // // ignore: use_build_context_synchronously
+      // AnimatedSnackBar.material(
+      //   'Produk berhasil ditambahkan',
+      //   type: AnimatedSnackBarType.success,
+      // ).show(context);
 
-      Navigator.pushReplacementNamed(context, '/list_produk');
+      // Tampilkan keuntungan
+      // print('Keuntungan per produk(jika laku total): Rp $totalProfit');
+      // print('Keuntungan per produk(satuan): Rp $profitSatuan');
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => AddProductDetailPage(
+            addedByName: userName,
+            productName: menu,
+            hargaJual: hargaJual,
+            hargaPokok: hargaPokok,
+            jumlahIsi: jumlahIsi,
+            kategori: _selectedCategory,
+            imageUrl: imageUrl,
+            deskripsi: _deskripsiController.text,
+            stok: stok,
+            totalProfit: totalProfit,
+            profitSatuan: profitSatuan,
+            createdAt: DateTime.now(),
+          ),
+        ),
+      );
     } else {
       AnimatedSnackBar.material(
         'Mohon isi semua field yang diperlukan dan pastikan harga dan stok valid',
@@ -169,8 +212,9 @@ class _AddDataPageState extends State<AddDataPage> {
       ),
       body: Scrollbar(
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.symmetric(horizontal: 10),
           child: SingleChildScrollView(
+            padding: const EdgeInsets.only(top: 10),
             physics: const BouncingScrollPhysics(),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -205,7 +249,12 @@ class _AddDataPageState extends State<AddDataPage> {
                             context: context,
                             builder: (BuildContext context) {
                               return AlertDialog(
-                                title: const Text("Pilih Sumber Gambar"),
+                                title: const Text("Pilih Sumber Gambar",
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                      color: DesignSystem.blackColor,
+                                      fontSize: 16,
+                                    )),
                                 actions: <Widget>[
                                   TextButton(
                                     onPressed: () {
@@ -290,14 +339,8 @@ class _AddDataPageState extends State<AddDataPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Nama Produk *',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
-                    ),
+                    const Text('Nama Produk *',
+                        style: DesignSystem.emphasizedBodyTextStyle),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _menuController,
@@ -323,19 +366,13 @@ class _AddDataPageState extends State<AddDataPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Harga *',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: DesignSystem.blackColor,
-                            ),
-                          ),
+                          const Text('Harga pokok/beli *',
+                              style: DesignSystem.emphasizedBodyTextStyle),
                           const SizedBox(height: 8.0),
                           TextFormField(
                             style:
                                 const TextStyle(color: DesignSystem.blackColor),
-                            controller: _hargaController,
+                            controller: _hargaPokokController,
                             decoration: const InputDecoration(
                               prefixIcon: Padding(
                                   padding: EdgeInsets.all(11),
@@ -345,7 +382,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                         fontWeight: FontWeight.normal,
                                         fontSize: 16,
                                       ))),
-                              hintText: 'Harga',
+                              hintText: 'Harga pokok/beli',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
                                 fontWeight: FontWeight.normal,
@@ -361,14 +398,69 @@ class _AddDataPageState extends State<AddDataPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            'Stok *',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: DesignSystem.blackColor,
+                          const Text('Jumlah isi satuan*',
+                              style: DesignSystem.emphasizedBodyTextStyle),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: _jumlahIsiController,
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            decoration: const InputDecoration(
+                              hintText: 'Isi',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
                             ),
+                            keyboardType: TextInputType.number,
                           ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Harga jual *',
+                              style: DesignSystem.emphasizedBodyTextStyle),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            controller: _hargaJualController,
+                            decoration: const InputDecoration(
+                              prefixIcon: Padding(
+                                  padding: EdgeInsets.all(11),
+                                  child: Text('Rp',
+                                      style: TextStyle(
+                                        color: DesignSystem.greyColor,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ))),
+                              hintText: 'Harga jual',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Stok yang akan dijual*',
+                              style: DesignSystem.emphasizedBodyTextStyle),
                           const SizedBox(height: 8.0),
                           TextFormField(
                             controller: _stokController,
@@ -390,14 +482,8 @@ class _AddDataPageState extends State<AddDataPage> {
                 ),
                 const SizedBox(height: 16.0),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text(
-                    'Pilih kategori *',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: DesignSystem.blackColor,
-                    ),
-                  ),
+                  const Text('Pilih kategori *',
+                      style: DesignSystem.emphasizedBodyTextStyle),
                   const SizedBox(height: 8.0),
                   DropdownButtonFormField2<String>(
                     isExpanded: true,
@@ -465,14 +551,8 @@ class _AddDataPageState extends State<AddDataPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Deskripsi *',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: DesignSystem.blackColor,
-                      ),
-                    ),
+                    const Text('Deskripsi *',
+                        style: DesignSystem.emphasizedBodyTextStyle),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _deskripsiController,

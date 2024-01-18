@@ -32,6 +32,7 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        indicatorColor: DesignSystem.primaryColor,
         fontFamily: 'Roboto',
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: DesignSystem.backgroundColor,
@@ -50,7 +51,7 @@ class MyApp extends StatelessWidget {
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(100),
                 ),
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
@@ -59,8 +60,10 @@ class MyApp extends StatelessWidget {
         inputDecorationTheme: InputDecorationTheme(
           contentPadding:
               const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-          border: OutlineInputBorder(
+          enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
+            borderSide:
+                const BorderSide(color: DesignSystem.greyColor, width: 1),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
@@ -69,14 +72,14 @@ class MyApp extends StatelessWidget {
           ),
         ),
         colorScheme: const ColorScheme(
-          primary: Colors.blue,
-          secondary: Colors.orange,
+          primary: DesignSystem.primaryColor,
+          secondary: DesignSystem.secondaryColor,
           background: DesignSystem.backgroundColor,
-          surface: Colors.white,
+          surface: DesignSystem.secondaryColor,
           onBackground: Colors.black,
           onSurface: Colors.black,
           onError: Colors.white,
-          onPrimary: Colors.white,
+          onPrimary: DesignSystem.secondaryColor,
           onSecondary: Colors.black,
           brightness: Brightness.light,
           error: Colors.red,

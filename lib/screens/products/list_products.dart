@@ -317,60 +317,65 @@ class _ListProdukPageState extends State<ListProdukPage> {
         backgroundColor: DesignSystem.secondaryColor,
         surfaceTintColor: DesignSystem.secondaryColor,
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 5.0),
-            child: SizedBox(
-              width: MediaQuery.of(context).size.width * 0.75,
-              height: 40,
-              child: Stack(
-                alignment: Alignment.centerRight,
-                children: [
-                  TextField(
-                    controller: _searchController,
-                    style: const TextStyle(
-                      color: DesignSystem.blackColor,
-                    ),
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: DesignSystem.greyColor.withOpacity(0.1),
-                      contentPadding: const EdgeInsets.all(8.0),
-                      hintText: 'Cari produk',
-                      hintStyle: const TextStyle(
-                        color: DesignSystem.greyColor,
-                        fontSize: 14.0,
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,
+                height: 40,
+                child: Stack(
+                  alignment: Alignment.centerRight,
+                  children: [
+                    TextField(
+                      controller: _searchController,
+                      style: const TextStyle(
+                        color: DesignSystem.blackColor,
                       ),
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(10.0),
-                        borderSide: BorderSide.none,
-                      ),
-                    ),
-                    onChanged: (value) {
-                      setState(() {
-                        _searchQuery = value.toLowerCase();
-                      });
-                    },
-                  ),
-                  Visibility(
-                    visible: _searchQuery.isNotEmpty,
-                    child: GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          _searchQuery = ''; // Clear the search query
-                        });
-                        // Clear the text field
-                        _searchController.clear();
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: const Icon(
-                          Icons.clear,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: DesignSystem.greyColor.withOpacity(0.1),
+                        contentPadding: const EdgeInsets.all(8.0),
+                        hintText: 'Cari produk',
+                        hintStyle: const TextStyle(
                           color: DesignSystem.greyColor,
+                          fontSize: 14.0,
+                        ),
+                        prefixIcon: const Icon(Icons.search),
+                        prefixIconColor: DesignSystem.greyColor,
+                        enabledBorder: const OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(10),
+                          ),
+                          borderSide: BorderSide.none,
+                        ),
+                      ),
+                      onChanged: (value) {
+                        setState(() {
+                          _searchQuery = value.toLowerCase();
+                        });
+                      },
+                    ),
+                    Visibility(
+                      visible: _searchQuery.isNotEmpty,
+                      child: GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            _searchQuery = ''; // Clear the search query
+                          });
+                          // Clear the text field
+                          _searchController.clear();
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: const Icon(
+                            Icons.clear,
+                            color: DesignSystem.greyColor,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
