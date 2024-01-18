@@ -82,6 +82,8 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildAppBar() {
     return AppBar(
+      elevation: 0,
+      backgroundColor: DesignSystem.backgroundColor,
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
       title:
@@ -116,59 +118,62 @@ class _HomePageState extends State<HomePage> {
         SystemNavigator.pop();
         return true;
       },
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(kToolbarHeight),
-          child: _buildAppBar(),
-        ),
-        endDrawer: Drawer(
-          child: DrawerWidget(
-            currentUser: _currentUser,
-            confirmSignOut: _confirmSignOut,
+      child: ScrollConfiguration(
+        behavior: const ScrollBehavior().copyWith(overscroll: false),
+        child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(kToolbarHeight),
+            child: _buildAppBar(),
           ),
-        ),
-        body: Stack(
-          children: [
-            RefreshIndicator(
-              color: DesignSystem.primaryColor,
-              onRefresh: _refreshData,
-              child: Skeletonizer(
-                enabled: _enabled,
-                child: SingleChildScrollView(
-                  physics: const ScrollPhysics(),
-                  child: Column(
-                    children: [
-                      buildTotalProductsWidget(context),
-                      buildStockWidget(context),
-                      RecentActivityWidget(),
-                    ],
+          endDrawer: Drawer(
+            child: DrawerWidget(
+              currentUser: _currentUser,
+              confirmSignOut: _confirmSignOut,
+            ),
+          ),
+          body: Stack(
+            children: [
+              RefreshIndicator(
+                color: DesignSystem.primaryColor,
+                onRefresh: _refreshData,
+                child: Skeletonizer(
+                  enabled: _enabled,
+                  child: SingleChildScrollView(
+                    physics: const ScrollPhysics(),
+                    child: Column(
+                      children: [
+                        buildTotalProductsWidget(context),
+                        buildStockWidget(context),
+                        const RecentActivityWidget(),
+                      ],
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+              onPressed: () {
+                showModalBottomSheet(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const MenuButton();
+                  },
+                );
+              },
+              extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              ),
+              backgroundColor: DesignSystem.primaryColor,
+              foregroundColor: DesignSystem.whiteColor,
+              icon: const Icon(Icons.rocket_launch_outlined),
+              label: const Text('Menu',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ))),
         ),
-        floatingActionButton: FloatingActionButton.extended(
-            onPressed: () {
-              showModalBottomSheet(
-                context: context,
-                builder: (BuildContext context) {
-                  return const MenuButton();
-                },
-              );
-            },
-            extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-            ),
-            backgroundColor: DesignSystem.primaryColor,
-            foregroundColor: DesignSystem.whiteColor,
-            icon: const Icon(Icons.rocket_launch_outlined),
-            label: const Text('Menu',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ))),
       ),
     );
   }

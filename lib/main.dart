@@ -32,22 +32,28 @@ class MyApp extends StatelessWidget {
       title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        backgroundColor: DesignSystem.backgroundColor,
         fontFamily: 'Roboto',
         visualDensity: VisualDensity.adaptivePlatformDensity,
         scaffoldBackgroundColor: DesignSystem.backgroundColor,
         primaryColor: DesignSystem.primaryColor,
         dialogBackgroundColor: DesignSystem.backgroundColor,
+        iconTheme: const IconThemeData(color: DesignSystem.blackColor),
         appBarTheme: const AppBarTheme(
-          color: DesignSystem.backgroundColor,
-          foregroundColor: Colors.black,
+          foregroundColor: DesignSystem.blackColor,
+        ),
+        cardTheme: CardTheme(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
+          color: DesignSystem.secondaryColor,
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 backgroundColor: DesignSystem.primaryColor,
                 foregroundColor: DesignSystem.backgroundColor)),
         inputDecorationTheme: InputDecorationTheme(
@@ -58,8 +64,22 @@ class MyApp extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(10.0),
-            borderSide: const BorderSide(color: DesignSystem.primaryColor, width: 1),
+            borderSide:
+                const BorderSide(color: DesignSystem.primaryColor, width: 1),
           ),
+        ),
+        colorScheme: const ColorScheme(
+          primary: Colors.blue,
+          secondary: Colors.orange,
+          background: DesignSystem.backgroundColor,
+          surface: Colors.white,
+          onBackground: Colors.black,
+          onSurface: Colors.black,
+          onError: Colors.white,
+          onPrimary: Colors.white,
+          onSecondary: Colors.black,
+          brightness: Brightness.light,
+          error: Colors.red,
         ),
       ),
       routes: {
