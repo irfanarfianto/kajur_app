@@ -29,7 +29,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Kajur",
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         indicatorColor: DesignSystem.primaryColor,
@@ -58,19 +57,28 @@ class MyApp extends StatelessWidget {
                 backgroundColor: DesignSystem.primaryColor,
                 foregroundColor: DesignSystem.backgroundColor)),
         inputDecorationTheme: InputDecorationTheme(
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide:
-                const BorderSide(color: DesignSystem.greyColor, width: 1),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            borderSide:
-                const BorderSide(color: DesignSystem.primaryColor, width: 1),
-          ),
-        ),
+            contentPadding:
+                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide:
+                  const BorderSide(color: DesignSystem.greyColor, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide:
+                  const BorderSide(color: DesignSystem.primaryColor, width: 1),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide:
+                  const BorderSide(color: DesignSystem.redAccent, width: 1),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              borderSide:
+                  const BorderSide(color: DesignSystem.redAccent, width: 1),
+            )),
         colorScheme: const ColorScheme(
           primary: DesignSystem.primaryColor,
           secondary: DesignSystem.secondaryColor,

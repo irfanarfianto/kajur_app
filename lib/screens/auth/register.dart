@@ -22,9 +22,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
 
   bool isSigningUp = false;
   bool _passwordVisible = false;
+  bool _confirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -79,12 +82,17 @@ class _SignUpPageState extends State<SignUpPage> {
       isSigningUp = true;
     });
 
-    String username = _usernameController.text;
+    String username =
+        _usernameController.text.replaceAll(' ', '').toLowerCase();
     String email = _emailController.text;
     String password = _passwordController.text;
+    String confirmPassword = _confirmPasswordController.text;
 
     // Pemeriksaan apakah semua form terisi
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
+    if (username.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
       showToast(message: "Semua form harus diisi");
       setState(() {
         isSigningUp = false;
@@ -275,13 +283,66 @@ class _SignUpPageState extends State<SignUpPage> {
                                 _passwordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
-                                color: DesignSystem.greyColor,
+                                color: DesignSystem.greyColor.withOpacity(.50),
                               ),
                             ),
                           ),
                         ),
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: !_passwordVisible,
+                        textInputAction: TextInputAction.next,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Konfirmasi Password',
+                        style: DesignSystem.bodyTextStyle,
+                      ),
+                      const SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _confirmPasswordController,
+                        style: const TextStyle(color: DesignSystem.blackColor),
+                        decoration: InputDecoration(
+                          hintText: 'Konfirmasi Password',
+                          hintStyle: const TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          errorText:
+                              _confirmPasswordController.text.isNotEmpty &&
+                                      _confirmPasswordController.text !=
+                                          _passwordController.text
+                                  ? 'Password tidak cocok'
+                                  : null,
+                          suffixIcon: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(100),
+                              splashColor: Colors.transparent,
+                              onTap: () {
+                                setState(() {
+                                  // Mengubah visibilitas teks password
+                                  _confirmPasswordVisible =
+                                      !_confirmPasswordVisible;
+                                });
+                              },
+                              child: Icon(
+                                _confirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: DesignSystem.greyColor.withOpacity(.50),
+                              ),
+                            ),
+                          ),
+                        ),
+                        keyboardType: TextInputType.visiblePassword,
+                        obscureText: !_confirmPasswordVisible,
                         textInputAction: TextInputAction.done,
                       ),
                     ],

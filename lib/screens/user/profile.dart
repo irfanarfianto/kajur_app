@@ -1,118 +1,146 @@
-import 'dart:io';
-
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/global/common/toast.dart';
 
-class ProfilePage extends StatefulWidget {
-  const ProfilePage({Key? key});
+class UserProfilePage extends StatelessWidget {
+  final User? currentUser;
 
-  @override
-  State<ProfilePage> createState() => _ProfilePageState();
-}
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-class _ProfilePageState extends State<ProfilePage> {
-  late User? _currentUser;
-  final String _defaultAvatar =
-      'https://example.com/default_avatar.png'; // URL gambar default
-
-  @override
-  void initState() {
-    super.initState();
-    _getCurrentUser();
-  }
-
-  Future<void> _getCurrentUser() async {
-    _currentUser = FirebaseAuth.instance.currentUser;
-    setState(() {});
-  }
-
-  Future<void> _showImagePicker() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      Reference ref = FirebaseStorage.instance
-          .ref()
-          .child('profile_images')
-          .child('profile_${DateTime.now()}.jpg');
-      TaskSnapshot task = await ref.putFile(File(pickedFile.path));
-      String newImageUrl = await task.ref.getDownloadURL();
-      await _currentUser?.updatePhotoURL(newImageUrl);
-
-      setState(() {
-        // Remove the following line as it's not needed
-        // _currentUser?.updatePhotoURL(newImageUrl);
-      });
-    }
-  }
+  UserProfilePage({super.key, required this.currentUser});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profile'),
+        title: const Text('Profil'),
       ),
-      body: _currentUser != null
-          ? Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      _showImagePicker(); // Panggil fungsi untuk memilih foto baru
-                    },
-                    child: _buildProfileImage(),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildUserInfo(),
-                ],
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _buildUserWidget(currentUser),
+              const Spacer(),
+              _buildLogoutButton(context),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildUserWidget(User? currentUser) {
+    if (currentUser == null) {
+      return const CircularProgressIndicator(
+        color: Colors.white, // Adjust the color as needed
+      );
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          const CircleAvatar(
+            backgroundImage: AssetImage('images/avatar.png'),
+            radius: 50,
+          ),
+          const SizedBox(height: 16),
+          Text("${currentUser.displayName}",
+              style: DesignSystem.headingTextStyle),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Icon(
+                Icons.email,
+                color: DesignSystem.greyColor,
+                size: 16,
               ),
-            )
-          : const Center(
-              child: CircularProgressIndicator(),
+              const SizedBox(width: 2),
+              Text(
+                "${currentUser.email}",
+                style: const TextStyle(
+                  color: Colors.grey, // Adjust the color as needed
+                  fontSize: 16,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+  }
+
+  Widget _buildLogoutButton(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: DesignSystem.redAccent,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+      ),
+      onPressed: () => _confirmSignOut(context),
+      child: const Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.exit_to_app),
+          SizedBox(width: 10),
+          Text(
+            'Keluar',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget _buildProfileImage() {
-    return CircleAvatar(
-      radius: 70,
-      backgroundImage: _currentUser!.photoURL != null
-          ? NetworkImage(_currentUser!.photoURL!)
-          : NetworkImage(_defaultAvatar),
+  void _confirmSignOut(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          title: const Text("Konfirmasi"),
+          content: const Text("Aapakah kamu yakin untuk keluar?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Cancel",
+                  style: TextStyle(color: DesignSystem.greyColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                _signOut(context); // Pass context to _signOut
+                Navigator.of(context).pop(); // Close the dialog
+              },
+              child: const Text("Keluar",
+                  style: TextStyle(color: DesignSystem.redAccent)),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildUserInfo() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          _currentUser!.displayName ?? 'No Name',
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Text(
-          _currentUser!.email ?? 'No Email',
-          style: TextStyle(
-            fontSize: 18,
-            color: Colors.grey[600],
-          ),
-        ),
-        const SizedBox(height: 10),
-        ElevatedButton(
-          onPressed: () {
-            // Implement action for editing profile
-          },
-          child: const Text('Edit Profile'),
-        ),
-      ],
-    );
+  void _signOut(BuildContext context) async {
+    try {
+      await _googleSignIn.signOut();
+      await FirebaseAuth.instance.signOut();
+      // ignore: use_build_context_synchronously
+      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+      showToast(message: "Berhasil keluar");
+    } catch (e) {
+      showToast(message: "Error signing out: $e");
+    }
   }
 }

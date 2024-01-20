@@ -13,7 +13,10 @@ import 'package:skeletonizer/skeletonizer.dart';
 class DetailProdukPage extends StatefulWidget {
   final String documentId;
 
-  const DetailProdukPage({super.key, required this.documentId});
+  const DetailProdukPage({
+    super.key,
+    required this.documentId,
+  });
 
   @override
   State<DetailProdukPage> createState() => _DetailProdukPageState();
@@ -420,6 +423,26 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               icon: const Icon(Icons.delete,
                   color: DesignSystem.whiteColor, size: 20),
               tooltip: 'Hapus',
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  foregroundColor: DesignSystem.blackColor,
+                  backgroundColor: DesignSystem.secondaryColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      side: BorderSide(
+                        color: DesignSystem.greyColor.withOpacity(.20),
+                      )),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                ),
+                onPressed: () async {},
+                child: const Text('Update Stok'),
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(

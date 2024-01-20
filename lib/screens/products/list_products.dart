@@ -33,6 +33,9 @@ class _ListProdukPageState extends State<ListProdukPage> {
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
   bool _enabled = false;
+  bool isSelectedTerbaru = true;
+  bool isSelectedAZ = false;
+  bool isSelectedZA = false;
 
   @override
   void initState() {
@@ -41,24 +44,10 @@ class _ListProdukPageState extends State<ListProdukPage> {
     _refreshData();
   }
 
-  void _resetCategoryFilter() {
-    setState(() {
-      _categoryFilter = CategoryFilter.Semua;
-    });
-  }
-
   void _resetSortingOption() {
     setState(() {
       _sortingOption = SortingOption.Terbaru;
     });
-  }
-
-  void _updateSnapshot(AsyncSnapshot<QuerySnapshot> newSnapshot) {
-    setState(() {});
-  }
-
-  Future<void> _deleteProduct(String documentId) async {
-    await _produkCollection.doc(documentId).delete();
   }
 
   Future<void> _refreshData() async {
@@ -66,7 +55,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
     setState(() {
       _isRefreshing = true;
       _enabled = false;
-      _resetCategoryFilter();
+
       _resetSortingOption();
     });
 
@@ -96,122 +85,145 @@ class _ListProdukPageState extends State<ListProdukPage> {
     }
   }
 
-  void _showFilterSortingOverlay() {
+  void _showSortingOverlay() {
+    bool isSelectedTerbaru = _sortingOption == SortingOption.Terbaru;
+    bool isSelectedAZ = _sortingOption == SortingOption.AZ;
+    bool isSelectedZA = _sortingOption == SortingOption.ZA;
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.4, // Adjusted initial size
-          maxChildSize: 0.4, // Adjusted max size
-          minChildSize: 0.1,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: DesignSystem.backgroundColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 5,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: DesignSystem.greyColor.withOpacity(.50),
-                    ),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return DraggableScrollableSheet(
+              expand: false,
+              initialChildSize: 0.4,
+              maxChildSize: 0.4,
+              minChildSize: 0.1,
+              builder:
+                  (BuildContext context, ScrollController scrollController) {
+                return Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: const BoxDecoration(
+                    color: DesignSystem.backgroundColor,
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(20)),
                   ),
-                  const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Kategori',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
+                      Container(
+                        height: 5,
+                        width: 40,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(100),
+                          color: DesignSystem.greyColor.withOpacity(.50),
                         ),
                       ),
-                      Row(children: [
-                        buildSortingAndFilteringButton(
-                          label: 'Semua',
-                          icon: Icons.category,
-                          onPressed: () {
-                            _setcategoryOption(CategoryFilter.Semua);
-                            _refreshData();
-                            Navigator.pop(context);
-                          },
-                          isActive: _categoryFilter == CategoryFilter.Semua,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'Makanan',
-                          icon: Icons.restaurant,
-                          onPressed: () {
-                            _setcategoryOption(CategoryFilter.Makanan);
-                            Navigator.pop(context);
-                          },
-                          isActive: _categoryFilter == CategoryFilter.Makanan,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'Minuman',
-                          icon: Icons.local_drink_outlined,
-                          onPressed: () {
-                            _setcategoryOption(CategoryFilter.Minuman);
-                            Navigator.pop(context);
-                          },
-                          isActive: _categoryFilter == CategoryFilter.Minuman,
-                        ),
-                      ]),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Urutkan berdasarkan',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
+                      const SizedBox(height: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Urutkan berdasarkan',
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: DesignSystem.blackColor,
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          CheckboxListTile(
+                            activeColor: DesignSystem.primaryColor,
+                            title: const Text(
+                              'Terbaru',
+                              style: DesignSystem.subtitleTextStyle,
+                            ),
+                            value: isSelectedTerbaru,
+                            onChanged: (value) {
+                              setState(() {
+                                isSelectedTerbaru = value!;
+                                isSelectedAZ = false;
+                                isSelectedZA = false;
+                              });
+                            },
+                          ),
+                          CheckboxListTile(
+                            activeColor: DesignSystem.primaryColor,
+                            title: const Text(
+                              'A-Z',
+                              style: DesignSystem.subtitleTextStyle,
+                            ),
+                            value: isSelectedAZ,
+                            onChanged: (value) {
+                              setState(() {
+                                isSelectedAZ = value!;
+                                isSelectedTerbaru = false;
+                                isSelectedZA = false;
+                              });
+                            },
+                          ),
+                          CheckboxListTile(
+                            activeColor: DesignSystem.primaryColor,
+                            title: const Text(
+                              'Z-A',
+                              style: DesignSystem.subtitleTextStyle,
+                            ),
+                            value: isSelectedZA,
+                            onChanged: (value) {
+                              setState(() {
+                                isSelectedZA = value!;
+                                isSelectedTerbaru = false;
+                                isSelectedAZ = false;
+                              });
+                            },
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              TextButton(
+                                style: ElevatedButton.styleFrom(
+                                  foregroundColor: DesignSystem.greyColor,
+                                  backgroundColor: Colors.transparent,
+                                ),
+                                onPressed: () {
+                                  // Reset Sorting
+                                  setState(() {
+                                    isSelectedTerbaru = false;
+                                    isSelectedAZ = false;
+                                    isSelectedZA = false;
+                                  });
+                                },
+                                child: const Text('Reset'),
+                              ),
+                              const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    // Apply Sorting
+                                    if (isSelectedTerbaru) {
+                                      _setSortingOption(SortingOption.Terbaru);
+                                    } else if (isSelectedAZ) {
+                                      _setSortingOption(SortingOption.AZ);
+                                    } else if (isSelectedZA) {
+                                      _setSortingOption(SortingOption.ZA);
+                                    }
+
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Terapkan'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      Row(children: [
-                        buildSortingAndFilteringButton(
-                          label: 'Terbaru',
-                          icon: Icons.flash_auto_outlined,
-                          onPressed: () {
-                            _setSortingOption(SortingOption.Terbaru);
-                            Navigator.pop(context);
-                          },
-                          isActive: _sortingOption == SortingOption.Terbaru,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'A-Z',
-                          icon: Icons.sort_by_alpha,
-                          onPressed: () {
-                            _setSortingOption(SortingOption.AZ);
-                            Navigator.pop(context);
-                          },
-                          isActive: _sortingOption == SortingOption.AZ,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'Z-A',
-                          icon: Icons.sort_by_alpha_outlined,
-                          onPressed: () {
-                            _setSortingOption(SortingOption.ZA);
-                            Navigator.pop(context);
-                          },
-                          isActive: _sortingOption == SortingOption.ZA,
-                        ),
-                      ]),
                     ],
                   ),
-                ],
-              ),
+                );
+              },
             );
           },
         );
@@ -219,37 +231,40 @@ class _ListProdukPageState extends State<ListProdukPage> {
     );
   }
 
-  Widget buildSortingAndFilteringButton({
+  Widget filteringButton({
     required String label,
-    required IconData icon,
     required VoidCallback onPressed,
     required bool isActive,
   }) {
-    return ElevatedButton(
-      style: isActive
-          ? ElevatedButton.styleFrom(
-              backgroundColor: DesignSystem.primaryColor,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
+    return Expanded(
+      child: InkWell(
+        onTap: onPressed,
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color:
+                    isActive ? DesignSystem.secondaryColor : Colors.transparent,
+                width: 2,
+                style: BorderStyle.solid,
               ),
-            )
-          : ElevatedButton.styleFrom(
-              foregroundColor: DesignSystem.greyColor,
-              backgroundColor: DesignSystem.backgroundColor,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              elevation: 0,
             ),
-      onPressed: onPressed,
-      child: Row(
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 5),
-          Text(label),
-        ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Center(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: isActive
+                      ? DesignSystem.secondaryColor
+                      : DesignSystem.whiteColor,
+                  fontWeight: DesignSystem.regular,
+                ),
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -263,14 +278,6 @@ class _ListProdukPageState extends State<ListProdukPage> {
   void _setcategoryOption(CategoryFilter option) {
     setState(() {
       _categoryFilter = option;
-    });
-  }
-
-  void _resetFilters() {
-    setState(() {
-      _categoryFilter = CategoryFilter.Semua;
-      _sortingOption = SortingOption.Terbaru;
-      _refreshData();
     });
   }
 
@@ -314,8 +321,10 @@ class _ListProdukPageState extends State<ListProdukPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: DesignSystem.secondaryColor,
-        surfaceTintColor: DesignSystem.secondaryColor,
+        elevation: 2,
+        backgroundColor: DesignSystem.primaryColor,
+        foregroundColor: DesignSystem.whiteColor,
+        surfaceTintColor: DesignSystem.primaryColor,
         actions: [
           Center(
             child: Padding(
@@ -333,15 +342,16 @@ class _ListProdukPageState extends State<ListProdukPage> {
                       ),
                       decoration: InputDecoration(
                         filled: true,
-                        fillColor: DesignSystem.greyColor.withOpacity(0.1),
+                        fillColor: DesignSystem.whiteColor.withOpacity(0.1),
                         contentPadding: const EdgeInsets.all(8.0),
                         hintText: 'Cari produk',
-                        hintStyle: const TextStyle(
-                          color: DesignSystem.greyColor,
+                        hintStyle: TextStyle(
+                          color: DesignSystem.whiteColor.withOpacity(.50),
                           fontSize: 14.0,
                         ),
                         prefixIcon: const Icon(Icons.search),
-                        prefixIconColor: DesignSystem.greyColor,
+                        prefixIconColor:
+                            DesignSystem.whiteColor.withOpacity(.50),
                         enabledBorder: const OutlineInputBorder(
                           borderRadius: BorderRadius.all(
                             Radius.circular(10),
@@ -381,9 +391,9 @@ class _ListProdukPageState extends State<ListProdukPage> {
           ),
           IconButton(
             onPressed: () {
-              Navigator.pushNamed(context, '/comingsoon');
+              _showSortingOverlay();
             },
-            icon: const Icon(Icons.history),
+            icon: const Icon(Icons.sort_outlined),
           ),
         ],
       ),
@@ -392,97 +402,33 @@ class _ListProdukPageState extends State<ListProdukPage> {
         children: [
           Container(
             decoration: const BoxDecoration(
-              color: DesignSystem.secondaryColor,
+              color: DesignSystem.primaryColor,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: _categoryFilter != CategoryFilter.Semua
-                          ? DesignSystem.primaryColor
-                          : DesignSystem.blackColor,
-                      elevation: 0.2,
-
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 3), // Adjusted padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    ),
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  filteringButton(
+                    label: 'Semua',
                     onPressed: () {
-                      _showFilterSortingOverlay();
+                      _setcategoryOption(CategoryFilter.Semua);
                     },
-                    child: Row(
-                      children: [
-                        Text(
-                          _categoryFilter != CategoryFilter.Semua
-                              ? _categoryFilter.toString().split('.').last
-                              : 'Filter',
-                          style: const TextStyle(
-                            fontSize: 14, // Adjusted font size
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.expand_more_outlined,
-                        ),
-                      ],
-                    )),
-                const SizedBox(width: 8),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: _sortingOption != SortingOption.Terbaru
-                        ? DesignSystem.primaryColor
-                        : DesignSystem.blackColor,
-                    elevation: 0.2,
-
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 3), // Adjusted padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
-                    ),
+                    isActive: _categoryFilter == CategoryFilter.Semua,
                   ),
-                  onPressed: () {
-                    _showFilterSortingOverlay();
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        _sortingOption != SortingOption.Terbaru
-                            ? _sortingOption.toString().split('.').last
-                            : 'Sort',
-                        style: const TextStyle(
-                          fontSize: 14, // Adjusted font size
-                        ),
-                      ),
-                      const SizedBox(width: 4), // Adjusted spacing
-                      const Icon(
-                        Icons.expand_more_outlined,
-                      ),
-                    ],
-                  ),
-                ),
-                if (_categoryFilter != CategoryFilter.Semua ||
-                    _sortingOption != SortingOption.Terbaru)
-                  const SizedBox(width: 8),
-                if (_categoryFilter != CategoryFilter.Semua ||
-                    _sortingOption != SortingOption.Terbaru)
-                  TextButton(
+                  filteringButton(
+                    label: 'Makanan',
                     onPressed: () {
-                      _resetFilters();
+                      _setcategoryOption(CategoryFilter.Makanan);
                     },
-                    child: const Text(
-                      'Reset',
-                      style: TextStyle(
-                        color: DesignSystem.primaryColor,
-                        fontSize: 14, // Adjusted font size
-                      ),
-                    ),
+                    isActive: _categoryFilter == CategoryFilter.Makanan,
                   ),
-              ],
-            ),
+                  filteringButton(
+                    label: 'Minuman',
+                    onPressed: () {
+                      _setcategoryOption(CategoryFilter.Minuman);
+                    },
+                    isActive: _categoryFilter == CategoryFilter.Minuman,
+                  ),
+                ]),
           ),
           Expanded(
             child: RefreshIndicator(

@@ -26,56 +26,58 @@ Widget buildStockWidget(BuildContext context) {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Info Stok 📢',
-                    style: DesignSystem.titleTextStyle,
-                  ),
-                  InkWell(
-                    onTap: () {
-                      Navigator.of(context).push(
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  const StockPage(),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.easeInOut;
-
-                            var tween = Tween(begin: begin, end: end).chain(
-                              CurveTween(curve: curve),
-                            );
-
-                            var offsetAnimation = animation.drive(tween);
-
-                            return SlideTransition(
-                              position: offsetAnimation,
-                              child: child,
-                            );
-                          },
-                        ),
-                      );
-                    },
-                    child: const Row(
-                      children: [
-                        Text(
-                          "Lihat semua",
-                          style: DesignSystem.bodyTextStyle,
-                        ),
-                        SizedBox(width: 5),
-                        Icon(
-                          Icons.east,
-                          color: DesignSystem.blackColor,
-                          size: 16,
-                        ),
-                      ],
+              Skeleton.keep(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Info Stok 📢',
+                      style: DesignSystem.titleTextStyle,
                     ),
-                  ),
-                ],
+                    InkWell(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    const StockPage(),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(1.0, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.easeInOut;
+
+                              var tween = Tween(begin: begin, end: end).chain(
+                                CurveTween(curve: curve),
+                              );
+
+                              var offsetAnimation = animation.drive(tween);
+
+                              return SlideTransition(
+                                position: offsetAnimation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: const Row(
+                        children: [
+                          Text(
+                            "Lihat semua",
+                            style: DesignSystem.bodyTextStyle,
+                          ),
+                          SizedBox(width: 5),
+                          Icon(
+                            Icons.east,
+                            color: DesignSystem.blackColor,
+                            size: 16,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               SizedBox(

@@ -169,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                                 _passwordVisible
                                     ? Icons.visibility
                                     : Icons.visibility_off,
-                                color: DesignSystem.greyColor,
+                                color: DesignSystem.greyColor.withOpacity(.50),
                               ),
                             ),
                           ),
