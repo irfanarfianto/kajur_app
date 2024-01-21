@@ -6,6 +6,7 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:intl/intl.dart';
+import 'package:kajur_app/screens/products/stok/update_stok.dart';
 import 'package:readmore/readmore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -112,6 +113,9 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       child: Scaffold(
         backgroundColor: DesignSystem.secondaryColor,
         appBar: AppBar(
+          backgroundColor: DesignSystem.primaryColor,
+          surfaceTintColor: DesignSystem.primaryColor,
+          foregroundColor: DesignSystem.whiteColor,
           title: const Text('Detail Produk'),
         ),
         body: SingleChildScrollView(
@@ -224,30 +228,81 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         ),
                       ],
                     ),
-                    Text(
-                      NumberFormat.currency(
-                        locale: 'id',
-                        symbol: 'Rp',
-                        decimalDigits: 0,
-                      ).format(data['hargaJual']),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: DesignSystem.blackColor,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Column(
+                          children: [
+                            const Text('Harga Jual'),
+                            Text(
+                              NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp',
+                                decimalDigits: 0,
+                              ).format(data['hargaJual']),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: DesignSystem.blackColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 32),
+                        Column(
+                          children: [
+                            const Text('Harga Pokok/Beli'),
+                            Text(
+                              NumberFormat.currency(
+                                    locale: 'id',
+                                    symbol: 'Rp',
+                                    decimalDigits: 0,
+                                  ).format(data['hargaPokok']) +
+                                  '/' +
+                                  (data['jumlahIsi'].toString()),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: DesignSystem.blackColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      NumberFormat.currency(
-                        locale: 'id',
-                        symbol: 'Rp',
-                        decimalDigits: 0,
-                      ).format(data['profitSatuan'].toInt()),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: DesignSystem.greenAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Column(
+                      children: [
+                        const Text('Perkiraan Total Profit/Satuan'),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp',
+                                decimalDigits: 0,
+                              ).format(data['totalProfit'].toInt())}/',
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: DesignSystem.greenAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp',
+                                decimalDigits: 0,
+                              ).format(data['profitSatuan'].toInt()),
+                              style: const TextStyle(
+                                fontSize: 20,
+                                color: DesignSystem.greenAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Column(
@@ -440,7 +495,17 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   padding:
                       const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
                 ),
-                onPressed: () async {},
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UpdateStokProdukPage(documentId: widget.documentId),
+                    ),
+                  );
+                  // Refresh data setelah kembali dari halaman UpdateStokProdukPage
+                  _refreshData();
+                },
                 child: const Text('Update Stok'),
               ),
             ),

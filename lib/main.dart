@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/screens/auth/login.dart';
+import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:kajur_app/screens/auth/register.dart';
 import 'package:kajur_app/screens/home/home.dart';
@@ -101,6 +102,7 @@ class MyApp extends StatelessWidget {
         '/signUp': (context) => const SignUpPage(),
         '/home': (context) => const HomePage(),
         '/list_produk': (context) => const ListProdukPage(),
+        '/add_produk': (context) => const AddDataPage(),
         '/comingsoon': (context) => const ComingSoonPage(),
       },
     );

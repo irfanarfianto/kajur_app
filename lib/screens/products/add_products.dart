@@ -590,6 +590,7 @@ class _AddDataPageState extends State<AddDataPage> {
                           ),
                   ),
                 ),
+                const SizedBox(height: 24.0),
               ],
             ),
           ),

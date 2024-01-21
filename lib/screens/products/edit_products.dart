@@ -21,7 +21,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
   late TextEditingController _menuController;
   late TextEditingController _hargaJualController;
   late TextEditingController _deskripsiController;
-  late TextEditingController _stokController;
 
   late CollectionReference _produkCollection;
   File? _selectedImage;
@@ -35,7 +34,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController = TextEditingController();
     _hargaJualController = TextEditingController();
     _deskripsiController = TextEditingController();
-    _stokController = TextEditingController();
 
     _fetchProductDetails();
   }
@@ -52,7 +50,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
         _menuController.text = data['menu'];
         _hargaJualController.text = data['hargaJual'].toString();
         _deskripsiController.text = data['deskripsi'];
-        _stokController.text = data['stok']?.toString() ?? '0';
 
         setState(() {
           _oldImageUrl = data['image'];
@@ -65,9 +62,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
   Future<void> _updateProductDetails() async {
     try {
-      if (_menuController.text.isEmpty ||
-          _hargaJualController.text.isEmpty ||
-          _stokController.text.isEmpty) {
+      if (_menuController.text.isEmpty || _hargaJualController.text.isEmpty) {
         AnimatedSnackBar.material(
           'Eitss! Jangan ada kolom yang kosong ya',
           type: AnimatedSnackBarType.info,
@@ -76,13 +71,11 @@ class _EditProdukPageState extends State<EditProdukPage> {
       }
 
       String hargaJualText = _hargaJualController.text;
-      String stokText = _stokController.text;
+
       int hargaJual = int.tryParse(hargaJualText) ?? 0;
-      int stok = int.tryParse(stokText) ?? 0;
 
       // Validasi input
-      if (hargaJualText == hargaJual.toString() &&
-          stokText == stok.toString()) {
+      if (hargaJualText == hargaJual.toString()) {
         User? user = FirebaseAuth.instance.currentUser;
         String? userId = user?.uid;
         String? userName = user?.displayName ?? 'Unknown User';
@@ -101,6 +94,12 @@ class _EditProdukPageState extends State<EditProdukPage> {
         Map<String, dynamic> oldProductData =
             oldProductSnapshot.data() as Map<String, dynamic>;
 
+        int newHargaJual = int.tryParse(_hargaJualController.text) ?? 0;
+        num newProfitSatuan = newHargaJual -
+            (oldProductData['hargaPokok'] / oldProductData['jumlahIsi'])
+                .toInt();
+        num newTotalProfit = newProfitSatuan * oldProductData['jumlahIsi'];
+
         // Merekam log aktivitas
         await _recordActivityLog(
           action: 'Edit Produk',
@@ -108,19 +107,21 @@ class _EditProdukPageState extends State<EditProdukPage> {
           productName: _menuController.text,
           newProductData: {
             'menu': _menuController.text,
-            'hargaJual': hargaJual,
+            'hargaJual': newHargaJual,
             'deskripsi': _deskripsiController.text,
             'image': imageUrl,
-            'stok': stok,
+            'totalProfit': newTotalProfit,
+            'profitSatuan': newProfitSatuan,
           },
         );
 
         await _produkCollection.doc(widget.documentId).update({
           'menu': _menuController.text,
-          'hargaJual': hargaJual,
+          'hargaJual': newHargaJual,
           'deskripsi': _deskripsiController.text,
           'image': imageUrl,
-          'stok': stok,
+          'totalProfit': newTotalProfit,
+          'profitSatuan': newProfitSatuan,
           'updatedAt': FieldValue.serverTimestamp(),
           'lastEditedBy': userId,
           'lastEditedByName': userName,
@@ -330,30 +331,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Stok',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            controller: _stokController,
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            decoration: const InputDecoration(
-                              hintText: 'Stok',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    )
                   ],
                 ),
                 const SizedBox(height: 16.0),
@@ -400,7 +377,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController.dispose();
     _hargaJualController.dispose();
     _deskripsiController.dispose();
-    _stokController.dispose();
     super.dispose();
   }
 }
