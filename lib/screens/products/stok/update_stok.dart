@@ -65,29 +65,49 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
         return;
       }
 
+      // Set isUpdating to true to show the circular progress indicator
+      setState(() {
+        _isUpdating = true;
+      });
+
       // Fetch the old product data
       DocumentSnapshot oldProductSnapshot =
           await _produkCollection.doc(widget.documentId).get();
       Map<String, dynamic> oldProductData =
           oldProductSnapshot.data() as Map<String, dynamic>;
 
-      // Update the stock
+      // Update the stock and updatedAt field
       await _produkCollection.doc(widget.documentId).update({
         'stok': newStok,
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
       // Record activity log
       await _recordActivityLog(
         action: 'Update Stok',
         oldProductData: oldProductData,
-        newProductData: {'stok': newStok},
+        newProductData: {
+          'stok': newStok,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
       );
 
       showToast(message: 'Stok produk berhasil diupdate');
+
+      // Set isUpdating back to false after the update process is completed
+      setState(() {
+        _isUpdating = false;
+      });
+
       Navigator.pop(context);
     } catch (e) {
       print('Error updating stock: $e');
       showToast(message: 'Terjadi kesalahan saat mengupdate stok produk');
+
+      // Set isUpdating back to false in case of an error
+      setState(() {
+        _isUpdating = false;
+      });
     }
   }
 
@@ -177,9 +197,9 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                                 fontSize: 100,
                                 fontWeight: DesignSystem.regular),
                           ),
-                          Text(
+                          const Text(
                             '/pcs',
-                            style: const TextStyle(
+                            style: TextStyle(
                                 fontSize: 50, fontWeight: DesignSystem.regular),
                           ),
                         ],
@@ -204,6 +224,24 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: _isUpdating ? null : _updateStok,
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: DesignSystem.whiteColor,
+                        backgroundColor: _isUpdating
+                            ? DesignSystem.primaryColor
+                            : null, // Set blue color when updating
+                      ).copyWith(
+                        elevation: ButtonStyleButton.allOrNull(0.0),
+                        backgroundColor:
+                            MaterialStateProperty.resolveWith<Color>(
+                                (Set<MaterialState> states) {
+                          if (_isUpdating) {
+                            return DesignSystem
+                                .primaryColor; // Set blue color when updating
+                          }
+                          return DesignSystem
+                              .primaryColor; // Default color when not updating
+                        }),
+                      ),
                       child: _isUpdating
                           ? const SizedBox(
                               height: 20,

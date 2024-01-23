@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
+import 'package:kajur_app/utils/internet_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:kajur_app/design/system.dart';
 
@@ -36,6 +37,10 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     });
 
     try {
+      while (await checkInternetConnection() == false) {
+        // Tunggu 2 detik sebelum memeriksa koneksi lagi
+        await Future.delayed(const Duration(seconds: 2));
+      }
       await Future.delayed(const Duration(seconds: 2));
     } finally {
       if (mounted) {

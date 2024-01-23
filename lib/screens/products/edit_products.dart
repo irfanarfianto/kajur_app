@@ -4,9 +4,12 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 
 class EditProdukPage extends StatefulWidget {
   final String documentId;
@@ -25,6 +28,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
   late CollectionReference _produkCollection;
   File? _selectedImage;
   String? _oldImageUrl;
+  late bool _isUpdating;
 
   @override
   void initState() {
@@ -34,8 +38,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController = TextEditingController();
     _hargaJualController = TextEditingController();
     _deskripsiController = TextEditingController();
-
+    _isUpdating = false;
     _fetchProductDetails();
+  }
+
+  String formatCurrency(int amount) {
+    final currencyFormatter =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+    return currencyFormatter.format(amount);
   }
 
   Future<void> _fetchProductDetails() async {
@@ -48,7 +58,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
             documentSnapshot.data() as Map<String, dynamic>;
 
         _menuController.text = data['menu'];
-        _hargaJualController.text = data['hargaJual'].toString();
+        _hargaJualController.text = formatCurrency(data['hargaJual']);
         _deskripsiController.text = data['deskripsi'];
 
         setState(() {
@@ -70,12 +80,16 @@ class _EditProdukPageState extends State<EditProdukPage> {
         return;
       }
 
-      String hargaJualText = _hargaJualController.text;
+      setState(() {
+        _isUpdating = true;
+      });
 
-      int hargaJual = int.tryParse(hargaJualText) ?? 0;
+      String hargaJualText = _hargaJualController.text;
+      int newHargaJual =
+          int.tryParse(hargaJualText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
 
       // Validasi input
-      if (hargaJualText == hargaJual.toString()) {
+      if (newHargaJual >= 0) {
         User? user = FirebaseAuth.instance.currentUser;
         String? userId = user?.uid;
         String? userName = user?.displayName ?? 'Unknown User';
@@ -84,8 +98,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
         if (_selectedImage != null) {
           imageUrl = await _uploadImage();
         } else {
-          imageUrl =
-              _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
+          imageUrl = _oldImageUrl;
         }
 
         // Mendapatkan detail produk sebelum diperbarui
@@ -94,7 +107,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
         Map<String, dynamic> oldProductData =
             oldProductSnapshot.data() as Map<String, dynamic>;
 
-        int newHargaJual = int.tryParse(_hargaJualController.text) ?? 0;
         num newProfitSatuan = newHargaJual -
             (oldProductData['hargaPokok'] / oldProductData['jumlahIsi'])
                 .toInt();
@@ -126,11 +138,17 @@ class _EditProdukPageState extends State<EditProdukPage> {
           'lastEditedBy': userId,
           'lastEditedByName': userName,
         });
+
         // ignore: use_build_context_synchronously
         AnimatedSnackBar.material(
           'Produk berhasil diperbarui',
           type: AnimatedSnackBarType.success,
         ).show(context);
+
+        setState(() {
+          _isUpdating = false;
+        });
+
         Navigator.pop(context);
       } else {
         AnimatedSnackBar.material(
@@ -138,8 +156,12 @@ class _EditProdukPageState extends State<EditProdukPage> {
           type: AnimatedSnackBarType.info,
         ).show(context);
       }
-    } catch (e) {
+    } catch (e, stackTrace) {
       print('Error updating product details: $e');
+      print('Stack trace: $stackTrace');
+      setState(() {
+        _isUpdating = false;
+      });
     }
   }
 
@@ -312,20 +334,16 @@ class _EditProdukPageState extends State<EditProdukPage> {
                                 const TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaJualController,
                             decoration: const InputDecoration(
-                              prefixIcon: Padding(
-                                  padding: EdgeInsets.all(11),
-                                  child: Text('Rp',
-                                      style: TextStyle(
-                                        color: DesignSystem.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ))),
                               hintText: 'Harga jual',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CurrencyInputFormatter()
+                            ],
                             keyboardType: TextInputType.number,
                           ),
                         ],
@@ -362,7 +380,23 @@ class _EditProdukPageState extends State<EditProdukPage> {
                   onPressed: () {
                     _updateProductDetails();
                   },
-                  child: const Text('Update'),
+                  child: Center(
+                    child: _isUpdating
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ))
+                        : const Text(
+                            "Update",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
                 ),
               ],
             ),

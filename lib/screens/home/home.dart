@@ -1,5 +1,7 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,6 +16,7 @@ import 'package:kajur_app/screens/menu_button.dart';
 
 import 'package:flutter/services.dart';
 import 'package:kajur_app/screens/user/profile.dart';
+import 'package:kajur_app/utils/internet_utils.dart';
 
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -62,13 +65,18 @@ class _HomePageState extends State<HomePage> {
         _enabled = true;
       });
 
-      // Simulate fetching new data from your data source
+      while (await checkInternetConnection() == false) {
+        // Tunggu 2 detik sebelum memeriksa koneksi lagi
+        await Future.delayed(const Duration(seconds: 2));
+      }
+
+      // Simulasi pengambilan data baru dari sumber data Anda
       await Future.delayed(const Duration(seconds: 2));
 
-      // After fetching new data, you can setState or update your variables
-      // Example: setState(() { yourData = fetchedData; });
+      // Setelah mengambil data baru, Anda dapat memanggil setState atau memperbarui variabel
+      // Contoh: setState(() { yourData = fetchedData; });
     } catch (error) {
-      // Handle error if it occurs during data refresh
+      // Tangani kesalahan jika terjadi selama pembaruan data
     } finally {
       setState(() {
         _enabled = false;
