@@ -25,60 +25,67 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(
-      behavior: const ScrollBehavior().copyWith(overscroll: false),
-      child: Scaffold(
-        backgroundColor: DesignSystem.secondaryColor,
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              expandedHeight: 300,
-              pinned: true,
-              surfaceTintColor: DesignSystem.primaryColor,
-              flexibleSpace: FlexibleSpaceBar(
-                title: _currentUser != null
-                    ? Text(
-                        'Coming Soon ya ${_currentUser!.displayName}!',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
-                    : null,
-                background: Image.asset(
-                  'images/roket.gif',
-                  fit: BoxFit.cover,
-                ),
-              ),
-              actions: [
-                IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(Icons.close),
-                ),
-              ],
+    return Scaffold(
+      backgroundColor: DesignSystem.secondaryColor,
+      body: Stack(
+        children: [
+          Center(
+            child: Image.asset(
+              'images/roket.gif',
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 280, // Adjust the height as needed
             ),
-            const SliverFillRemaining(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                color: DesignSystem.primaryColor.withOpacity(0.9),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(height: 20),
-                    Text(
-                      'Nih, aplikasi kita lagi dipoles nih. Tungguin ya, ada update keren lagi!',
-                      textAlign: TextAlign.center,
-                      style: TextStyle(fontSize: 16),
-                    ),
+                    _currentUser != null
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Nongki bentar ya, ${_currentUser!.displayName}! Bakal ada update seru nih!',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: DesignSystem.secondaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                'See you..',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: DesignSystem.secondaryColor,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Container(),
                   ],
                 ),
               ),
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 55,
+            right: 0,
+            child: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.close,
+                  color: DesignSystem.secondaryColor, size: 30),
+            ),
+          ),
+        ],
       ),
     );
   }
