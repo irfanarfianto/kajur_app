@@ -4,12 +4,14 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:kajur_app/screens/products/tambah%20produk/details_add_product.dart';
+import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 
 class AddDataPage extends StatefulWidget {
   const AddDataPage({super.key});
@@ -73,11 +75,12 @@ class _AddDataPageState extends State<AddDataPage> {
     String hargaPokokText = _hargaPokokController.text;
     String jumlahIsiText = _jumlahIsiController.text;
 
-    int hargaJual = int.tryParse(hargaJualText) ?? 0;
+    int hargaJual =
+        int.tryParse(hargaJualText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     int stok = int.tryParse(stokText) ?? 0;
-    int hargaPokok = int.tryParse(hargaPokokText) ?? 0;
+    int hargaPokok =
+        int.tryParse(hargaPokokText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
     int jumlahIsi = int.tryParse(jumlahIsiText) ?? 0;
-
     // Validasi input
     if (menu.isNotEmpty &&
         hargaJual > 0 &&
@@ -86,9 +89,7 @@ class _AddDataPageState extends State<AddDataPage> {
         jumlahIsi > 0 && // Validasi jumlah isi
         _selectedCategory.isNotEmpty &&
         _selectedImage != null &&
-        hargaJualText == hargaJual.toString() &&
         stokText == stok.toString() &&
-        hargaPokokText == hargaPokok.toString() &&
         jumlahIsiText == jumlahIsi.toString()) {
       // Hitung keuntungan per produk
       int totalProfit =
@@ -339,8 +340,21 @@ class _AddDataPageState extends State<AddDataPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Nama Produk *',
-                        style: DesignSystem.emphasizedBodyTextStyle),
+                    const Row(
+                      children: [
+                        Text(
+                          'Nama Produk',
+                          style: DesignSystem.emphasizedBodyTextStyle,
+                        ),
+                        Text(
+                          '*',
+                          style: TextStyle(
+                            color: DesignSystem.redAccent,
+                            fontWeight: DesignSystem.regular,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _menuController,
@@ -359,131 +373,20 @@ class _AddDataPageState extends State<AddDataPage> {
                   ],
                 ),
                 const SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Harga pokok/beli *',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            controller: _hargaPokokController,
-                            decoration: const InputDecoration(
-                              prefixIcon: Padding(
-                                  padding: EdgeInsets.all(11),
-                                  child: Text('Rp',
-                                      style: TextStyle(
-                                        color: DesignSystem.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ))),
-                              hintText: 'Harga pokok/beli',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Jumlah isi satuan*',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            controller: _jumlahIsiController,
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            decoration: const InputDecoration(
-                              hintText: 'Isi',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Harga jual *',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            controller: _hargaJualController,
-                            decoration: const InputDecoration(
-                              prefixIcon: Padding(
-                                  padding: EdgeInsets.all(11),
-                                  child: Text('Rp',
-                                      style: TextStyle(
-                                        color: DesignSystem.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ))),
-                              hintText: 'Harga jual',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Stok yang akan dijual*',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            controller: _stokController,
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            decoration: const InputDecoration(
-                              hintText: 'Stok',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-                const SizedBox(height: 16.0),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                  const Text('Pilih kategori *',
-                      style: DesignSystem.emphasizedBodyTextStyle),
+                  const Row(
+                    children: [
+                      Text('Pilih kategori',
+                          style: DesignSystem.emphasizedBodyTextStyle),
+                      Text(
+                        '*',
+                        style: TextStyle(
+                          color: DesignSystem.redAccent,
+                          fontWeight: DesignSystem.regular,
+                        ),
+                      ),
+                    ],
+                  ),
                   const SizedBox(height: 8.0),
                   DropdownButtonFormField2<String>(
                     isExpanded: true,
@@ -548,11 +451,182 @@ class _AddDataPageState extends State<AddDataPage> {
                   ),
                 ]),
                 const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Text('Harga pokok/beli',
+                                  style: DesignSystem.emphasizedBodyTextStyle),
+                              Text(
+                                '*',
+                                style: TextStyle(
+                                  color: DesignSystem.redAccent,
+                                  fontWeight: DesignSystem.regular,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            controller: _hargaPokokController,
+                            decoration: const InputDecoration(
+                              hintText: 'Harga pokok/beli',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CurrencyInputFormatter()
+                            ],
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Text('Jumlah isi satuan',
+                                  style: DesignSystem.emphasizedBodyTextStyle),
+                              Text(
+                                '*',
+                                style: TextStyle(
+                                  color: DesignSystem.redAccent,
+                                  fontWeight: DesignSystem.regular,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: _jumlahIsiController,
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            decoration: const InputDecoration(
+                              hintText: 'Isi',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Text('Harga jual',
+                                  style: DesignSystem.emphasizedBodyTextStyle),
+                              Text(
+                                '*',
+                                style: TextStyle(
+                                  color: DesignSystem.redAccent,
+                                  fontWeight: DesignSystem.regular,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            controller: _hargaJualController,
+                            decoration: const InputDecoration(
+                              hintText: 'Harga jual',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CurrencyInputFormatter()
+                            ],
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Row(
+                            children: [
+                              Text('Stok yang akan dijual',
+                                  style: DesignSystem.emphasizedBodyTextStyle),
+                              Text(
+                                '*',
+                                style: TextStyle(
+                                  color: DesignSystem.redAccent,
+                                  fontWeight: DesignSystem.regular,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8.0),
+                          TextFormField(
+                            controller: _stokController,
+                            style:
+                                const TextStyle(color: DesignSystem.blackColor),
+                            decoration: const InputDecoration(
+                              hintText: 'Stok',
+                              hintStyle: TextStyle(
+                                color: DesignSystem.greyColor,
+                                fontWeight: FontWeight.normal,
+                              ),
+                            ),
+                            keyboardType: TextInputType.number,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 16.0),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Deskripsi *',
-                        style: DesignSystem.emphasizedBodyTextStyle),
+                    const Row(
+                      children: [
+                        Text(
+                          'Deskripsi',
+                          style: DesignSystem.emphasizedBodyTextStyle,
+                        ),
+                        Text(
+                          '*',
+                          style: TextStyle(
+                            color: DesignSystem.redAccent,
+                            fontWeight: DesignSystem.regular,
+                          ),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 8.0),
                     TextFormField(
                       controller: _deskripsiController,
@@ -568,19 +642,39 @@ class _AddDataPageState extends State<AddDataPage> {
                       style: const TextStyle(color: DesignSystem.blackColor),
                       keyboardType: TextInputType.multiline,
                       maxLines: 3,
+                      maxLength: 1000,
                     ),
                   ],
                 ),
                 const SizedBox(height: 24.0),
                 ElevatedButton(
                   onPressed: _isLoading ? null : () => _submitData(context),
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: DesignSystem.whiteColor,
+                    backgroundColor: _isLoading
+                        ? DesignSystem.primaryColor
+                        : null, // Set blue color when updating
+                  ).copyWith(
+                    elevation: ButtonStyleButton.allOrNull(0.0),
+                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                        (Set<MaterialState> states) {
+                      if (_isLoading) {
+                        return DesignSystem
+                            .primaryColor; // Set blue color when updating
+                      }
+                      return DesignSystem
+                          .primaryColor; // Default color when not updating
+                    }),
+                  ),
                   child: Center(
                     child: _isLoading
                         ? const SizedBox(
                             width: 20,
                             height: 20,
-                            child:
-                                CircularProgressIndicator(color: Colors.white))
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ))
                         : const Text(
                             "Tambah",
                             style: TextStyle(
@@ -590,6 +684,7 @@ class _AddDataPageState extends State<AddDataPage> {
                           ),
                   ),
                 ),
+                const SizedBox(height: 24.0),
               ],
             ),
           ),

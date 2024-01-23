@@ -1,11 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:kajur_app/design/system.dart';
 
 class ComingSoonPage extends StatefulWidget {
-  const ComingSoonPage({super.key});
+  const ComingSoonPage({Key? key}) : super(key: key);
 
   @override
-  State<ComingSoonPage> createState() => _ComingSoonPageState();
+  _ComingSoonPageState createState() => _ComingSoonPageState();
 }
 
 class _ComingSoonPageState extends State<ComingSoonPage> {
@@ -25,40 +26,66 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Image.asset(
+      backgroundColor: DesignSystem.secondaryColor,
+      body: Stack(
+        children: [
+          Center(
+            child: Image.asset(
               'images/roket.gif',
-              width: 300,
-              height: 300,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 280, // Adjust the height as needed
             ),
-            Text(
-              'Coming Soon ya ${_currentUser!.displayName}!',
-              style: const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+          ),
+          Positioned.fill(
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                color: DesignSystem.primaryColor.withOpacity(0.9),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _currentUser != null
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Nongki bentar ya, ${_currentUser!.displayName}! Bakal ada update seru nih!',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  color: DesignSystem.secondaryColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 5),
+                              const Text(
+                                'See you..',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: DesignSystem.secondaryColor,
+                                ),
+                              ),
+                            ],
+                          )
+                        : Container(),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            const Text(
-              'Nih, aplikasi kita lagi dipoles nih. Tungguin ya, ada update keren lagi!',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 40),
-            ElevatedButton(
+          ),
+          Positioned(
+            bottom: 55,
+            right: 0,
+            child: IconButton(
               onPressed: () {
-                Navigator.pop(
-                    context); // Ini akan mengarahkan ke halaman sebelumnya
+                Navigator.pop(context);
               },
-              child: const Text('Kembali'),
+              icon: const Icon(Icons.close,
+                  color: DesignSystem.secondaryColor, size: 30),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

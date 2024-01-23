@@ -85,7 +85,6 @@ class FirebaseAuthService {
         'lastLoginAt': DateTime.now().toIso8601String(),
       });
     } catch (e) {
-      print("Error saving user data to Firestore: $e");
       showToast(message: 'Error saving user data to Firestore.');
     }
   }
@@ -121,7 +120,6 @@ class FirebaseAuthService {
           .doc(userId)
           .update({'lastLoginAt': DateTime.now().toIso8601String()});
     } catch (e) {
-      print("Ada kesalahan pas update waktu login terakhir: $e");
     }
   }
 
@@ -134,21 +132,20 @@ class FirebaseAuthService {
 
       return snapshot.docs.isEmpty;
     } catch (e) {
-      print("Ada kesalahan pas ngecek ketersediaan username: $e");
       return false;
     }
   }
 
   Future<User?> signInWithGoogle() async {
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
+    final GoogleSignIn googleSignIn = GoogleSignIn();
 
     try {
       // Clear the previous GoogleSignInAccount
-      await _googleSignIn.signOut();
+      await googleSignIn.signOut();
 
       // Jika pengguna belum masuk, minta untuk memilih akun Google
       final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
+          await googleSignIn.signIn();
 
       if (googleSignInAccount != null) {
         final GoogleSignInAuthentication googleSignInAuthentication =
@@ -196,7 +193,6 @@ class FirebaseAuthService {
 
       return snapshot.exists;
     } catch (e) {
-      print("Ada kesalahan pas cek user di Firestore: $e");
       return false;
     }
   }

@@ -4,9 +4,12 @@ import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 
 class EditProdukPage extends StatefulWidget {
   final String documentId;
@@ -14,6 +17,7 @@ class EditProdukPage extends StatefulWidget {
   const EditProdukPage({super.key, required this.documentId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditProdukPageState createState() => _EditProdukPageState();
 }
 
@@ -21,11 +25,11 @@ class _EditProdukPageState extends State<EditProdukPage> {
   late TextEditingController _menuController;
   late TextEditingController _hargaJualController;
   late TextEditingController _deskripsiController;
-  late TextEditingController _stokController;
 
   late CollectionReference _produkCollection;
   File? _selectedImage;
   String? _oldImageUrl;
+  late bool _isUpdating;
 
   @override
   void initState() {
@@ -35,9 +39,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController = TextEditingController();
     _hargaJualController = TextEditingController();
     _deskripsiController = TextEditingController();
-    _stokController = TextEditingController();
-
+    _isUpdating = false;
     _fetchProductDetails();
+  }
+
+  String formatCurrency(int amount) {
+    final currencyFormatter =
+        NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+    return currencyFormatter.format(amount);
   }
 
   Future<void> _fetchProductDetails() async {
@@ -50,24 +59,20 @@ class _EditProdukPageState extends State<EditProdukPage> {
             documentSnapshot.data() as Map<String, dynamic>;
 
         _menuController.text = data['menu'];
-        _hargaJualController.text = data['hargaJual'].toString();
+        _hargaJualController.text = formatCurrency(data['hargaJual']);
         _deskripsiController.text = data['deskripsi'];
-        _stokController.text = data['stok']?.toString() ?? '0';
 
         setState(() {
           _oldImageUrl = data['image'];
         });
       }
     } catch (e) {
-      print('Error fetching product details: $e');
     }
   }
 
   Future<void> _updateProductDetails() async {
     try {
-      if (_menuController.text.isEmpty ||
-          _hargaJualController.text.isEmpty ||
-          _stokController.text.isEmpty) {
+      if (_menuController.text.isEmpty || _hargaJualController.text.isEmpty) {
         AnimatedSnackBar.material(
           'Eitss! Jangan ada kolom yang kosong ya',
           type: AnimatedSnackBarType.info,
@@ -75,14 +80,16 @@ class _EditProdukPageState extends State<EditProdukPage> {
         return;
       }
 
+      setState(() {
+        _isUpdating = true;
+      });
+
       String hargaJualText = _hargaJualController.text;
-      String stokText = _stokController.text;
-      int hargaJual = int.tryParse(hargaJualText) ?? 0;
-      int stok = int.tryParse(stokText) ?? 0;
+      int newHargaJual =
+          int.tryParse(hargaJualText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
 
       // Validasi input
-      if (hargaJualText == hargaJual.toString() &&
-          stokText == stok.toString()) {
+      if (newHargaJual >= 0) {
         User? user = FirebaseAuth.instance.currentUser;
         String? userId = user?.uid;
         String? userName = user?.displayName ?? 'Unknown User';
@@ -91,8 +98,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
         if (_selectedImage != null) {
           imageUrl = await _uploadImage();
         } else {
-          imageUrl =
-              _oldImageUrl; // Gunakan gambar lama jika tidak ada gambar baru dipilih
+          imageUrl = _oldImageUrl;
         }
 
         // Mendapatkan detail produk sebelum diperbarui
@@ -101,6 +107,11 @@ class _EditProdukPageState extends State<EditProdukPage> {
         Map<String, dynamic> oldProductData =
             oldProductSnapshot.data() as Map<String, dynamic>;
 
+        num newProfitSatuan = newHargaJual -
+            (oldProductData['hargaPokok'] / oldProductData['jumlahIsi'])
+                .toInt();
+        num newTotalProfit = newProfitSatuan * oldProductData['jumlahIsi'];
+
         // Merekam log aktivitas
         await _recordActivityLog(
           action: 'Edit Produk',
@@ -108,28 +119,36 @@ class _EditProdukPageState extends State<EditProdukPage> {
           productName: _menuController.text,
           newProductData: {
             'menu': _menuController.text,
-            'hargaJual': hargaJual,
+            'hargaJual': newHargaJual,
             'deskripsi': _deskripsiController.text,
             'image': imageUrl,
-            'stok': stok,
+            'totalProfit': newTotalProfit,
+            'profitSatuan': newProfitSatuan,
           },
         );
 
         await _produkCollection.doc(widget.documentId).update({
           'menu': _menuController.text,
-          'hargaJual': hargaJual,
+          'hargaJual': newHargaJual,
           'deskripsi': _deskripsiController.text,
           'image': imageUrl,
-          'stok': stok,
+          'totalProfit': newTotalProfit,
+          'profitSatuan': newProfitSatuan,
           'updatedAt': FieldValue.serverTimestamp(),
           'lastEditedBy': userId,
           'lastEditedByName': userName,
         });
+
         // ignore: use_build_context_synchronously
         AnimatedSnackBar.material(
           'Produk berhasil diperbarui',
           type: AnimatedSnackBarType.success,
         ).show(context);
+
+        setState(() {
+          _isUpdating = false;
+        });
+
         Navigator.pop(context);
       } else {
         AnimatedSnackBar.material(
@@ -138,7 +157,9 @@ class _EditProdukPageState extends State<EditProdukPage> {
         ).show(context);
       }
     } catch (e) {
-      print('Error updating product details: $e');
+      setState(() {
+        _isUpdating = false;
+      });
     }
   }
 
@@ -186,7 +207,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
         _selectedImage = File(pickedFile.path);
       });
     } else {
-      print('No image selected.');
     }
   }
 
@@ -311,49 +331,21 @@ class _EditProdukPageState extends State<EditProdukPage> {
                                 const TextStyle(color: DesignSystem.blackColor),
                             controller: _hargaJualController,
                             decoration: const InputDecoration(
-                              prefixIcon: Padding(
-                                  padding: EdgeInsets.all(11),
-                                  child: Text('Rp',
-                                      style: TextStyle(
-                                        color: DesignSystem.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                        fontSize: 16,
-                                      ))),
                               hintText: 'Harga jual',
                               hintStyle: TextStyle(
                                 color: DesignSystem.greyColor,
                                 fontWeight: FontWeight.normal,
                               ),
                             ),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              CurrencyInputFormatter()
+                            ],
                             keyboardType: TextInputType.number,
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(width: 16.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Stok',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            controller: _stokController,
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            decoration: const InputDecoration(
-                              hintText: 'Stok',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    )
                   ],
                 ),
                 const SizedBox(height: 16.0),
@@ -385,7 +377,23 @@ class _EditProdukPageState extends State<EditProdukPage> {
                   onPressed: () {
                     _updateProductDetails();
                   },
-                  child: const Text('Update'),
+                  child: Center(
+                    child: _isUpdating
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ))
+                        : const Text(
+                            "Update",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                  ),
                 ),
               ],
             ),
@@ -400,7 +408,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
     _menuController.dispose();
     _hargaJualController.dispose();
     _deskripsiController.dispose();
-    _stokController.dispose();
     super.dispose();
   }
 }

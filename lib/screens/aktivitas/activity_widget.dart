@@ -4,6 +4,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
 class RecentActivityWidget extends StatelessWidget {
   const RecentActivityWidget({super.key});
@@ -15,32 +16,11 @@ class RecentActivityWidget extends StatelessWidget {
       child: Column(
         children: [
           Center(
-            child: Container(
-              height: 335,
-              padding: const EdgeInsets.only(
-                top: 16,
-                bottom: 10,
-                left: 16,
-                right: 16,
-              ),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: DesignSystem.secondaryColor,
-                border: Border.all(
-                  color: DesignSystem.greyColor.withOpacity(.10),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: DesignSystem.greyColor.withOpacity(.10),
-                    offset: const Offset(0, 5),
-                    blurRadius: 10,
-                  ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Skeleton.keep(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
@@ -90,45 +70,65 @@ class RecentActivityWidget extends StatelessWidget {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 5),
-                  StreamBuilder<QuerySnapshot>(
-                    stream: FirebaseFirestore.instance
-                        .collection('activity_log')
-                        .orderBy('timestamp', descending: true)
-                        .limit(3)
-                        .snapshots(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<QuerySnapshot> snapshot) {
-                      if (snapshot.hasError) {
-                        return Text('Error: ${snapshot.error}');
-                      }
+                ),
+                const SizedBox(height: 8),
+                StreamBuilder<QuerySnapshot>(
+                  stream: FirebaseFirestore.instance
+                      .collection('activity_log')
+                      .orderBy('timestamp', descending: true)
+                      .limit(5)
+                      .snapshots(),
+                  builder: (BuildContext context,
+                      AsyncSnapshot<QuerySnapshot> snapshot) {
+                    if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const SizedBox(
+                        height: 150,
+                        child: Center(
                           child: CircularProgressIndicator(
                             color: DesignSystem.primaryColor,
                           ),
-                        );
-                      }
+                        ),
+                      );
+                    }
 
-                      if (snapshot.data == null ||
-                          snapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text('Tidak ada aktivitas terbaru'),
-                        );
-                      }
+                    if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
+                      return const Center(
+                        child: Text('Tidak ada aktivitas terbaru'),
+                      );
+                    }
 
-                      // Use ListView.builder instead of ListView
-                      return Column(
-                        children:
-                            snapshot.data!.docs.map((DocumentSnapshot doc) {
-                          Map<String, dynamic> data =
-                              doc.data() as Map<String, dynamic>;
+                    // Use ListView.builder instead of ListView
+                    return Column(
+                      children: snapshot.data!.docs.map((DocumentSnapshot doc) {
+                        Map<String, dynamic> data =
+                            doc.data() as Map<String, dynamic>;
 
-                          return Column(
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 10),
+                          padding: const EdgeInsets.all(8.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: DesignSystem.secondaryColor,
+                            border: Border.all(
+                                color: DesignSystem.greyColor.withOpacity(.10)),
+                            boxShadow: [
+                              BoxShadow(
+                                color: DesignSystem.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Column(
                             children: [
                               ListTile(
-                                leading: ActivityIcon(action: data['action']),
+                                leading: Skeleton.leaf(
+                                    child:
+                                        ActivityIcon(action: data['action'])),
                                 title: Text(
                                   (data['action'] ?? '') +
                                       (data['productName'] != null
@@ -155,17 +155,14 @@ class RecentActivityWidget extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              Divider(
-                                color: DesignSystem.greyColor.withOpacity(.10),
-                              ),
                             ],
-                          );
-                        }).toList(),
-                      );
-                    },
-                  ),
-                ],
-              ),
+                          ),
+                        );
+                      }).toList(),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         ],

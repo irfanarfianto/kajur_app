@@ -65,8 +65,8 @@ class AddProductDetailPage extends StatelessWidget {
                     children: [
                       Image.asset(
                         'assets/gif/success2.gif',
-                        height: 150,
-                        width: 150,
+                        height: 100,
+                        width: 100,
                         fit: BoxFit.contain,
                       ),
                       const SizedBox(height: 5),

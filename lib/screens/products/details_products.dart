@@ -6,14 +6,17 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:intl/intl.dart';
+import 'package:kajur_app/screens/products/stok/update_stok.dart';
 import 'package:readmore/readmore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 class DetailProdukPage extends StatefulWidget {
   final String documentId;
 
-  const DetailProdukPage({super.key, required this.documentId});
+  const DetailProdukPage({
+    super.key,
+    required this.documentId,
+  });
 
   @override
   State<DetailProdukPage> createState() => _DetailProdukPageState();
@@ -21,7 +24,6 @@ class DetailProdukPage extends StatefulWidget {
 
 class _DetailProdukPageState extends State<DetailProdukPage> {
   late CollectionReference _produkCollection;
-  bool _enabled = false;
 
   @override
   void initState() {
@@ -81,11 +83,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       return; // Check if the widget is still mounted
     }
 
-    // Set state to indicate refreshing
-    setState(() {
-      _enabled = true;
-    });
-
     try {
       // Fetch or refresh data here (e.g., refetch Firestore data)
       await Future.delayed(const Duration(seconds: 1)); // Simulating a delay
@@ -95,9 +92,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       // Disable skeleton loading after data has been fetched or in case of an error
       if (mounted) {
         // Check again before calling setState
-        setState(() {
-          _enabled = false;
-        });
       }
     }
   }
@@ -107,13 +101,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
-        backgroundColor: DesignSystem.secondaryColor,
-        appBar: AppBar(
-          title: const Text('Detail Produk'),
-        ),
-        body: SingleChildScrollView(
-            physics: const ClampingScrollPhysics(),
-            child: Container(child: _buildProductDetails())),
+        body: _buildProductDetails(),
         bottomNavigationBar: _buildBottomAppBar(),
       ),
     );
@@ -136,62 +124,66 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             .firstWhere((doc) => doc.id == widget.documentId)
             .data() as Map<String, dynamic>;
 
+        String productName = data['menu'] ?? 'Product Name';
+
         Timestamp createdAt = data['createdAt'] ?? Timestamp.now();
         Timestamp updatedAt = data['updatedAt'] ?? Timestamp.now();
 
-        return Skeletonizer(
-          enabled: _enabled,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
+        return CustomScrollView(slivers: [
+          SliverAppBar(
+            iconTheme: const IconThemeData(
+              color: DesignSystem.whiteColor,
+              size: 24,
+            ),
+            expandedHeight: 300,
+            floating: true,
+            pinned: true,
+            foregroundColor: DesignSystem.whiteColor,
+            title: Text(
+              productName,
+            ),
+            automaticallyImplyLeading: true,
+            centerTitle: true,
+            backgroundColor: DesignSystem.primaryColor,
+            flexibleSpace: FlexibleSpaceBar(
+              background: GestureDetector(
                 onTap: () {
                   _showImageDialog(context, data['image']);
                 },
-                child: Skeleton.leaf(
-                  child: Hero(
-                    tag: 'product_image_${widget.documentId}',
-                    child: SizedBox(
-                      height: 350,
-                      width: double.infinity,
-                      child: ClipRRect(
-                        child: CachedNetworkImage(
-                          imageUrl: data['image'],
-                          fit: BoxFit.cover,
-                          errorWidget: (context, url, error) =>
-                              const Icon(Icons.error),
-                        ),
+                child: Hero(
+                  tag: 'product_image_${widget.documentId}',
+                  child: SizedBox(
+                    height: 300,
+                    width: 300,
+                    child: ClipRRect(
+                      child: CachedNetworkImage(
+                        imageUrl: data['image'],
+                        fit: BoxFit.cover,
+                        errorWidget: (context, url, error) =>
+                            const Icon(Icons.error),
                       ),
                     ),
                   ),
                 ),
               ),
+            ),
+          ),
+          SliverList(
+            delegate: SliverChildListDelegate([
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Flexible(
-                          child: Text(
-                            data['menu'],
-                            style: const TextStyle(
-                              fontWeight: FontWeight.normal,
-                              fontSize: 18,
-                              color: DesignSystem.blackColor,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Row(
-                          children: [
-                            Skeleton.leaf(
-                              child: StatusBadge(
+                    Column(children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Detail produk',
+                              style: DesignSystem.titleTextStyle),
+                          Row(
+                            children: [
+                              StatusBadge(
                                 label: data['kategori'] == 'Makanan'
                                     ? 'Makanan'
                                     : data['kategori'] == 'Minuman'
@@ -203,73 +195,155 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                         ? DesignSystem.primaryColor
                                         : Colors.grey,
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Skeleton.leaf(
-                              child: StatusBadge(
+                              const SizedBox(width: 8),
+                              StatusBadge(
                                 label: data['stok'] == 0
                                     ? 'Stok habis'
-                                    : 'Stok ${data['stok'] ?? 0}',
+                                    : 'Sisa stok ${data['stok'] ?? 0}',
                                 color: data['stok'] == 0
                                     ? DesignSystem.redAccent
                                     : data['stok'] < 5
                                         ? DesignSystem.primaryColor
                                         : DesignSystem.primaryColor,
                               ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ]),
+                    const SizedBox(height: 15),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text('Harga Jual'),
+                        Row(
+                          children: [
+                            Text(
+                              NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp ',
+                                decimalDigits: 0,
+                              ).format(data['hargaJual']),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: DesignSystem.blackColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            Text(
+                              ' +${NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp ',
+                                decimalDigits: 0,
+                              ).format(data['profitSatuan'].toInt())}',
+                              style: const TextStyle(
+                                fontSize: 15,
+                                color: DesignSystem.greenAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ],
                         ),
                       ],
                     ),
-                    Text(
-                      NumberFormat.currency(
-                        locale: 'id',
-                        symbol: 'Rp',
-                        decimalDigits: 0,
-                      ).format(data['hargaJual']),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: DesignSystem.blackColor,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
                     const SizedBox(height: 8),
-                    Text(
-                      NumberFormat.currency(
-                        locale: 'id',
-                        symbol: 'Rp',
-                        decimalDigits: 0,
-                      ).format(data['profitSatuan'].toInt()),
-                      style: const TextStyle(
-                        fontSize: 20,
-                        color: DesignSystem.greenAccent,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Harga Pokok / Beli'),
+                            Text(
+                              NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp ',
+                                decimalDigits: 0,
+                              ).format(data['hargaPokok']),
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: DesignSystem.blackColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 10),
+                        const SizedBox(
+                          height: 30, // Adjust the height as needed
+                          child: VerticalDivider(
+                            color: DesignSystem
+                                .greyColor, // Set the color of the vertical line
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Qty / isi'),
+                            Text(
+                              '${data['jumlahIsi']}pcs',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: DesignSystem.blackColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(width: 10),
+                        const SizedBox(
+                          height: 30, // Adjust the height as needed
+                          child: VerticalDivider(
+                            color: DesignSystem
+                                .greyColor, // Set the color of the vertical line
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Perkiraan Total Profit'),
+                            Text(
+                              '+${NumberFormat.currency(
+                                locale: 'id',
+                                symbol: 'Rp ',
+                                decimalDigits: 0,
+                              ).format(data['totalProfit'].toInt())}',
+                              style: const TextStyle(
+                                fontSize: 18,
+                                color: DesignSystem.greenAccent,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 15),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Deskripsi produk',
                             style: DesignSystem.subtitleTextStyle),
                         ReadMoreText(
-                            '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
-                            trimLines: 3,
-                            style: DesignSystem.bodyTextStyle,
-                            colorClickableText: DesignSystem.primaryColor,
-                            trimMode: TrimMode.Line,
-                            trimCollapsedText: 'Baca selengkapnya',
-                            trimExpandedText: 'Tutup',
-                            moreStyle: const TextStyle(
-                              fontSize: 14,
-                              color: DesignSystem.greyColor,
-                              fontWeight: DesignSystem.regular,
-                            ),
-                            lessStyle: const TextStyle(
-                              fontSize: 12,
-                              color: DesignSystem.greyColor,
-                              fontWeight: DesignSystem.regular,
-                            )),
+                          '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
+                          trimLines: 3,
+                          style: DesignSystem.bodyTextStyle,
+                          colorClickableText: DesignSystem.primaryColor,
+                          trimMode: TrimMode.Line,
+                          trimCollapsedText: 'Baca selengkapnya',
+                          trimExpandedText: 'Tutup',
+                          moreStyle: const TextStyle(
+                            fontSize: 14,
+                            color: DesignSystem.greyColor,
+                            fontWeight: DesignSystem.regular,
+                          ),
+                          lessStyle: const TextStyle(
+                            fontSize: 12,
+                            color: DesignSystem.greyColor,
+                            fontWeight: DesignSystem.regular,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: 8),
@@ -365,9 +439,9 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   ],
                 ),
               ),
-            ],
-          ),
-        );
+            ]),
+          )
+        ]);
       },
     );
   }
@@ -420,6 +494,37 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               icon: const Icon(Icons.delete,
                   color: DesignSystem.whiteColor, size: 20),
               tooltip: 'Hapus',
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  elevation: 0,
+                  shadowColor: Colors.transparent,
+                  foregroundColor: DesignSystem.blackColor,
+                  backgroundColor: DesignSystem.secondaryColor,
+                  shape: RoundedRectangleBorder(
+                      borderRadius:
+                          const BorderRadius.all(Radius.circular(100)),
+                      side: BorderSide(
+                        color: DesignSystem.greyColor.withOpacity(.20),
+                      )),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+                ),
+                onPressed: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          UpdateStokProdukPage(documentId: widget.documentId),
+                    ),
+                  );
+                  // Refresh data setelah kembali dari halaman UpdateStokProdukPage
+                  _refreshData();
+                },
+                child: const Text('Update Stok'),
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(
@@ -487,7 +592,7 @@ class StatusBadge extends StatelessWidget {
       child: Text(
         label,
         style: const TextStyle(
-          fontSize: 10,
+          fontSize: 12,
           color: Colors.white,
         ),
       ),

@@ -1,23 +1,28 @@
 // ignore_for_file: deprecated_member_use
 
+import 'dart:async';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:kajur_app/design/system.dart';
 
-import 'package:kajur_app/screens/home/widget/activity_widget.dart';
-import 'package:kajur_app/screens/home/widget/drawer_widget.dart';
+import 'package:kajur_app/screens/aktivitas/activity_widget.dart';
+import 'package:kajur_app/screens/home/widget/images_widget.dart';
+
 import 'package:kajur_app/screens/home/widget/stock_widget.dart';
 import 'package:kajur_app/screens/home/widget/total_produk_widget.dart';
 import 'package:kajur_app/screens/menu_button.dart';
 
 import 'package:flutter/services.dart';
+import 'package:kajur_app/screens/user/profile.dart';
+import 'package:kajur_app/utils/internet_utils.dart';
 
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key});
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -61,13 +66,18 @@ class _HomePageState extends State<HomePage> {
         _enabled = true;
       });
 
-      // Simulate fetching new data from your data source
+      while (await checkInternetConnection() == false) {
+        // Tunggu 2 detik sebelum memeriksa koneksi lagi
+        await Future.delayed(const Duration(seconds: 2));
+      }
+
+      // Simulasi pengambilan data baru dari sumber data Anda
       await Future.delayed(const Duration(seconds: 2));
 
-      // After fetching new data, you can setState or update your variables
-      // Example: setState(() { yourData = fetchedData; });
+      // Setelah mengambil data baru, Anda dapat memanggil setState atau memperbarui variabel
+      // Contoh: setState(() { yourData = fetchedData; });
     } catch (error) {
-      // Handle error if it occurs during data refresh
+      // Tangani kesalahan jika terjadi selama pembaruan data
     } finally {
       setState(() {
         _enabled = false;
@@ -80,35 +90,110 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  Widget _buildAppBar() {
+  Widget _buildAppBar(BuildContext context) {
     return AppBar(
       elevation: 0,
       backgroundColor: DesignSystem.backgroundColor,
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
-      title:
-          const Text("Manajemen Kajur", style: TextStyle(fontFamily: 'Roboto')),
+      title: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            PageRouteBuilder(
+              pageBuilder: (context, animation, secondaryAnimation) =>
+                  UserProfilePage(currentUser: _currentUser),
+              transitionsBuilder:
+                  (context, animation, secondaryAnimation, child) {
+                const begin = Offset(1.0, 0.0);
+                const end = Offset.zero;
+                const curve = Curves.easeInOut;
+
+                var tween = Tween(begin: begin, end: end).chain(
+                  CurveTween(curve: curve),
+                );
+
+                var offsetAnimation = animation.drive(tween);
+
+                return SlideTransition(
+                  position: offsetAnimation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        },
+        child: _buildUserWidget(_currentUser),
+      ),
       actions: [
         // notification icon
         IconButton(
-            onPressed: () {
-              // TODO: implement notification icon
-              Navigator.pushNamed(context, '/comingsoon');
-            },
-            icon: const Icon(
-              Icons.notifications_none_outlined,
-            ))
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all(Colors.transparent),
+            overlayColor: MaterialStateProperty.all(Colors.transparent),
+          ),
+          color: DesignSystem.greyColor,
+          iconSize: 24,
+          constraints: const BoxConstraints(),
+          onPressed: () {
+            // TODO: implement notification icon
+            Navigator.pushNamed(context, '/comingsoon');
+          },
+          icon: const Icon(Icons.notifications_none_outlined),
+        ),
       ],
     );
   }
 
-  void _confirmSignOut() {
-    // Your sign-out logic here
-    // Example:
-    // _googleSignIn.signOut();
-    // FirebaseAuth.instance.signOut();
-    // Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-    // showToast(message: "Berhasil keluar");
+  Widget _buildUserWidget(User? currentUser) {
+    if (_currentUser == null) {
+      return const CircularProgressIndicator(
+        color: DesignSystem.whiteColor,
+      );
+    } else {
+      return Container(
+        alignment: Alignment.topLeft,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              backgroundImage: AssetImage('images/avatar.png'),
+            ),
+            const SizedBox(width: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "${_currentUser!.displayName}",
+                  style: const TextStyle(
+                    fontWeight: DesignSystem.regular,
+                    fontSize: 18,
+                    color: DesignSystem.blackColor,
+                  ),
+                ),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.email,
+                      color: DesignSystem.greyColor,
+                      size: 12,
+                    ),
+                    const SizedBox(width: 2),
+                    Text(
+                      "${_currentUser!.email}",
+                      style: const TextStyle(
+                        color: DesignSystem.greyColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                )
+              ],
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -123,34 +208,29 @@ class _HomePageState extends State<HomePage> {
         child: Scaffold(
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: _buildAppBar(),
+            child: _buildAppBar(context),
           ),
-          endDrawer: Drawer(
-            child: DrawerWidget(
-              currentUser: _currentUser,
-              confirmSignOut: _confirmSignOut,
-            ),
-          ),
-          body: Stack(
-            children: [
-              RefreshIndicator(
-                color: DesignSystem.primaryColor,
-                onRefresh: _refreshData,
-                child: Skeletonizer(
-                  enabled: _enabled,
-                  child: SingleChildScrollView(
-                    physics: const ScrollPhysics(),
-                    child: Column(
-                      children: [
-                        buildTotalProductsWidget(context),
-                        buildStockWidget(context),
-                        const RecentActivityWidget(),
-                      ],
+          body: RefreshIndicator(
+            color: DesignSystem.primaryColor,
+            onRefresh: _refreshData,
+            child: Skeletonizer(
+              enabled: _enabled,
+              child: ListView(
+                physics: const ClampingScrollPhysics(),
+                children: [
+                  const SizedBox(height: 20),
+                  buildTotalProductsWidget(context),
+                  buildStockWidget(context),
+                  const RecentActivityWidget(),
+                  Center(
+                    child: Image.asset(
+                      'images/gambar.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
           floatingActionButton: FloatingActionButton.extended(
               onPressed: () {

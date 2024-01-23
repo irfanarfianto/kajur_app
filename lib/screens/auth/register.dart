@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
@@ -22,9 +21,13 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   bool isSigningUp = false;
   bool _passwordVisible = false;
+  bool _confirmPasswordVisible = false;
 
   @override
   void dispose() {
@@ -57,6 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
             // ignore: deprecated_member_use
             await user.updateProfile(displayName: user.displayName);
             showToast(message: "Berhasil daftar akun dengan Google");
+            // ignore: use_build_context_synchronously
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
@@ -79,18 +83,10 @@ class _SignUpPageState extends State<SignUpPage> {
       isSigningUp = true;
     });
 
-    String username = _usernameController.text;
+    String username =
+        _usernameController.text.replaceAll(' ', '').toLowerCase();
     String email = _emailController.text;
     String password = _passwordController.text;
-
-    // Pemeriksaan apakah semua form terisi
-    if (username.isEmpty || email.isEmpty || password.isEmpty) {
-      showToast(message: "Semua form harus diisi");
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
 
     // Pemeriksaan apakah password memenuhi persyaratan
     if (!_isPasswordValid(password)) {
@@ -125,6 +121,7 @@ class _SignUpPageState extends State<SignUpPage> {
         // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
         showToast(message: "Berhasil daftar akun");
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginPage()),
@@ -165,213 +162,307 @@ class _SignUpPageState extends State<SignUpPage> {
             padding: const EdgeInsets.symmetric(horizontal: 15),
             child: SingleChildScrollView(
               physics: const BouncingScrollPhysics(),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    "Daftar",
-                    style: TextStyle(
-                      fontSize: 27,
-                      fontWeight: DesignSystem.medium,
-                      color: DesignSystem.blackColor,
+              child: Form(
+                key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Daftar",
+                      style: TextStyle(
+                        fontSize: 27,
+                        fontWeight: DesignSystem.medium,
+                        color: DesignSystem.blackColor,
+                      ),
                     ),
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Username',
-                        style: DesignSystem.bodyTextStyle,
-                      ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        controller: _usernameController,
-                        textCapitalization: TextCapitalization.words,
-                        keyboardType: TextInputType.name,
-                        textInputAction: TextInputAction.next,
-                        style: const TextStyle(color: DesignSystem.blackColor),
-                        decoration: const InputDecoration(
-                          hintText: 'Username',
-                          hintStyle: TextStyle(
-                            color: DesignSystem.greyColor,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        onFieldSubmitted: (_) =>
-                            FocusScope.of(context).nextFocus(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Email',
-                        style: DesignSystem.bodyTextStyle,
-                      ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        controller: _emailController,
-                        textCapitalization: TextCapitalization.words,
-                        keyboardType: TextInputType.emailAddress,
-                        textInputAction: TextInputAction.next,
-                        style: const TextStyle(color: DesignSystem.blackColor),
-                        decoration: const InputDecoration(
-                          hintText: 'Email',
-                          hintStyle: TextStyle(
-                            color: DesignSystem.greyColor,
-                            fontWeight: FontWeight.normal,
-                          ),
-                        ),
-                        onFieldSubmitted: (_) =>
-                            FocusScope.of(context).nextFocus(),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Password',
-                        style: DesignSystem.bodyTextStyle,
-                      ),
-                      const SizedBox(height: 8.0),
-                      TextFormField(
-                        controller: _passwordController,
-                        style: const TextStyle(color: DesignSystem.blackColor),
-                        decoration: InputDecoration(
-                          hintText: 'Password',
-                          hintStyle: const TextStyle(
-                            color: DesignSystem.greyColor,
-                            fontWeight: FontWeight.normal,
-                          ),
-                          helperText:
-                              'Minimal 8 karakter, termasuk huruf dan angka',
-                          helperStyle: const TextStyle(
-                            color: DesignSystem.greyColor,
-                            fontStyle: FontStyle.italic,
-                          ),
-                          suffixIcon: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: InkWell(
-                              borderRadius: BorderRadius.circular(100),
-                              splashColor: Colors.transparent,
-                              onTap: () {
-                                setState(() {
-                                  // Mengubah visibilitas teks password
-                                  _passwordVisible = !_passwordVisible;
-                                });
-                              },
-                              child: Icon(
-                                _passwordVisible
-                                    ? Icons.visibility
-                                    : Icons.visibility_off,
-                                color: DesignSystem.greyColor,
-                              ),
-                            ),
-                          ),
-                        ),
-                        keyboardType: TextInputType.visiblePassword,
-                        obscureText: !_passwordVisible,
-                        textInputAction: TextInputAction.done,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 30,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _signUp();
-                    },
-                    child: Center(
-                      child: isSigningUp
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(
-                                color: DesignSystem.whiteColor,
-                              ),
-                            )
-                          : const Text(
-                              "Daftar akun",
-                              style: TextStyle(
-                                color: DesignSystem.whiteColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+                    const SizedBox(
+                      height: 30,
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: Divider(
-                            color: DesignSystem.greyColor.withOpacity(.30),
-                            height: 0.5,
-                          ),
+                        const Text(
+                          'Username',
+                          style: DesignSystem.bodyTextStyle,
                         ),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 8.0),
-                          child: Text("Atau"),
-                        ),
-                        Expanded(
-                          child: Divider(
-                            color: DesignSystem.greyColor.withOpacity(.30),
-                            height: 0.5,
+                        const SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _usernameController,
+                          textCapitalization: TextCapitalization.words,
+                          keyboardType: TextInputType.name,
+                          textInputAction: TextInputAction.next,
+                          style:
+                              const TextStyle(color: DesignSystem.blackColor),
+                          decoration: const InputDecoration(
+                            hintText: 'Username',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
                           ),
+                          onFieldSubmitted: (_) =>
+                              FocusScope.of(context).nextFocus(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Username harus diisi';
+                            }
+                            return null;
+                          },
                         ),
                       ],
                     ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      _signUpWithGoogle();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: DesignSystem.whiteColor,
+                    const SizedBox(
+                      height: 10,
                     ),
-                    child: const Center(
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Email',
+                          style: DesignSystem.bodyTextStyle,
+                        ),
+                        const SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _emailController,
+                          textCapitalization: TextCapitalization.words,
+                          keyboardType: TextInputType.emailAddress,
+                          textInputAction: TextInputAction.next,
+                          style:
+                              const TextStyle(color: DesignSystem.blackColor),
+                          decoration: const InputDecoration(
+                            hintText: 'Email',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                          onFieldSubmitted: (_) =>
+                              FocusScope.of(context).nextFocus(),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Email harus diisi';
+                            } else if (!value.contains('@')) {
+                              return 'Masukkan email dengan benar';
+                            }
+                            return null;
+                          },
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Password',
+                          style: DesignSystem.bodyTextStyle,
+                        ),
+                        const SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _passwordController,
+                          style:
+                              const TextStyle(color: DesignSystem.blackColor),
+                          decoration: InputDecoration(
+                            hintText: 'Password',
+                            hintStyle: const TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            helperText:
+                                'Minimal 8 karakter, termasuk huruf dan angka',
+                            helperStyle: const TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontStyle: FontStyle.italic,
+                            ),
+                            suffixIcon: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(100),
+                                splashColor: Colors.transparent,
+                                onTap: () {
+                                  setState(() {
+                                    // Mengubah visibilitas teks password
+                                    _passwordVisible = !_passwordVisible;
+                                  });
+                                },
+                                child: Icon(
+                                  _passwordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color:
+                                      DesignSystem.greyColor.withOpacity(.50),
+                                ),
+                              ),
+                            ),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Password harus diisi';
+                            } else if (value.length < 8) {
+                              return 'Password harus memiliki minimal 8 karakter';
+                            }
+                            return null;
+                          },
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: !_passwordVisible,
+                          textInputAction: TextInputAction.next,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Konfirmasi Password',
+                          style: DesignSystem.bodyTextStyle,
+                        ),
+                        const SizedBox(height: 8.0),
+                        TextFormField(
+                          controller: _confirmPasswordController,
+                          style:
+                              const TextStyle(color: DesignSystem.blackColor),
+                          decoration: InputDecoration(
+                            hintText: 'Konfirmasi Password',
+                            hintStyle: const TextStyle(
+                              color: DesignSystem.greyColor,
+                              fontWeight: FontWeight.normal,
+                            ),
+                            errorText:
+                                _confirmPasswordController.text.isNotEmpty &&
+                                        _confirmPasswordController.text !=
+                                            _passwordController.text
+                                    ? 'Password tidak cocok'
+                                    : null,
+                            suffixIcon: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(100),
+                                splashColor: Colors.transparent,
+                                onTap: () {
+                                  setState(() {
+                                    // Mengubah visibilitas teks password
+                                    _confirmPasswordVisible =
+                                        !_confirmPasswordVisible;
+                                  });
+                                },
+                                child: Icon(
+                                  _confirmPasswordVisible
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color:
+                                      DesignSystem.greyColor.withOpacity(.50),
+                                ),
+                              ),
+                            ),
+                          ),
+                          validator: (value) =>
+                              _confirmPasswordController.text.isNotEmpty &&
+                                      _confirmPasswordController.text !=
+                                          _passwordController.text
+                                  ? 'Password tidak cocok'
+                                  : null,
+                          keyboardType: TextInputType.visiblePassword,
+                          obscureText: !_confirmPasswordVisible,
+                          textInputAction: TextInputAction.done,
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 30,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          _signUp();
+                        }
+                      },
+                      child: Center(
+                        child: isSigningUp
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  color: DesignSystem.whiteColor,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text(
+                                "Daftar akun",
+                                style: TextStyle(
+                                  color: DesignSystem.whiteColor,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(
-                            FontAwesomeIcons.google,
-                            color: DesignSystem.blackColor,
-                            size: 20,
+                          Expanded(
+                            child: Divider(
+                              color: DesignSystem.greyColor.withOpacity(.30),
+                              height: 0.5,
+                            ),
                           ),
-                          SizedBox(
-                            width: 5,
+                          const Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text("Atau"),
                           ),
-                          Text(
-                            "Daftar dengan Google",
-                            style: TextStyle(
-                              color: DesignSystem.blackColor,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Divider(
+                              color: DesignSystem.greyColor.withOpacity(.30),
+                              height: 0.5,
                             ),
                           ),
                         ],
                       ),
                     ),
-                  ),
-                ],
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        _signUpWithGoogle();
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: DesignSystem.whiteColor,
+                      ),
+                      child: const Center(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              FontAwesomeIcons.google,
+                              color: DesignSystem.blackColor,
+                              size: 20,
+                            ),
+                            SizedBox(
+                              width: 5,
+                            ),
+                            Text(
+                              "Daftar dengan Google",
+                              style: TextStyle(
+                                color: DesignSystem.blackColor,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

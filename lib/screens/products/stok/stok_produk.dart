@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/products/stok/update_stok.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:timeago/timeago.dart' as timeago;
 
@@ -54,7 +53,10 @@ class _StockPageState extends State<StockPage> {
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
         appBar: AppBar(
-          surfaceTintColor: Colors.transparent,
+          elevation: 2,
+          backgroundColor: DesignSystem.primaryColor,
+          foregroundColor: DesignSystem.whiteColor,
+          surfaceTintColor: DesignSystem.primaryColor,
           title: const Center(child: Text('Info Stok 📢')),
           actions: [
             Padding(
@@ -260,30 +262,30 @@ class _StockPageState extends State<StockPage> {
   ) {
     return GestureDetector(
       onTap: () async {
-        await Navigator.of(context).push(
-          PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) =>
-                EditStockPage(
-              namaProduk: namaProduk,
-              stok: stok,
-              documentId: documentId,
-            ),
-            transitionsBuilder:
-                (context, animation, secondaryAnimation, child) {
-              const begin = Offset(0.0, 1.0);
-              const end = Offset.zero;
+        // await Navigator.of(context).push(
+        //   PageRouteBuilder(
+        //     pageBuilder: (context, animation, secondaryAnimation) =>
+        //         EditStockPage(
+        //       namaProduk: namaProduk,
+        //       stok: stok,
+        //       documentId: documentId,
+        //     ),
+        //     transitionsBuilder:
+        //         (context, animation, secondaryAnimation, child) {
+        //       const begin = Offset(0.0, 1.0);
+        //       const end = Offset.zero;
 
-              var tween = Tween(begin: begin, end: end);
+        //       var tween = Tween(begin: begin, end: end);
 
-              var offsetAnimation = animation.drive(tween);
+        //       var offsetAnimation = animation.drive(tween);
 
-              return SlideTransition(
-                position: offsetAnimation,
-                child: child,
-              );
-            },
-          ),
-        );
+        //       return SlideTransition(
+        //         position: offsetAnimation,
+        //         child: child,
+        //       );
+        //     },
+        //   ),
+        // );
       },
       child: Skeleton.leaf(
         child: Container(

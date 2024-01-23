@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
+import 'package:kajur_app/screens/products/widget/sorting_show.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
@@ -17,22 +18,23 @@ enum SortingOption {
 }
 
 class ListProdukPage extends StatefulWidget {
-  const ListProdukPage({super.key});
+  const ListProdukPage({Key? key}) : super(key: key);
 
   @override
-  // ignore: library_private_types_in_public_api
   _ListProdukPageState createState() => _ListProdukPageState();
 }
 
-class _ListProdukPageState extends State<ListProdukPage> {
+class _ListProdukPageState extends State<ListProdukPage>
+    with AutomaticKeepAliveClientMixin {
   final TextEditingController _searchController = TextEditingController();
-
   late CollectionReference _produkCollection;
   late bool _isRefreshing = false;
   CategoryFilter _categoryFilter = CategoryFilter.Semua;
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
-  bool _enabled = false;
+  bool isSelectedTerbaru = true;
+  bool isSelectedAZ = false;
+  bool isSelectedZA = false;
 
   @override
   void initState() {
@@ -41,177 +43,79 @@ class _ListProdukPageState extends State<ListProdukPage> {
     _refreshData();
   }
 
-  void _resetCategoryFilter() {
-    setState(() {
-      _categoryFilter = CategoryFilter.Semua;
-    });
-  }
+  @override
+  bool get wantKeepAlive => true;
 
   void _resetSortingOption() {
     setState(() {
       _sortingOption = SortingOption.Terbaru;
+      isSelectedTerbaru = false;
+      isSelectedAZ = false;
+      isSelectedZA = false;
     });
-  }
-
-  void _updateSnapshot(AsyncSnapshot<QuerySnapshot> newSnapshot) {
-    setState(() {});
-  }
-
-  Future<void> _deleteProduct(String documentId) async {
-    await _produkCollection.doc(documentId).delete();
   }
 
   Future<void> _refreshData() async {
-    // Set state to indicate refreshing
     setState(() {
       _isRefreshing = true;
-      _enabled = false;
-      _resetCategoryFilter();
       _resetSortingOption();
     });
 
-    if (!mounted) {
-      return; // Check if the widget is still mounted
-    }
-
     try {
-      setState(() {
-        _isRefreshing = false;
-        _enabled = true;
-      });
-
-      // Fetch or refresh data here (e.g., refetch Firestore data)
-      await Future.delayed(const Duration(seconds: 2)); // Simulating a delay
+      await Future.delayed(const Duration(seconds: 2));
     } catch (error) {
-      // Handle error in case of any issues during refresh
       print('Error refreshing data: $error');
     } finally {
-      // Disable skeleton loading after data has been fetched or in case of an error
       if (mounted) {
-        // Check again before calling setState
         setState(() {
-          _enabled = false;
+          _isRefreshing = false;
         });
       }
     }
   }
 
-  void _showFilterSortingOverlay() {
+  void _showSortingOverlay() {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       builder: (BuildContext context) {
-        return DraggableScrollableSheet(
-          expand: false,
-          initialChildSize: 0.4, // Adjusted initial size
-          maxChildSize: 0.4, // Adjusted max size
-          minChildSize: 0.1,
-          builder: (BuildContext context, ScrollController scrollController) {
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: DesignSystem.backgroundColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 5,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: DesignSystem.greyColor.withOpacity(.50),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Kategori',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
-                      ),
-                      Row(children: [
-                        buildSortingAndFilteringButton(
-                          label: 'Semua',
-                          icon: Icons.category,
-                          onPressed: () {
-                            _setcategoryOption(CategoryFilter.Semua);
-                            _refreshData();
-                            Navigator.pop(context);
-                          },
-                          isActive: _categoryFilter == CategoryFilter.Semua,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'Makanan',
-                          icon: Icons.restaurant,
-                          onPressed: () {
-                            _setcategoryOption(CategoryFilter.Makanan);
-                            Navigator.pop(context);
-                          },
-                          isActive: _categoryFilter == CategoryFilter.Makanan,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'Minuman',
-                          icon: Icons.local_drink_outlined,
-                          onPressed: () {
-                            _setcategoryOption(CategoryFilter.Minuman);
-                            Navigator.pop(context);
-                          },
-                          isActive: _categoryFilter == CategoryFilter.Minuman,
-                        ),
-                      ]),
-                      const SizedBox(height: 20),
-                      const Text(
-                        'Urutkan berdasarkan',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor,
-                        ),
-                      ),
-                      Row(children: [
-                        buildSortingAndFilteringButton(
-                          label: 'Terbaru',
-                          icon: Icons.flash_auto_outlined,
-                          onPressed: () {
-                            _setSortingOption(SortingOption.Terbaru);
-                            Navigator.pop(context);
-                          },
-                          isActive: _sortingOption == SortingOption.Terbaru,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'A-Z',
-                          icon: Icons.sort_by_alpha,
-                          onPressed: () {
-                            _setSortingOption(SortingOption.AZ);
-                            Navigator.pop(context);
-                          },
-                          isActive: _sortingOption == SortingOption.AZ,
-                        ),
-                        const SizedBox(width: 10),
-                        buildSortingAndFilteringButton(
-                          label: 'Z-A',
-                          icon: Icons.sort_by_alpha_outlined,
-                          onPressed: () {
-                            _setSortingOption(SortingOption.ZA);
-                            Navigator.pop(context);
-                          },
-                          isActive: _sortingOption == SortingOption.ZA,
-                        ),
-                      ]),
-                    ],
-                  ),
-                ],
-              ),
+        return StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return SortingOverlay(
+              isSelectedTerbaru: isSelectedTerbaru,
+              isSelectedAZ: isSelectedAZ,
+              isSelectedZA: isSelectedZA,
+              onTerbaruChanged: (value) {
+                setState(() {
+                  isSelectedTerbaru = value!;
+                  isSelectedAZ = false;
+                  isSelectedZA = false;
+                });
+              },
+              onAZChanged: (value) {
+                setState(() {
+                  isSelectedAZ = value!;
+                  isSelectedTerbaru = false;
+                  isSelectedZA = false;
+                });
+              },
+              onZAChanged: (value) {
+                setState(() {
+                  isSelectedZA = value!;
+                  isSelectedTerbaru = false;
+                  isSelectedAZ = false;
+                });
+              },
+              onReset: () {
+                setState(() {
+                  _resetSortingOption(); // Panggil fungsi reset di sini
+                });
+              },
+              onTerapkan: () {
+                _applySortingOption();
+                _refreshData();
+                Navigator.pop(context);
+              },
             );
           },
         );
@@ -219,39 +123,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
     );
   }
 
-  Widget buildSortingAndFilteringButton({
-    required String label,
-    required IconData icon,
-    required VoidCallback onPressed,
-    required bool isActive,
-  }) {
-    return ElevatedButton(
-      style: isActive
-          ? ElevatedButton.styleFrom(
-              backgroundColor: DesignSystem.primaryColor,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-            )
-          : ElevatedButton.styleFrom(
-              foregroundColor: DesignSystem.greyColor,
-              backgroundColor: DesignSystem.backgroundColor,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              elevation: 0,
-            ),
-      onPressed: onPressed,
-      child: Row(
-        children: [
-          Icon(icon, size: 20),
-          const SizedBox(width: 5),
-          Text(label),
-        ],
-      ),
-    );
+  void _applySortingOption() {
+    if (isSelectedTerbaru) {
+      _setSortingOption(SortingOption.Terbaru);
+    } else if (isSelectedAZ) {
+      _setSortingOption(SortingOption.AZ);
+    } else if (isSelectedZA) {
+      _setSortingOption(SortingOption.ZA);
+    }
   }
 
   void _setSortingOption(SortingOption option) {
@@ -260,18 +139,14 @@ class _ListProdukPageState extends State<ListProdukPage> {
     });
   }
 
-  void _setcategoryOption(CategoryFilter option) {
-    setState(() {
-      _categoryFilter = option;
-    });
-  }
-
-  void _resetFilters() {
-    setState(() {
-      _categoryFilter = CategoryFilter.Semua;
-      _sortingOption = SortingOption.Terbaru;
-      _refreshData();
-    });
+  CategoryFilter _getCategoryFromIndex(int index) {
+    if (index == 0) {
+      return CategoryFilter.Semua;
+    } else if (index == 1) {
+      return CategoryFilter.Makanan;
+    } else {
+      return CategoryFilter.Minuman;
+    }
   }
 
   List<DocumentSnapshot> _filterProducts(QuerySnapshot snapshot) {
@@ -279,9 +154,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
       Map<String, dynamic> data = document.data() as Map<String, dynamic>;
 
       final menuName = data['menu'].toString().toLowerCase();
-      final productCategory = data['kategori']
-          .toString()
-          .toLowerCase(); // Change to the appropriate field in Firestore
+      final productCategory = data['kategori'].toString().toLowerCase();
 
       return (_categoryFilter == CategoryFilter.Semua ||
               (_categoryFilter == CategoryFilter.Makanan &&
@@ -293,7 +166,7 @@ class _ListProdukPageState extends State<ListProdukPage> {
   }
 
   List<DocumentSnapshot> _sortProducts(List<DocumentSnapshot> products) {
-    return products
+    return List.from(products)
       ..sort((a, b) {
         Map<String, dynamic> dataA = a.data() as Map<String, dynamic>;
         Map<String, dynamic> dataB = b.data() as Map<String, dynamic>;
@@ -303,209 +176,136 @@ class _ListProdukPageState extends State<ListProdukPage> {
           Timestamp timeB = dataB['updatedAt'] ?? Timestamp.now();
           return timeB.compareTo(timeA);
         } else if (_sortingOption == SortingOption.AZ) {
-          return dataA['menu'].compareTo(dataB['menu']);
+          return dataA['menu']
+              .toString()
+              .toLowerCase()
+              .compareTo(dataB['menu'].toString().toLowerCase());
         } else {
-          return dataB['menu'].compareTo(dataA['menu']);
+          return dataB['menu']
+              .toString()
+              .toLowerCase()
+              .compareTo(dataA['menu'].toString().toLowerCase());
         }
       });
   }
 
+  int _getNumberOfTabs() {
+    return CategoryFilter.values.length;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: DesignSystem.secondaryColor,
-        surfaceTintColor: DesignSystem.secondaryColor,
-        actions: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: SizedBox(
-                width: MediaQuery.of(context).size.width * 0.75,
-                height: 40,
-                child: Stack(
-                  alignment: Alignment.centerRight,
-                  children: [
-                    TextField(
-                      controller: _searchController,
-                      style: const TextStyle(
-                        color: DesignSystem.blackColor,
-                      ),
-                      decoration: InputDecoration(
-                        filled: true,
-                        fillColor: DesignSystem.greyColor.withOpacity(0.1),
-                        contentPadding: const EdgeInsets.all(8.0),
-                        hintText: 'Cari produk',
-                        hintStyle: const TextStyle(
-                          color: DesignSystem.greyColor,
-                          fontSize: 14.0,
-                        ),
-                        prefixIcon: const Icon(Icons.search),
-                        prefixIconColor: DesignSystem.greyColor,
-                        enabledBorder: const OutlineInputBorder(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(10),
-                          ),
-                          borderSide: BorderSide.none,
-                        ),
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          _searchQuery = value.toLowerCase();
-                        });
-                      },
-                    ),
-                    Visibility(
-                      visible: _searchQuery.isNotEmpty,
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            _searchQuery = ''; // Clear the search query
-                          });
-                          // Clear the text field
-                          _searchController.clear();
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          child: const Icon(
-                            Icons.clear,
-                            color: DesignSystem.greyColor,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushNamed(context, '/comingsoon');
-            },
-            icon: const Icon(Icons.history),
-          ),
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: const BoxDecoration(
-              color: DesignSystem.secondaryColor,
-            ),
-            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                TextButton(
-                    style: TextButton.styleFrom(
-                      foregroundColor: _categoryFilter != CategoryFilter.Semua
-                          ? DesignSystem.primaryColor
-                          : DesignSystem.blackColor,
-                      elevation: 0.2,
-
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 3), // Adjusted padding
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(100),
-                      ),
-                    ),
-                    onPressed: () {
-                      _showFilterSortingOverlay();
-                    },
-                    child: Row(
+    super.build(context);
+    return ScrollConfiguration(
+      behavior: const ScrollBehavior().copyWith(overscroll: false),
+      child: DefaultTabController(
+        length: _getNumberOfTabs(),
+        child: Scaffold(
+          appBar: AppBar(
+            elevation: 2,
+            backgroundColor: DesignSystem.primaryColor,
+            foregroundColor: DesignSystem.whiteColor,
+            surfaceTintColor: DesignSystem.primaryColor,
+            actions: [
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
+                  child: SizedBox(
+                    width: MediaQuery.of(context).size.width * 0.75,
+                    height: 40,
+                    child: Stack(
+                      alignment: Alignment.centerRight,
                       children: [
-                        Text(
-                          _categoryFilter != CategoryFilter.Semua
-                              ? _categoryFilter.toString().split('.').last
-                              : 'Filter',
+                        TextField(
+                          controller: _searchController,
                           style: const TextStyle(
-                            fontSize: 14, // Adjusted font size
+                            color: DesignSystem.whiteColor,
                           ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: DesignSystem.whiteColor.withOpacity(0.1),
+                            contentPadding: const EdgeInsets.all(8.0),
+                            hintText: 'Cari produk',
+                            hintStyle: TextStyle(
+                              color: DesignSystem.whiteColor.withOpacity(.50),
+                              fontSize: 14.0,
+                            ),
+                            prefixIcon: const Icon(Icons.search),
+                            prefixIconColor:
+                                DesignSystem.whiteColor.withOpacity(.50),
+                            enabledBorder: const OutlineInputBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                              borderSide: BorderSide.none,
+                            ),
+                          ),
+                          onChanged: (value) {
+                            setState(() {
+                              _searchQuery = value.toLowerCase();
+                            });
+                          },
                         ),
-                        const SizedBox(width: 4),
-                        const Icon(
-                          Icons.expand_more_outlined,
+                        Visibility(
+                          visible: _searchQuery.isNotEmpty,
+                          child: GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                _searchQuery = '';
+                              });
+                              _searchController.clear();
+                            },
+                            child: Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 10),
+                              child: const Icon(
+                                Icons.clear,
+                                color: DesignSystem.greyColor,
+                              ),
+                            ),
+                          ),
                         ),
                       ],
-                    )),
-                const SizedBox(width: 8),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: _sortingOption != SortingOption.Terbaru
-                        ? DesignSystem.primaryColor
-                        : DesignSystem.blackColor,
-                    elevation: 0.2,
-
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 3), // Adjusted padding
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(100),
                     ),
                   ),
-                  onPressed: () {
-                    _showFilterSortingOverlay();
-                  },
-                  child: Row(
-                    children: [
-                      Text(
-                        _sortingOption != SortingOption.Terbaru
-                            ? _sortingOption.toString().split('.').last
-                            : 'Sort',
-                        style: const TextStyle(
-                          fontSize: 14, // Adjusted font size
-                        ),
-                      ),
-                      const SizedBox(width: 4), // Adjusted spacing
-                      const Icon(
-                        Icons.expand_more_outlined,
-                      ),
-                    ],
-                  ),
                 ),
-                if (_categoryFilter != CategoryFilter.Semua ||
-                    _sortingOption != SortingOption.Terbaru)
-                  const SizedBox(width: 8),
-                if (_categoryFilter != CategoryFilter.Semua ||
-                    _sortingOption != SortingOption.Terbaru)
-                  TextButton(
-                    onPressed: () {
-                      _resetFilters();
-                    },
-                    child: const Text(
-                      'Reset',
+              ),
+              IconButton(
+                onPressed: () {
+                  _showSortingOverlay();
+                },
+                icon: const Icon(Icons.sort_outlined),
+              ),
+            ],
+            bottom: TabBar(
+              tabs: [
+                for (int i = 0; i < _getNumberOfTabs(); i++)
+                  Tab(
+                    child: Text(
+                      _getCategoryFromIndex(i).toString().split('.').last
+                        ..toUpperCase(),
                       style: TextStyle(
-                        color: DesignSystem.primaryColor,
-                        fontSize: 14, // Adjusted font size
+                        color: _categoryFilter == _getCategoryFromIndex(i)
+                            ? DesignSystem.secondaryColor
+                            : DesignSystem.whiteColor,
+                        fontWeight: DesignSystem.regular,
                       ),
                     ),
                   ),
               ],
             ),
           ),
-          Expanded(
-            child: RefreshIndicator(
-              color: DesignSystem.primaryColor,
-              backgroundColor: DesignSystem.backgroundColor,
-              onRefresh: _refreshData,
-              child: Skeletonizer(
-                enabled: _enabled,
-                child: StreamBuilder<QuerySnapshot>(
-                  stream: _produkCollection.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Text('Error: ${snapshot.error}'),
-                      );
-                    }
-
+          body: TabBarView(
+            key: UniqueKey(),
+            children: [
+              for (int i = 0; i < _getNumberOfTabs(); i++)
+                FutureBuilder<QuerySnapshot>(
+                  future: _produkCollection.get(),
+                  builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         _isRefreshing) {
-                      return Skeletonizer(
-                        enabled: _enabled,
-                        child: Container(),
+                      return const Center(
+                        child: CircularProgressIndicator(),
                       );
                     }
 
@@ -520,150 +320,157 @@ class _ListProdukPageState extends State<ListProdukPage> {
 
                     List<DocumentSnapshot> filteredProducts =
                         _filterProducts(snapshot.data!);
+                    List<DocumentSnapshot> categoryProducts =
+                        filteredProducts.where((document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+                      String productCategory =
+                          data['kategori'].toString().toLowerCase();
+
+                      return _getCategoryFromIndex(i) == CategoryFilter.Semua ||
+                          (_getCategoryFromIndex(i) == CategoryFilter.Makanan &&
+                              productCategory == 'makanan') ||
+                          (_getCategoryFromIndex(i) == CategoryFilter.Minuman &&
+                              productCategory == 'minuman');
+                    }).toList();
+
                     List<DocumentSnapshot> sortedProducts =
-                        _sortProducts(filteredProducts);
+                        _sortProducts(categoryProducts);
 
-                    return Scrollbar(
-                      child: ScrollConfiguration(
-                        behavior:
-                            const ScrollBehavior().copyWith(overscroll: false),
-                        child: GridView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                          physics: const ClampingScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                            crossAxisCount: 2,
-                            crossAxisSpacing: 15.0,
-                            mainAxisSpacing: 10.0,
-                          ),
-                          itemCount: sortedProducts.length,
-                          itemBuilder: (BuildContext context, int index) {
-                            DocumentSnapshot document = sortedProducts[index];
-                            Map<String, dynamic> data =
-                                document.data() as Map<String, dynamic>;
-                            String documentId = document.id;
+                    return RefreshIndicator(
+                      backgroundColor: DesignSystem.secondaryColor,
+                      color: DesignSystem.primaryColor,
+                      onRefresh: _refreshData,
+                      child: GridView.builder(
+                        key: UniqueKey(),
+                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 15.0,
+                          mainAxisSpacing: 10.0,
+                        ),
+                        itemCount: sortedProducts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          DocumentSnapshot document = sortedProducts[index];
+                          Map<String, dynamic> data =
+                              document.data() as Map<String, dynamic>;
+                          String documentId = document.id;
 
-                            return Container(
-                              margin: const EdgeInsets.only(top: 5),
-                              child: InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailProdukPage(
-                                        documentId: documentId,
-                                      ),
+                          return Container(
+                            margin: const EdgeInsets.only(top: 5),
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailProdukPage(
+                                      documentId: documentId,
                                     ),
-                                  );
-                                },
-                                child: Hero(
-                                  tag: 'product_image_$documentId',
-                                  child: Card(
-                                    elevation: 0,
-                                    color: DesignSystem.backgroundColor,
-                                    child: Stack(
-                                      children: [
-                                        Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Container(
-                                              height: 150,
-                                              width: double.infinity,
-                                              decoration: BoxDecoration(
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: DesignSystem
-                                                        .greyColor
-                                                        .withOpacity(.10),
-                                                    offset: const Offset(0, 5),
-                                                    blurRadius: 10,
-                                                  ),
-                                                ],
-                                              ),
-                                              child: ClipRRect(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                                child: Image.network(
-                                                  data['image'],
-                                                  fit: BoxFit.cover,
+                                  ),
+                                );
+                              },
+                              child: Hero(
+                                tag: 'product_image_$documentId',
+                                child: Card(
+                                  elevation: 0,
+                                  color: DesignSystem.backgroundColor,
+                                  child: Stack(
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Container(
+                                            height: 150,
+                                            width: double.infinity,
+                                            decoration: BoxDecoration(
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: DesignSystem.greyColor
+                                                      .withOpacity(.10),
+                                                  offset: const Offset(0, 5),
+                                                  blurRadius: 10,
                                                 ),
+                                              ],
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.network(
+                                                data['image'],
+                                                fit: BoxFit.cover,
                                               ),
                                             ),
-                                            const SizedBox(height: 3),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 8.0),
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                children: [
-                                                  Text(
-                                                    data['menu'],
-                                                    style: DesignSystem
-                                                        .titleTextStyle,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    maxLines: 1,
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Positioned(
-                                          top: 8,
-                                          right: 8,
-                                          child: Skeleton.unite(
-                                            child: Container(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      vertical: 5,
-                                                      horizontal: 10),
-                                              decoration: BoxDecoration(
-                                                color: data['stok'] == 0
-                                                    ? DesignSystem.redAccent
-                                                        .withOpacity(.80)
-                                                    : data['stok'] < 5
-                                                        ? DesignSystem
-                                                            .primaryColor
-                                                            .withOpacity(.80)
-                                                        : DesignSystem
-                                                            .primaryColor
-                                                            .withOpacity(.80),
-                                                borderRadius:
-                                                    BorderRadius.circular(100),
-                                              ),
-                                              child: Text(
-                                                data['stok'] == 0
-                                                    ? 'Stok habis'
-                                                    : '${data['stok'] ?? 0}',
-                                                style: const TextStyle(
-                                                  fontSize: 12,
-                                                  color:
-                                                      DesignSystem.whiteColor,
+                                          ),
+                                          const SizedBox(height: 3),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 8.0),
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  data['menu'],
+                                                  style: DesignSystem
+                                                      .titleTextStyle,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  maxLines: 1,
                                                 ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Positioned(
+                                        top: 8,
+                                        right: 8,
+                                        child: Skeleton.unite(
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5, horizontal: 10),
+                                            decoration: BoxDecoration(
+                                              color: data['stok'] == 0
+                                                  ? DesignSystem.redAccent
+                                                      .withOpacity(.80)
+                                                  : data['stok'] < 5
+                                                      ? DesignSystem
+                                                          .primaryColor
+                                                          .withOpacity(.80)
+                                                      : DesignSystem
+                                                          .primaryColor
+                                                          .withOpacity(.80),
+                                              borderRadius:
+                                                  BorderRadius.circular(100),
+                                            ),
+                                            child: Text(
+                                              data['stok'] == 0
+                                                  ? 'Stok habis'
+                                                  : '${data['stok'] ?? 0}',
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: DesignSystem.whiteColor,
                                               ),
                                             ),
                                           ),
                                         ),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
                 ),
-              ),
-            ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

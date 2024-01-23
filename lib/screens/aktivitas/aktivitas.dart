@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
+import 'package:kajur_app/utils/internet_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:kajur_app/design/system.dart';
 
@@ -36,6 +37,10 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     });
 
     try {
+      while (await checkInternetConnection() == false) {
+        // Tunggu 2 detik sebelum memeriksa koneksi lagi
+        await Future.delayed(const Duration(seconds: 2));
+      }
       await Future.delayed(const Duration(seconds: 2));
     } finally {
       if (mounted) {
@@ -159,10 +164,12 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
-        backgroundColor: DesignSystem.secondaryColor,
+        backgroundColor: DesignSystem.backgroundColor,
         appBar: AppBar(
           elevation: 2,
-          surfaceTintColor: DesignSystem.backgroundColor,
+          backgroundColor: DesignSystem.primaryColor,
+          foregroundColor: DesignSystem.whiteColor,
+          surfaceTintColor: DesignSystem.primaryColor,
           title: const Text('Semua Aktivitas'),
         ),
         body: Scrollbar(
@@ -194,7 +201,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     );
                   }
 
-                  List<Map<String, dynamic>> _activitiesData =
+                  List<Map<String, dynamic>> activitiesData =
                       snapshot.data!.docs.map((DocumentSnapshot doc) {
                     Map<String, dynamic> data =
                         doc.data() as Map<String, dynamic>;
@@ -203,9 +210,9 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
 
                   return ListView.builder(
                     physics: const ClampingScrollPhysics(),
-                    itemCount: _activitiesData.length,
+                    itemCount: activitiesData.length,
                     itemBuilder: (BuildContext context, int index) {
-                      Map<String, dynamic> data = _activitiesData[index];
+                      Map<String, dynamic> data = activitiesData[index];
 
                       DateTime activityDate =
                           (data['timestamp'] as Timestamp).toDate();
@@ -216,58 +223,84 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                       bool isFirstActivityWithDate = index == 0 ||
                           formattedDate !=
                               DateFormat('dd MMMM y', 'id').format(
-                                  (_activitiesData[index - 1]['timestamp']
+                                  (activitiesData[index - 1]['timestamp']
                                           as Timestamp)
                                       .toDate());
 
-                      return Column(
-                        children: [
-                          if (isFirstActivityWithDate)
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          children: [
+                            if (isFirstActivityWithDate)
+                              Skeleton.keep(
+                                child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  width: double.infinity,
+                                  color: DesignSystem.backgroundColor,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 16, vertical: 10),
+                                    child: Text(formattedDate,
+                                        style: DesignSystem.titleTextStyle),
+                                  ),
+                                ),
+                              ),
                             Container(
-                              alignment: Alignment.centerLeft,
-                              width: double.infinity,
-                              color: DesignSystem.backgroundColor,
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 16, vertical: 10),
-                                child: Text(formattedDate,
-                                    style: DesignSystem.titleTextStyle),
+                              margin: const EdgeInsets.only(bottom: 10),
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color: DesignSystem.secondaryColor,
+                                border: Border.all(
+                                    color: DesignSystem.greyColor
+                                        .withOpacity(.10)),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        DesignSystem.greyColor.withOpacity(.10),
+                                    offset: const Offset(0, 5),
+                                    blurRadius: 10,
+                                  ),
+                                ],
+                              ),
+                              child: Column(
+                                children: [
+                                  ListTile(
+                                    leading: Skeleton.leaf(
+                                        child: ActivityIcon(
+                                            action: data['action'])),
+                                    title: Text(
+                                      (data['action'] ?? '') +
+                                          (data['productName'] != null
+                                              ? ' - ${data['productName']}'
+                                              : ''),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style:
+                                          DesignSystem.emphasizedBodyTextStyle,
+                                    ),
+                                    subtitle: Text(
+                                      (data['userName'] ?? '') +
+                                          ' pada ' +
+                                          (data['timestamp'] != null
+                                              ? DateFormat('dd MMMM y • HH:mm ',
+                                                      'id')
+                                                  .format((data['timestamp']
+                                                          as Timestamp)
+                                                      .toDate())
+                                              : 'Timestamp tidak tersedia'),
+                                      style: const TextStyle(
+                                        fontFamily: 'Roboto',
+                                        fontSize: 14,
+                                        color: Colors.grey,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                          ListTile(
-                            leading: Skeleton.leaf(
-                              child: ActivityIcon(action: data['action']),
-                            ),
-                            title: Text(
-                              (data['action'] ?? '') +
-                                  (data['productName'] != null
-                                      ? ' - ${data['productName']}'
-                                      : ''),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: DesignSystem.emphasizedBodyTextStyle,
-                            ),
-                            subtitle: Text(
-                              (data['userName'] ?? '') +
-                                  ' pada ' +
-                                  (data['timestamp'] != null
-                                      ? DateFormat('dd MMMM y • HH:mm ', 'id')
-                                          .format(
-                                              (data['timestamp'] as Timestamp)
-                                                  .toDate())
-                                      : 'Timestamp tidak tersedia'),
-                              style: const TextStyle(
-                                color: Colors.grey,
-                              ),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Divider(
-                              color: DesignSystem.greyColor.withOpacity(.10),
-                            ),
-                          ),
-                        ],
+                          ],
+                        ),
                       );
                     },
                   );
