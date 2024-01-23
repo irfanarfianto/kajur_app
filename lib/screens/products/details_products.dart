@@ -53,7 +53,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       await _produkCollection.doc(documentId).delete();
       showToast(message: 'Produk berhasil dihapus');
     } catch (e) {
-      print('Error: $e');
       showToast(message: 'Terjadi kesalahan saat menghapus produk');
     }
   }
@@ -488,7 +487,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   foregroundColor: DesignSystem.blackColor,
                   backgroundColor: DesignSystem.secondaryColor,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(100)),
+                      borderRadius: const BorderRadius.all(Radius.circular(100)),
                       side: BorderSide(
                         color: DesignSystem.greyColor.withOpacity(.20),
                       )),

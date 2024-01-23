@@ -13,7 +13,7 @@ class SortingOverlay extends StatelessWidget {
   final VoidCallback onReset;
   final VoidCallback onTerapkan;
 
-  SortingOverlay({
+  const SortingOverlay({super.key, 
     required this.isSelectedTerbaru,
     required this.isSelectedAZ,
     required this.isSelectedZA,

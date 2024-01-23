@@ -8,9 +8,9 @@ class UpdateStokProdukPage extends StatefulWidget {
   final String documentId;
 
   const UpdateStokProdukPage({
-    Key? key,
+    super.key,
     required this.documentId,
-  }) : super(key: key);
+  });
 
   @override
   _UpdateStokProdukPageState createState() => _UpdateStokProdukPageState();
@@ -47,8 +47,8 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
           _previousStok = data['stok'] ?? 0;
         });
       }
+    // ignore: empty_catches
     } catch (e) {
-      print('Error fetching product details: $e');
     }
   }
 
@@ -101,7 +101,6 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
 
       Navigator.pop(context);
     } catch (e) {
-      print('Error updating stock: $e');
       showToast(message: 'Terjadi kesalahan saat mengupdate stok produk');
 
       // Set isUpdating back to false in case of an error
@@ -136,7 +135,6 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
         'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (e) {
-      print('Error recording activity log: $e');
     }
   }
 
@@ -173,40 +171,38 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Container(
-                child: Column(
-                  children: [
-                    Text(
-                      _productName,
-                      style: const TextStyle(
-                          fontSize: 16, fontWeight: DesignSystem.bold),
+              Column(
+                children: [
+                  Text(
+                    _productName,
+                    style: const TextStyle(
+                        fontSize: 16, fontWeight: DesignSystem.bold),
+                  ),
+                  const Text(
+                    'Stok Sebelumnya',
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: DesignSystem.regular),
+                  ),
+                  Container(
+                    alignment: Alignment.topCenter,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '$_previousStok',
+                          style: const TextStyle(
+                              fontSize: 100,
+                              fontWeight: DesignSystem.regular),
+                        ),
+                        const Text(
+                          '/pcs',
+                          style: TextStyle(
+                              fontSize: 50, fontWeight: DesignSystem.regular),
+                        ),
+                      ],
                     ),
-                    const Text(
-                      'Stok Sebelumnya',
-                      style: TextStyle(
-                          fontSize: 16, fontWeight: DesignSystem.regular),
-                    ),
-                    Container(
-                      alignment: Alignment.topCenter,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            '$_previousStok',
-                            style: const TextStyle(
-                                fontSize: 100,
-                                fontWeight: DesignSystem.regular),
-                          ),
-                          const Text(
-                            '/pcs',
-                            style: TextStyle(
-                                fontSize: 50, fontWeight: DesignSystem.regular),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
               const SizedBox(height: 50),
               TextFormField(

@@ -17,6 +17,7 @@ class EditProdukPage extends StatefulWidget {
   const EditProdukPage({super.key, required this.documentId});
 
   @override
+  // ignore: library_private_types_in_public_api
   _EditProdukPageState createState() => _EditProdukPageState();
 }
 
@@ -66,7 +67,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
         });
       }
     } catch (e) {
-      print('Error fetching product details: $e');
     }
   }
 
@@ -156,9 +156,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
           type: AnimatedSnackBarType.info,
         ).show(context);
       }
-    } catch (e, stackTrace) {
-      print('Error updating product details: $e');
-      print('Stack trace: $stackTrace');
+    } catch (e) {
       setState(() {
         _isUpdating = false;
       });
@@ -209,7 +207,6 @@ class _EditProdukPageState extends State<EditProdukPage> {
         _selectedImage = File(pickedFile.path);
       });
     } else {
-      print('No image selected.');
     }
   }
 

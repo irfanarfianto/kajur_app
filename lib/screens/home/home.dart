@@ -195,15 +195,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  void _confirmSignOut() {
-    // Your sign-out logic here
-    // Example:
-    // _googleSignIn.signOut();
-    // FirebaseAuth.instance.signOut();
-    // Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-    // showToast(message: "Berhasil keluar");
-  }
-
   @override
   Widget build(BuildContext context) {
     return WillPopScope(

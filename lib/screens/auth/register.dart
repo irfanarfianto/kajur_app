@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
@@ -61,6 +60,7 @@ class _SignUpPageState extends State<SignUpPage> {
             // ignore: deprecated_member_use
             await user.updateProfile(displayName: user.displayName);
             showToast(message: "Berhasil daftar akun dengan Google");
+            // ignore: use_build_context_synchronously
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => const HomePage()),
@@ -121,6 +121,7 @@ class _SignUpPageState extends State<SignUpPage> {
         // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
         showToast(message: "Berhasil daftar akun");
+        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const LoginPage()),
