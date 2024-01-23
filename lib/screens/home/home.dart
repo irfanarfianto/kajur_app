@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 
 import 'package:kajur_app/screens/aktivitas/activity_widget.dart';
+import 'package:kajur_app/screens/home/widget/images_widget.dart';
 
 import 'package:kajur_app/screens/home/widget/stock_widget.dart';
 import 'package:kajur_app/screens/home/widget/total_produk_widget.dart';
@@ -214,17 +215,20 @@ class _HomePageState extends State<HomePage> {
             onRefresh: _refreshData,
             child: Skeletonizer(
               enabled: _enabled,
-              child: SingleChildScrollView(
-                physics: const BouncingScrollPhysics(),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20),
-                    buildTotalProductsWidget(context),
-                    buildStockWidget(context),
-                    const RecentActivityWidget(),
-                    const SizedBox(height: 20),
-                  ],
-                ),
+              child: ListView(
+                physics: const ClampingScrollPhysics(),
+                children: [
+                  const SizedBox(height: 20),
+                  buildTotalProductsWidget(context),
+                  buildStockWidget(context),
+                  const RecentActivityWidget(),
+                  Center(
+                    child: Image.asset(
+                      'images/gambar.png',
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
