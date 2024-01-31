@@ -38,7 +38,6 @@ class FirebaseAuthService {
     return null;
   }
 
-
   Future<User?> signUpWithEmailAndPassword(
       String email, String password, String username) async {
     try {
@@ -119,8 +118,7 @@ class FirebaseAuthService {
           .collection('users')
           .doc(userId)
           .update({'lastLoginAt': DateTime.now().toIso8601String()});
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<bool> isUsernameAvailable(String username) async {

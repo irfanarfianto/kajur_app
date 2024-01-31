@@ -536,7 +536,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   );
                   setState(() {});
                 },
-                child: const Text('Edit'),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.edit_note),
+                    SizedBox(width: 8),
+                    Text('Edit Produk'),
+                  ],
+                ),
               ),
             ),
           ],

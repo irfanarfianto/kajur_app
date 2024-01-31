@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk.dart';
+import 'package:kajur_app/screens/widget/icon_text_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 Widget buildStockWidget(BuildContext context) {
@@ -9,7 +10,6 @@ Widget buildStockWidget(BuildContext context) {
     children: [
       Center(
         child: Container(
-          margin: const EdgeInsets.all(16.0),
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -34,8 +34,10 @@ Widget buildStockWidget(BuildContext context) {
                       'Info Stok 📢',
                       style: DesignSystem.titleTextStyle,
                     ),
-                    InkWell(
-                      onTap: () {
+                    IconTextButton(
+                      text: 'Lihat semua',
+                      iconData: Icons.east,
+                      onPressed: () {
                         Navigator.of(context).push(
                           PageRouteBuilder(
                             pageBuilder:
@@ -47,9 +49,8 @@ Widget buildStockWidget(BuildContext context) {
                               const end = Offset.zero;
                               const curve = Curves.easeInOut;
 
-                              var tween = Tween(begin: begin, end: end).chain(
-                                CurveTween(curve: curve),
-                              );
+                              var tween = Tween(begin: begin, end: end)
+                                  .chain(CurveTween(curve: curve));
 
                               var offsetAnimation = animation.drive(tween);
 
@@ -61,20 +62,10 @@ Widget buildStockWidget(BuildContext context) {
                           ),
                         );
                       },
-                      child: const Row(
-                        children: [
-                          Text(
-                            "Lihat semua",
-                            style: DesignSystem.bodyTextStyle,
-                          ),
-                          SizedBox(width: 5),
-                          Icon(
-                            Icons.east,
-                            color: DesignSystem.blackColor,
-                            size: 16,
-                          ),
-                        ],
-                      ),
+                      iconOnRight: true,
+                      iconColor: DesignSystem.greyColor,
+                      textColor: DesignSystem.greyColor,
+                      iconSize: 15.0,
                     ),
                   ],
                 ),

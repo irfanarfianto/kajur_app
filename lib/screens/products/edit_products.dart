@@ -31,6 +31,8 @@ class _EditProdukPageState extends State<EditProdukPage> {
   String? _oldImageUrl;
   late bool _isUpdating;
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   void initState() {
     super.initState();
@@ -220,185 +222,211 @@ class _EditProdukPageState extends State<EditProdukPage> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: SingleChildScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text("Pilih Sumber Gambar"),
-                          actions: <Widget>[
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                _getImage(ImageSource.gallery);
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.photo_library),
-                                  SizedBox(width: 8),
-                                  Text("Galeri"),
-                                ],
+            child: Form(
+              key: _formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text("Pilih Sumber Gambar"),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  _getImage(ImageSource.gallery);
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.photo_library),
+                                    SizedBox(width: 8),
+                                    Text("Galeri"),
+                                  ],
+                                ),
                               ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                                _getImage(ImageSource.camera);
-                              },
-                              child: const Row(
-                                children: [
-                                  Icon(Icons.camera_alt),
-                                  SizedBox(width: 8),
-                                  Text("Kamera"),
-                                ],
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                  _getImage(ImageSource.camera);
+                                },
+                                child: const Row(
+                                  children: [
+                                    Icon(Icons.camera_alt),
+                                    SizedBox(width: 8),
+                                    Text("Kamera"),
+                                  ],
+                                ),
                               ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                    child: Container(
+                      height: 250,
+                      width: 250,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: DesignSystem.greyColor.withOpacity(.20),
+                      ),
+                      child: _selectedImage != null
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Image.file(
+                                _selectedImage!,
+                                fit: BoxFit.cover,
+                              ),
+                            )
+                          : (_oldImageUrl != null && _oldImageUrl != '')
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    _oldImageUrl!,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : const Center(
+                                  child: Icon(Icons.add_a_photo),
+                                ),
+                    ),
+                  ),
+                  const SizedBox(height: 16.0),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Nama Produk',
+                          style: DesignSystem.emphasizedBodyTextStyle),
+                      const SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _menuController,
+                        keyboardType: TextInputType.name,
+                        textCapitalization: TextCapitalization.words,
+                        textInputAction: TextInputAction.next,
+                        style: const TextStyle(color: DesignSystem.blackColor),
+                        decoration: const InputDecoration(
+                          hintText: 'Nama produk',
+                          hintStyle: TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 16.0),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text('Harga Jual',
+                                style: DesignSystem.emphasizedBodyTextStyle),
+                            const SizedBox(height: 8.0),
+                            TextFormField(
+                              style: const TextStyle(
+                                  color: DesignSystem.blackColor),
+                              controller: _hargaJualController,
+                              decoration: const InputDecoration(
+                                hintText: 'Harga jual',
+                                hintStyle: TextStyle(
+                                  color: DesignSystem.greyColor,
+                                  fontWeight: FontWeight.normal,
+                                ),
+                              ),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                CurrencyInputFormatter()
+                              ],
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Tidak boleh kosong';
+                                }
+                                return null;
+                              },
                             ),
                           ],
-                        );
-                      },
-                    );
-                  },
-                  child: Container(
-                    height: 250,
-                    width: 250,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: DesignSystem.greyColor.withOpacity(.20),
-                    ),
-                    child: _selectedImage != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
-                            child: Image.file(
-                              _selectedImage!,
-                              fit: BoxFit.cover,
-                            ),
-                          )
-                        : (_oldImageUrl != null && _oldImageUrl != '')
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(10),
-                                child: Image.network(
-                                  _oldImageUrl!,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : const Center(
-                                child: Icon(Icons.add_a_photo),
-                              ),
-                  ),
-                ),
-                const SizedBox(height: 16.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Nama Produk',
-                        style: DesignSystem.emphasizedBodyTextStyle),
-                    const SizedBox(height: 8.0),
-                    TextFormField(
-                      controller: _menuController,
-                      keyboardType: TextInputType.name,
-                      textCapitalization: TextCapitalization.words,
-                      textInputAction: TextInputAction.next,
-                      style: const TextStyle(color: DesignSystem.blackColor),
-                      decoration: const InputDecoration(
-                        hintText: 'Nama produk',
-                        hintStyle: TextStyle(
-                          color: DesignSystem.greyColor,
-                          fontWeight: FontWeight.normal,
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Harga Jual',
-                              style: DesignSystem.emphasizedBodyTextStyle),
-                          const SizedBox(height: 8.0),
-                          TextFormField(
-                            style:
-                                const TextStyle(color: DesignSystem.blackColor),
-                            controller: _hargaJualController,
-                            decoration: const InputDecoration(
-                              hintText: 'Harga jual',
-                              hintStyle: TextStyle(
-                                color: DesignSystem.greyColor,
-                                fontWeight: FontWeight.normal,
-                              ),
-                            ),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly,
-                              CurrencyInputFormatter()
-                            ],
-                            keyboardType: TextInputType.number,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 16.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text('Deskripsi',
-                        style: DesignSystem.emphasizedBodyTextStyle),
-                    const SizedBox(height: 8.0),
-                    TextFormField(
-                      controller: _deskripsiController,
-                      decoration: const InputDecoration(
-                        hintText: 'Masukan deskripsi produk',
-                        hintStyle: TextStyle(
-                          color: DesignSystem.greyColor,
-                          fontWeight: FontWeight.normal,
-                        ),
-                        contentPadding: EdgeInsets.symmetric(
-                            vertical: 10.0, horizontal: 10.0),
-                      ),
-                      maxLength: 1000,
-                      style: const TextStyle(color: DesignSystem.blackColor),
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 3,
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24.0),
-                ElevatedButton(
-                  onPressed: () {
-                    _updateProductDetails();
-                  },
-                  child: Center(
-                    child: _isUpdating
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ))
-                        : const Text(
-                            "Update",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                    ],
                   ),
-                ),
-              ],
+                  const SizedBox(height: 16.0),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Deskripsi',
+                          style: DesignSystem.emphasizedBodyTextStyle),
+                      const SizedBox(height: 8.0),
+                      TextFormField(
+                        controller: _deskripsiController,
+                        decoration: const InputDecoration(
+                          hintText: 'Masukan deskripsi produk',
+                          hintStyle: TextStyle(
+                            color: DesignSystem.greyColor,
+                            fontWeight: FontWeight.normal,
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 10.0),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                        maxLength: 1000,
+                        style: const TextStyle(color: DesignSystem.blackColor),
+                        keyboardType: TextInputType.multiline,
+                        maxLines: 3,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),
       ),
+      bottomNavigationBar: BottomAppBar(
+          color: Colors.transparent,
+          elevation: 0,
+          child: ElevatedButton(
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _updateProductDetails();
+              }
+            },
+            child: Center(
+              child: _isUpdating
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ))
+                  : const Text(
+                      "Update",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+            ),
+          )),
     );
   }
 

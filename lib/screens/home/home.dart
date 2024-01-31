@@ -10,6 +10,7 @@ import 'package:kajur_app/design/system.dart';
 
 import 'package:kajur_app/screens/aktivitas/activity_widget.dart';
 import 'package:kajur_app/screens/home/component/images_widget.dart';
+import 'package:kajur_app/screens/home/component/menu.dart';
 
 import 'package:kajur_app/screens/home/component/stock_widget.dart';
 import 'package:kajur_app/screens/home/component/total_produk_widget.dart';
@@ -218,10 +219,21 @@ class _HomePageState extends State<HomePage> {
               child: ListView(
                 physics: const ClampingScrollPhysics(),
                 children: [
-                  const SizedBox(height: 20),
-                  buildTotalProductsWidget(context),
-                  buildStockWidget(context),
-                  const RecentActivityWidget(),
+                  const SizedBox(height: 10),
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        buildTotalProductsWidget(context),
+                        const SizedBox(height: 20),
+                        buildStockWidget(context),
+                        const SizedBox(height: 20),
+                        buildMenuWidget(context),
+                        const SizedBox(height: 20),
+                        const RecentActivityWidget(),
+                      ],
+                    ),
+                  ),
                   Center(
                     child: Column(
                       children: [
@@ -243,27 +255,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const MenuButton();
-                  },
-                );
-              },
-              extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              backgroundColor: DesignSystem.primaryColor,
-              foregroundColor: DesignSystem.whiteColor,
-              icon: const Icon(Icons.rocket_launch_outlined),
-              label: const Text('Menu',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ))),
         ),
       ),
     );
