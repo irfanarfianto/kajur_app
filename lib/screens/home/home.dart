@@ -9,10 +9,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 
 import 'package:kajur_app/screens/aktivitas/activity_widget.dart';
-import 'package:kajur_app/screens/home/widget/images_widget.dart';
+import 'package:kajur_app/screens/home/component/images_widget.dart';
 
-import 'package:kajur_app/screens/home/widget/stock_widget.dart';
-import 'package:kajur_app/screens/home/widget/total_produk_widget.dart';
+import 'package:kajur_app/screens/home/component/stock_widget.dart';
+import 'package:kajur_app/screens/home/component/total_produk_widget.dart';
 import 'package:kajur_app/screens/menu_button.dart';
 
 import 'package:flutter/services.dart';
@@ -223,9 +223,20 @@ class _HomePageState extends State<HomePage> {
                   buildStockWidget(context),
                   const RecentActivityWidget(),
                   Center(
-                    child: Image.asset(
-                      'images/gambar.png',
-                      fit: BoxFit.contain,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text('~ Segini dulu yaa ~',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: DesignSystem.greyColor,
+                              fontWeight: DesignSystem.regular,
+                            )),
+                        Image.asset(
+                          'images/gambar.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ],
                     ),
                   ),
                 ],

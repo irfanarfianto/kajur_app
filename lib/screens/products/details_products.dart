@@ -6,7 +6,7 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:kajur_app/screens/products/edit_products.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/screens/products/stok/update_stok.dart';
+
 import 'package:readmore/readmore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
@@ -101,6 +101,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
+        backgroundColor: DesignSystem.secondaryColor,
         body: _buildProductDetails(),
         bottomNavigationBar: _buildBottomAppBar(),
       ),
@@ -142,6 +143,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             title: Text(
               productName,
             ),
+            scrolledUnderElevation: 2,
             automaticallyImplyLeading: true,
             centerTitle: true,
             backgroundColor: DesignSystem.primaryColor,
@@ -150,20 +152,37 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                 onTap: () {
                   _showImageDialog(context, data['image']);
                 },
-                child: Hero(
-                  tag: 'product_image_${widget.documentId}',
-                  child: SizedBox(
-                    height: 300,
-                    width: 300,
-                    child: ClipRRect(
-                      child: CachedNetworkImage(
-                        imageUrl: data['image'],
-                        fit: BoxFit.cover,
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    Hero(
+                      tag: 'product_image_${widget.documentId}',
+                      child: SizedBox(
+                        height: 300,
+                        width: 300,
+                        child: ClipRRect(
+                          child: CachedNetworkImage(
+                            imageUrl: data['image'],
+                            fit: BoxFit.cover,
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.center,
+                          colors: [
+                            Colors.black.withOpacity(0.7),
+                            Colors.transparent,
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -364,8 +383,11 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         title: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text('Ditambah oleh ${data['addedByName']}',
-                                style: DesignSystem.emphasizedBodyTextStyle),
+                            Flexible(
+                              child: Text(
+                                  'Ditambah oleh ${data['addedByName']}',
+                                  style: DesignSystem.emphasizedBodyTextStyle),
+                            ),
                             IconButton(
                               padding: const EdgeInsets.all(0),
                               visualDensity: VisualDensity.compact,
@@ -424,9 +446,11 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             color: Colors.orange,
                           ),
                         ),
-                        title: Text(
-                          'Diupdate oleh ${data['lastEditedByName']}',
-                          style: DesignSystem.emphasizedBodyTextStyle,
+                        title: Flexible(
+                          child: Text(
+                            'Diupdate oleh ${data['lastEditedByName']}',
+                            style: DesignSystem.emphasizedBodyTextStyle,
+                          ),
                         ),
                         subtitle: Text(
                           DateFormat('EEEE, dd MMMM y HH:mm', 'id')
@@ -494,37 +518,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               icon: const Icon(Icons.delete,
                   color: DesignSystem.whiteColor, size: 20),
               tooltip: 'Hapus',
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  elevation: 0,
-                  shadowColor: Colors.transparent,
-                  foregroundColor: DesignSystem.blackColor,
-                  backgroundColor: DesignSystem.secondaryColor,
-                  shape: RoundedRectangleBorder(
-                      borderRadius:
-                          const BorderRadius.all(Radius.circular(100)),
-                      side: BorderSide(
-                        color: DesignSystem.greyColor.withOpacity(.20),
-                      )),
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                ),
-                onPressed: () async {
-                  await Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          UpdateStokProdukPage(documentId: widget.documentId),
-                    ),
-                  );
-                  // Refresh data setelah kembali dari halaman UpdateStokProdukPage
-                  _refreshData();
-                },
-                child: const Text('Update Stok'),
-              ),
             ),
             const SizedBox(width: 8),
             Expanded(

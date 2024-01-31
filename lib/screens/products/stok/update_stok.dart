@@ -47,9 +47,8 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
           _previousStok = data['stok'] ?? 0;
         });
       }
-    // ignore: empty_catches
-    } catch (e) {
-    }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   Future<void> _updateStok() async {
@@ -134,8 +133,7 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
         'newProductData': newProductData,
         'timestamp': FieldValue.serverTimestamp(),
       });
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   String? _validateStok(String? value) {
@@ -174,7 +172,8 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
               Column(
                 children: [
                   Text(
-                    _productName,
+                    _productName.isEmpty ? 'Loading...' : _productName,
+                    textAlign: TextAlign.center,
                     style: const TextStyle(
                         fontSize: 16, fontWeight: DesignSystem.bold),
                   ),
@@ -191,8 +190,7 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                         Text(
                           '$_previousStok',
                           style: const TextStyle(
-                              fontSize: 100,
-                              fontWeight: DesignSystem.regular),
+                              fontSize: 100, fontWeight: DesignSystem.regular),
                         ),
                         const Text(
                           '/pcs',

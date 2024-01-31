@@ -84,7 +84,7 @@ Widget buildStockWidget(BuildContext context) {
                 height: 150,
                 child: Scrollbar(
                   child: SingleChildScrollView(
-                    physics: const ScrollPhysics(),
+                    physics: const BouncingScrollPhysics(),
                     child: Column(
                       children: [
                         StreamBuilder<QuerySnapshot>(

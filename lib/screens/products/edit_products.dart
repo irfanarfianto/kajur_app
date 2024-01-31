@@ -66,8 +66,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
           _oldImageUrl = data['image'];
         });
       }
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   Future<void> _updateProductDetails() async {
@@ -206,8 +205,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
       setState(() {
         _selectedImage = File(pickedFile.path);
       });
-    } else {
-    }
+    } else {}
   }
 
   @override
@@ -366,6 +364,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 10.0, horizontal: 10.0),
                       ),
+                      maxLength: 1000,
                       style: const TextStyle(color: DesignSystem.blackColor),
                       keyboardType: TextInputType.multiline,
                       maxLines: 3,

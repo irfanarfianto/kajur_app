@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
 import 'package:kajur_app/screens/products/widget/sorting_show.dart';
@@ -29,7 +32,7 @@ class _ListProdukPageState extends State<ListProdukPage>
   final TextEditingController _searchController = TextEditingController();
   late CollectionReference _produkCollection;
   late bool _isRefreshing = false;
-  CategoryFilter _categoryFilter = CategoryFilter.Semua;
+  final CategoryFilter _categoryFilter = CategoryFilter.Semua;
   SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
   bool isSelectedTerbaru = true;
@@ -193,6 +196,218 @@ class _ListProdukPageState extends State<ListProdukPage>
     return CategoryFilter.values.length;
   }
 
+  void _updateStock(String documentId, int newStock) async {
+    try {
+      FirebaseFirestore.instance.collection('kantin').doc(documentId).update({
+        'stok': newStock,
+        'updatedAt': DateTime.now(),
+      });
+
+      // Fetch the old product data
+      DocumentSnapshot oldProductSnapshot =
+          await _produkCollection.doc(documentId).get();
+      Map<String, dynamic> oldProductData =
+          oldProductSnapshot.data() as Map<String, dynamic>;
+
+      // Record activity log
+      await _recordActivityLog(
+        action: 'Update Stok',
+        oldProductData: oldProductData,
+        newProductData: {
+          'stok': newStock,
+          'updatedAt': FieldValue.serverTimestamp(),
+        },
+      );
+      // Tampilkan notifikasi atau pesan sukses jika diperlukan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Stok berhasil diperbarui.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    } catch (error) {
+      // Tangani kesalahan jika terjadi
+      print('Error updating stock: $error');
+      // Tampilkan notifikasi atau pesan kesalahan jika diperlukan
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal memperbarui stok.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  Future<void> _recordActivityLog({
+    required String action,
+    required Map<String, dynamic> oldProductData,
+    required Map<String, dynamic> newProductData,
+  }) async {
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw FirebaseAuthException(
+            message: 'User not authenticated', code: '');
+      }
+
+      String userId = user.uid;
+      String userName = user.displayName ?? 'Unknown User';
+
+      // Create reference to activity log collection
+      CollectionReference activityLogCollection =
+          FirebaseFirestore.instance.collection('activity_log');
+
+      // Record activity log to collection
+      await activityLogCollection.add({
+        'userId': userId,
+        'userName': userName,
+        'action': action,
+        'productName': oldProductData['menu'],
+        'oldProductData': oldProductData,
+        'newProductData': newProductData,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Gagal merekam aktivitas.'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+    }
+  }
+
+  void _showUpdateStokDialog(
+      String documentId, String productName, int lastStock, String imageUrl) {
+    TextEditingController stokController = TextEditingController();
+    final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          surfaceTintColor: DesignSystem.secondaryColor,
+          backgroundColor: DesignSystem.secondaryColor,
+          title: const Row(
+            children: [
+              Icon(
+                Icons.update,
+                color: Colors.blue,
+              ),
+              SizedBox(width: 8),
+              Text('Update Stok', style: DesignSystem.titleTextStyle),
+            ],
+          ),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20.0),
+          content: SingleChildScrollView(
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width * 1.0,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Hero(
+                        tag: 'product_image_$documentId',
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.network(
+                            imageUrl,
+                            width: 80,
+                            height: 80,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              productName.isEmpty ? 'Loading...' : productName,
+                              style: DesignSystem.emphasizedBodyTextStyle,
+                              overflow: TextOverflow.ellipsis,
+                              maxLines: 2,
+                            ),
+                            Text(
+                              lastStock == 0
+                                  ? 'Stok sudah habis'
+                                  : 'Sisa stok $lastStock',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: lastStock == 0
+                                    ? DesignSystem.redAccent
+                                    : DesignSystem.greyColor,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Form(
+                    key: formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: TextFormField(
+                      controller: stokController,
+                      keyboardType: TextInputType.number,
+                      decoration: const InputDecoration(
+                        labelText: 'Stok Baru',
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Stok harus diisi';
+                        }
+                        // Validasi jika nilai bukan angka
+                        if (int.tryParse(value) == null) {
+                          return 'Masukkan angka yang valid';
+                        }
+                        // Validasi jika nilai negatif
+                        if (int.parse(value) < 0) {
+                          return 'Stok tidak boleh negatif';
+                        }
+                        return null;
+                      },
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                if (formKey.currentState!.validate()) {
+                  int newStock = int.tryParse(stokController.text) ?? 0;
+                  _updateStock(documentId, newStock);
+                  Navigator.of(context).pop();
+                }
+              },
+              child: const Text('Simpan'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -201,6 +416,7 @@ class _ListProdukPageState extends State<ListProdukPage>
       child: DefaultTabController(
         length: _getNumberOfTabs(),
         child: Scaffold(
+          backgroundColor: DesignSystem.backgroundColor,
           appBar: AppBar(
             elevation: 2,
             backgroundColor: DesignSystem.primaryColor,
@@ -299,13 +515,83 @@ class _ListProdukPageState extends State<ListProdukPage>
             key: UniqueKey(),
             children: [
               for (int i = 0; i < _getNumberOfTabs(); i++)
-                FutureBuilder<QuerySnapshot>(
-                  future: _produkCollection.get(),
+                StreamBuilder<QuerySnapshot>(
+                  stream: _produkCollection.snapshots(),
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting ||
                         _isRefreshing) {
+                      return Column(
+                        children: List.generate(
+                          3,
+                          (index) => Skeletonizer(
+                            enabled: true,
+                            child: Card(
+                              elevation: 0,
+                              color: DesignSystem.secondaryColor,
+                              shadowColor:
+                                  DesignSystem.greyColor.withOpacity(0.10),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Skeleton.leaf(
+                                      child: SizedBox(
+                                        width: 80,
+                                        height: 80,
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          child: Container(
+                                            color: Colors.grey[300],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    const Expanded(
+                                      flex: 3,
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Skeleton nama produk',
+                                            style: DesignSystem
+                                                .emphasizedBodyTextStyle,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
+                                          ),
+                                          Text(
+                                            'Skeleton stok',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                            ),
+                                          ),
+                                          SizedBox(height: 5),
+                                          Text(
+                                            'Skeleton update produkkkkkkkkk',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (snapshot.hasError) {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child: Text(
+                          'Error fetching data',
+                          style: TextStyle(color: DesignSystem.redAccent),
+                        ),
                       );
                     }
 
@@ -313,7 +599,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                       return const Center(
                         child: Text(
                           'Tidak ada produk',
-                          style: TextStyle(color: DesignSystem.whiteColor),
+                          style: TextStyle(color: DesignSystem.greyColor),
                         ),
                       );
                     }
@@ -341,15 +627,9 @@ class _ListProdukPageState extends State<ListProdukPage>
                       backgroundColor: DesignSystem.secondaryColor,
                       color: DesignSystem.primaryColor,
                       onRefresh: _refreshData,
-                      child: GridView.builder(
+                      child: ListView.builder(
                         key: UniqueKey(),
                         padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 2,
-                          crossAxisSpacing: 15.0,
-                          mainAxisSpacing: 10.0,
-                        ),
                         itemCount: sortedProducts.length,
                         itemBuilder: (BuildContext context, int index) {
                           DocumentSnapshot document = sortedProducts[index];
@@ -357,8 +637,11 @@ class _ListProdukPageState extends State<ListProdukPage>
                               document.data() as Map<String, dynamic>;
                           String documentId = document.id;
 
-                          return Container(
-                            margin: const EdgeInsets.only(top: 5),
+                          return Card(
+                            elevation: 0,
+                            color: DesignSystem.secondaryColor,
+                            shadowColor:
+                                DesignSystem.greyColor.withOpacity(0.10),
                             child: InkWell(
                               onTap: () {
                                 Navigator.push(
@@ -370,95 +653,82 @@ class _ListProdukPageState extends State<ListProdukPage>
                                   ),
                                 );
                               },
-                              child: Hero(
-                                tag: 'product_image_$documentId',
-                                child: Card(
-                                  elevation: 0,
-                                  color: DesignSystem.backgroundColor,
-                                  child: Stack(
-                                    children: [
-                                      Column(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  children: [
+                                    Hero(
+                                      tag: 'product_image_$documentId',
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(8),
+                                        child: Image.network(
+                                          data['image'],
+                                          width: 80,
+                                          height: 80,
+                                          fit: BoxFit.cover,
+                                        ),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Expanded(
+                                      flex: 3,
+                                      child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Container(
-                                            height: 150,
-                                            width: double.infinity,
-                                            decoration: BoxDecoration(
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: DesignSystem.greyColor
-                                                      .withOpacity(.10),
-                                                  offset: const Offset(0, 5),
-                                                  blurRadius: 10,
-                                                ),
-                                              ],
-                                            ),
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Image.network(
-                                                data['image'],
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
+                                          Text(
+                                            data['menu'],
+                                            style: DesignSystem
+                                                .emphasizedBodyTextStyle,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
-                                          const SizedBox(height: 3),
-                                          Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 8.0),
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  data['menu'],
-                                                  style: DesignSystem
-                                                      .titleTextStyle,
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                  maxLines: 1,
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                      Positioned(
-                                        top: 8,
-                                        right: 8,
-                                        child: Skeleton.unite(
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(
-                                                vertical: 5, horizontal: 10),
-                                            decoration: BoxDecoration(
+                                          Text(
+                                            data['stok'] == 0
+                                                ? 'Stok sudah habis'
+                                                : 'Sisa stok ${data['stok'] ?? 0}',
+                                            style: TextStyle(
+                                              fontSize: 14,
                                               color: data['stok'] == 0
                                                   ? DesignSystem.redAccent
-                                                      .withOpacity(.80)
-                                                  : data['stok'] < 5
-                                                      ? DesignSystem
-                                                          .primaryColor
-                                                          .withOpacity(.80)
-                                                      : DesignSystem
-                                                          .primaryColor
-                                                          .withOpacity(.80),
-                                              borderRadius:
-                                                  BorderRadius.circular(100),
+                                                  : DesignSystem.greyColor,
                                             ),
-                                            child: Text(
-                                              data['stok'] == 0
-                                                  ? 'Stok habis'
-                                                  : '${data['stok'] ?? 0}',
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: DesignSystem.whiteColor,
-                                              ),
+                                          ),
+                                          const SizedBox(height: 5),
+                                          Text(
+                                            '*Diperbarui ${DateFormat('dd MMM y HH:mm', 'id_ID').format(data['updatedAt'].toDate())}',
+                                            style: const TextStyle(
+                                              fontSize: 10,
+                                              color: DesignSystem.greyColor,
+                                              fontStyle: FontStyle.italic,
                                             ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 60,
+                                      height: 100,
+                                      child: InkWell(
+                                        onTap: () {
+                                          _showUpdateStokDialog(
+                                              documentId,
+                                              data['menu'],
+                                              data['stok'],
+                                              data['image']);
+                                        },
+                                        child: const SizedBox(
+                                          width: 60,
+                                          height: 100,
+                                          child: Icon(
+                                            Icons.more_vert,
+                                            color: DesignSystem.greyColor,
+                                            size: 18,
                                           ),
                                         ),
                                       ),
-                                    ],
-                                  ),
+                                    )
+                                  ],
                                 ),
                               ),
                             ),
