@@ -5,6 +5,7 @@ import 'package:kajur_app/screens/widget/action_icons.dart';
 import 'package:kajur_app/utils/internet_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:collection/collection.dart';
 
 enum SortOrder { Terbaru, Terlama }
 
@@ -188,11 +189,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: Col.primaryColor,
-                      ),
-                    );
+                    return Container();
                   }
 
                   if (snapshot.hasError) {
@@ -208,45 +205,36 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     return data;
                   }).toList();
 
+                  Map<String, List<Map<String, dynamic>>> groupedActivities =
+                      groupBy(
+                          activitiesData,
+                          (Map<String, dynamic> activity) =>
+                              DateFormat('dd MMMM y', 'id').format(
+                                  (activity['timestamp'] as Timestamp)
+                                      .toDate()));
+
                   return ListView.builder(
                     physics: const ClampingScrollPhysics(),
-                    itemCount: activitiesData.length,
+                    itemCount: groupedActivities.length,
                     itemBuilder: (BuildContext context, int index) {
-                      Map<String, dynamic> data = activitiesData[index];
-
-                      DateTime activityDate =
-                          (data['timestamp'] as Timestamp).toDate();
-
-                      String formattedDate =
-                          DateFormat('dd MMMM y', 'id').format(activityDate);
-
-                      bool isFirstActivityWithDate = index == 0 ||
-                          formattedDate !=
-                              DateFormat('dd MMMM y', 'id').format(
-                                  (activitiesData[index - 1]['timestamp']
-                                          as Timestamp)
-                                      .toDate());
+                      String date = groupedActivities.keys.toList()[index];
+                      List<Map<String, dynamic>> activities =
+                          groupedActivities[date]!;
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (isFirstActivityWithDate)
-                              Skeleton.keep(
-                                child: Container(
-                                  alignment: Alignment.centerLeft,
-                                  width: double.infinity,
-                                  color: Col.backgroundColor,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 10),
-                                    child: Text(formattedDate,
-                                        style: Typo.titleTextStyle),
-                                  ),
-                                ),
-                              ),
+                            const SizedBox(height: 16),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(date, style: Typo.titleTextStyle),
+                            ),
+                            const SizedBox(height: 16),
                             Container(
-                              margin: const EdgeInsets.only(bottom: 10),
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
@@ -261,39 +249,54 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                   ),
                                 ],
                               ),
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    leading: Skeleton.leaf(
-                                        child: ActivityIcon(
-                                            action: data['action'])),
-                                    title: Text(
-                                      (data['action'] ?? '') +
-                                          (data['productName'] != null
-                                              ? ' - ${data['productName']}'
-                                              : ''),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Typo.emphasizedBodyTextStyle,
-                                    ),
-                                    subtitle: Text(
-                                      (data['userName'] ?? '') +
-                                          ' pada ' +
-                                          (data['timestamp'] != null
-                                              ? DateFormat('dd MMMM y • HH:mm ',
-                                                      'id')
-                                                  .format((data['timestamp']
-                                                          as Timestamp)
-                                                      .toDate())
-                                              : 'Timestamp tidak tersedia'),
-                                      style: const TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 14,
-                                        color: Colors.grey,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const ClampingScrollPhysics(),
+                                itemCount: activities.length,
+                                itemBuilder:
+                                    (BuildContext context, int activityIndex) {
+                                  Map<String, dynamic> data =
+                                      activities[activityIndex];
+
+                                  return Column(
+                                    children: [
+                                      ListTile(
+                                        leading: ActivityIcon(
+                                            action: data['action']),
+                                        title: Text(
+                                          (data['action'] ?? '') +
+                                              (data['productName'] != null
+                                                  ? ' - ${data['productName']}'
+                                                  : ''),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Typo.emphasizedBodyTextStyle,
+                                        ),
+                                        subtitle: Text(
+                                          (data['userName'] ?? '') +
+                                              ' pada ' +
+                                              (data['timestamp'] != null
+                                                  ? DateFormat(
+                                                          'dd MMMM y • HH:mm ',
+                                                          'id')
+                                                      .format((data['timestamp']
+                                                              as Timestamp)
+                                                          .toDate())
+                                                  : 'Timestamp tidak tersedia'),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ],
+                                      if (activityIndex < activities.length - 1)
+                                        Divider(
+                                          thickness: 1,
+                                          color: Col.greyColor.withOpacity(0.1),
+                                        ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ],

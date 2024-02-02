@@ -65,13 +65,11 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                 color: Col.primaryColor,
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color:
-                                      Col.whiteColor.withOpacity(.20),
+                                  color: Col.whiteColor.withOpacity(.20),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Col.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -82,8 +80,13 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                 children: [
                                   Row(
                                     children: [
-                                      const Text('Total Produk',
-                                          style: Typo.subtitleTextStyle),
+                                      const Text(
+                                        'Total Produk',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: Col.whiteColor,
+                                        ),
+                                      ),
                                       IconButton(
                                         visualDensity: VisualDensity.compact,
                                         padding: const EdgeInsets.all(0),
@@ -168,13 +171,11 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                 color: Col.orangeAccent,
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color:
-                                      Col.whiteColor.withOpacity(.20),
+                                  color: Col.whiteColor.withOpacity(.20),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Col.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -188,7 +189,7 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                       const Text(
                                         'Makanan',
                                         style: TextStyle(
-                                          fontSize: 15,
+                                          fontSize: 14,
                                           color: Col.whiteColor,
                                         ),
                                       ),
@@ -275,13 +276,11 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                 color: Col.purpleAccent,
                                 borderRadius: BorderRadius.circular(15),
                                 border: Border.all(
-                                  color:
-                                      Col.whiteColor.withOpacity(.20),
+                                  color: Col.whiteColor.withOpacity(.20),
                                 ),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Col.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -295,7 +294,7 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                       const Text(
                                         'Minuman',
                                         style: TextStyle(
-                                          fontSize: 15,
+                                          fontSize: 14,
                                           color: Col.whiteColor,
                                         ),
                                       ),

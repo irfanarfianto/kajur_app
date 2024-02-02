@@ -24,46 +24,29 @@ Widget buildMenuWidget(BuildContext context) {
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Skeleton.keep(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Menu',
-                      style: Typo.titleTextStyle,
-                    ),
-                  ],
+          child: SizedBox(
+            height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Expanded(
+                  child: buildCircularButton(context, "List Produk",
+                      Icons.ballot, const ListProdukPage()),
                 ),
-              ),
-              const SizedBox(height: 10),
-              SizedBox(
-                height: 120,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Expanded(
-                      child: buildCircularButton(context, "List Produk",
-                          Icons.ballot, const ListProdukPage()),
-                    ),
-                    Expanded(
-                      child: buildCircularButton(context, "Tambah",
-                          Icons.add_shopping_cart_rounded, const AddDataPage()),
-                    ),
-                    Expanded(
-                      child: buildCircularButton(context, "Pengeluaran",
-                          Icons.money_off, const ComingSoonPage()),
-                    ),
-                    Expanded(
-                      child: buildCircularButton(context, "Pemasukan",
-                          Icons.account_balance_wallet, const ComingSoonPage()),
-                    ),
-                  ],
+                Expanded(
+                  child: buildCircularButton(context, "Tambah",
+                      Icons.add_shopping_cart_rounded, const AddDataPage()),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: buildCircularButton(context, "Pengeluaran",
+                      Icons.money_off, const ComingSoonPage()),
+                ),
+                Expanded(
+                  child: buildCircularButton(context, "Pemasukan",
+                      Icons.account_balance_wallet, const ComingSoonPage()),
+                ),
+              ],
+            ),
           ),
         ),
       ),

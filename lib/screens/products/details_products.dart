@@ -198,8 +198,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                           Text('Detail produk',
-                              style: Typo.titleTextStyle),
+                          Text('Detail produk', style: Typo.titleTextStyle),
                           Row(
                             children: [
                               StatusBadge(
@@ -279,14 +278,14 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                 decimalDigits: 0,
                               ).format(data['hargaPokok']),
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 15,
                                 color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ],
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         const SizedBox(
                           height: 30, // Adjust the height as needed
                           child: VerticalDivider(
@@ -294,7 +293,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                 .greyColor, // Set the color of the vertical line
                           ),
                         ),
-                        const SizedBox(width: 10),
+                        const SizedBox(width: 8),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -302,7 +301,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             Text(
                               '${data['jumlahIsi']}pcs',
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 15,
                                 color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -329,7 +328,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                 decimalDigits: 0,
                               ).format(data['totalProfit'].toInt())}',
                               style: const TextStyle(
-                                fontSize: 18,
+                                fontSize: 15,
                                 color: Col.greenAccent,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -342,8 +341,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         Text('Deskripsi produk',
-                            style: Typo.subtitleTextStyle),
+                        Text('Deskripsi produk', style: Typo.subtitleTextStyle),
                         ReadMoreText(
                           '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
                           trimLines: 3,
@@ -515,8 +513,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                   },
                 );
               },
-              icon: const Icon(Icons.delete,
-                  color: Col.whiteColor, size: 20),
+              icon: const Icon(Icons.delete, color: Col.whiteColor, size: 20),
               tooltip: 'Hapus',
             ),
             const SizedBox(width: 8),

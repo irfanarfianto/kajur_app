@@ -493,6 +493,11 @@ class _ListProdukPageState extends State<ListProdukPage>
               ),
             ],
             bottom: TabBar(
+              labelColor: Col.secondaryColor,
+              unselectedLabelColor: Col.secondaryColor.withOpacity(0.5),
+              indicatorWeight: 2.0,
+              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorColor: Col.primaryColor,
               tabs: [
                 for (int i = 0; i < _getNumberOfTabs(); i++)
                   Tab(
@@ -500,9 +505,6 @@ class _ListProdukPageState extends State<ListProdukPage>
                       _getCategoryFromIndex(i).toString().split('.').last
                         ..toUpperCase(),
                       style: TextStyle(
-                        color: _categoryFilter == _getCategoryFromIndex(i)
-                            ? Col.secondaryColor
-                            : Col.whiteColor,
                         fontWeight: Fw.regular,
                       ),
                     ),
@@ -546,7 +548,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                       ),
                                     ),
                                     const SizedBox(width: 16),
-                                    Expanded(
+                                    const Expanded(
                                       flex: 3,
                                       child: Column(
                                         crossAxisAlignment:
@@ -558,13 +560,13 @@ class _ListProdukPageState extends State<ListProdukPage>
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                           ),
-                                          const Text(
+                                          Text(
                                             'Skeleton stok',
                                             style: TextStyle(
                                               fontSize: 14,
                                             ),
                                           ),
-                                          const SizedBox(height: 5),
+                                          SizedBox(height: 5),
                                           Text(
                                             'Skeleton update produkkkkkkkkk',
                                             style: TextStyle(

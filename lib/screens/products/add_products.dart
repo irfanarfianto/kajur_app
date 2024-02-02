@@ -256,8 +256,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                   context: context,
                                   builder: (BuildContext context) {
                                     return AlertDialog(
-                                      surfaceTintColor:
-                                          Col.secondaryColor,
+                                      surfaceTintColor: Col.secondaryColor,
                                       title: const Text("Pilih Sumber Gambar",
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
@@ -353,7 +352,7 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             const Row(
+                            const Row(
                               children: [
                                 Text(
                                   'Nama Produk',
@@ -374,8 +373,7 @@ class _AddDataPageState extends State<AddDataPage> {
                               keyboardType: TextInputType.name,
                               textCapitalization: TextCapitalization.words,
                               textInputAction: TextInputAction.next,
-                              style: const TextStyle(
-                                  color: Col.blackColor),
+                              style: const TextStyle(color: Col.blackColor),
                               decoration: const InputDecoration(
                                 hintText: 'Nama produk',
                                 hintStyle: TextStyle(
@@ -385,6 +383,27 @@ class _AddDataPageState extends State<AddDataPage> {
                               ),
                               maxLines: 2,
                               maxLength: 500,
+                              inputFormatters: [
+                                // Menerapkan formatter untuk mengubah huruf pertama setiap kata menjadi huruf kapital
+                                FilteringTextInputFormatter.singleLineFormatter,
+                                TextInputFormatter.withFunction(
+                                    (oldValue, newValue) {
+                                  if (newValue.text.isEmpty) {
+                                    return newValue;
+                                  }
+                                  return TextEditingValue(
+                                    text: newValue.text
+                                        .split(' ')
+                                        .map((word) => word.isNotEmpty
+                                            ? word[0].toUpperCase() +
+                                                word.substring(1)
+                                            : '')
+                                        .join(' '),
+                                    selection: newValue.selection,
+                                    composing: TextRange.empty,
+                                  );
+                                }),
+                              ],
                               validator: (value) {
                                 if (value == null || value.isEmpty) {
                                   return 'Tidak boleh kosong';
@@ -401,7 +420,7 @@ class _AddDataPageState extends State<AddDataPage> {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         const Row(
+                        const Row(
                           children: [
                             Text('Pilih kategori',
                                 style: Typo.emphasizedBodyTextStyle),
@@ -438,8 +457,7 @@ class _AddDataPageState extends State<AddDataPage> {
                               child: Text(
                                 'Makanan',
                                 style: TextStyle(
-                                    color: Col.blackColor,
-                                    fontSize: 16),
+                                    color: Col.blackColor, fontSize: 16),
                               ),
                             ),
                             DropdownMenuItem<String>(
@@ -447,8 +465,7 @@ class _AddDataPageState extends State<AddDataPage> {
                               child: Text(
                                 'Minuman',
                                 style: TextStyle(
-                                    color: Col.blackColor,
-                                    fontSize: 16),
+                                    color: Col.blackColor, fontSize: 16),
                               ),
                             ),
                           ],
@@ -457,8 +474,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                 borderRadius: BorderRadius.circular(10),
                                 color: Col.backgroundColor,
                                 border: Border.all(
-                                  color:
-                                      Col.greyColor.withOpacity(.20),
+                                  color: Col.greyColor.withOpacity(.20),
                                 )),
                           ),
                           buttonStyleData: const ButtonStyleData(
@@ -491,7 +507,7 @@ class _AddDataPageState extends State<AddDataPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                       const Row(
+                      const Row(
                         children: [
                           Text(
                             'Deskripsi',
@@ -539,11 +555,10 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             const Row(
+                            const Row(
                               children: [
                                 Text('Harga pokok/beli',
-                                    style:
-                                        Typo.emphasizedBodyTextStyle),
+                                    style: Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
@@ -555,8 +570,7 @@ class _AddDataPageState extends State<AddDataPage> {
                             ),
                             const SizedBox(height: 8.0),
                             TextFormField(
-                              style: const TextStyle(
-                                  color: Col.blackColor),
+                              style: const TextStyle(color: Col.blackColor),
                               controller: _hargaPokokController,
                               decoration: const InputDecoration(
                                 hintText: 'Harga pokok/beli',
@@ -585,11 +599,10 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             const Row(
+                            const Row(
                               children: [
                                 Text('Jumlah isi satuan',
-                                    style:
-                                        Typo.emphasizedBodyTextStyle),
+                                    style: Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
@@ -602,8 +615,7 @@ class _AddDataPageState extends State<AddDataPage> {
                             const SizedBox(height: 8.0),
                             TextFormField(
                               controller: _jumlahIsiController,
-                              style: const TextStyle(
-                                  color: Col.blackColor),
+                              style: const TextStyle(color: Col.blackColor),
                               decoration: const InputDecoration(
                                 hintText: 'Isi',
                                 hintStyle: TextStyle(
@@ -635,11 +647,10 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             const Row(
+                            const Row(
                               children: [
                                 Text('Harga jual',
-                                    style:
-                                        Typo.emphasizedBodyTextStyle),
+                                    style: Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
@@ -651,8 +662,7 @@ class _AddDataPageState extends State<AddDataPage> {
                             ),
                             const SizedBox(height: 8.0),
                             TextFormField(
-                              style: const TextStyle(
-                                  color: Col.blackColor),
+                              style: const TextStyle(color: Col.blackColor),
                               controller: _hargaJualController,
                               decoration: const InputDecoration(
                                 hintText: 'Harga jual',
@@ -681,11 +691,10 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                             const Row(
+                            const Row(
                               children: [
                                 Text('Stok yang akan dijual',
-                                    style:
-                                        Typo.emphasizedBodyTextStyle),
+                                    style: Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
@@ -698,8 +707,7 @@ class _AddDataPageState extends State<AddDataPage> {
                             const SizedBox(height: 8.0),
                             TextFormField(
                               controller: _stokController,
-                              style: const TextStyle(
-                                  color: Col.blackColor),
+                              style: const TextStyle(color: Col.blackColor),
                               decoration: const InputDecoration(
                                 hintText: 'Stok',
                                 hintStyle: TextStyle(
@@ -748,11 +756,9 @@ class _AddDataPageState extends State<AddDataPage> {
             backgroundColor: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
               if (_isLoading) {
-                return Col
-                    .primaryColor; // Set blue color when updating
+                return Col.primaryColor; // Set blue color when updating
               }
-              return Col
-                  .primaryColor; // Default color when not updating
+              return Col.primaryColor; // Default color when not updating
             }),
           ),
           child: Center(

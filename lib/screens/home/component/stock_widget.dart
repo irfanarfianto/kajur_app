@@ -30,7 +30,7 @@ Widget buildStockWidget(BuildContext context) {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                   Text(
+                  Text(
                     'Info Stok 📢',
                     style: Typo.titleTextStyle,
                   ),
@@ -92,7 +92,7 @@ Widget buildStockWidget(BuildContext context) {
                       if (snapshot.data!.docs.isEmpty) {
                         return const Center(
                           child: Text(
-                            'Belum ada info stok',
+                            'Belum ada produk',
                             style: TextStyle(
                               color: Col.blackColor,
                             ),
@@ -112,8 +112,7 @@ Widget buildStockWidget(BuildContext context) {
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Col.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -145,8 +144,7 @@ Widget buildStockWidget(BuildContext context) {
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
                                             colors: [
-                                              Col.redAccent
-                                                  .withOpacity(.75),
+                                              Col.redAccent.withOpacity(.75),
                                               Col.redAccent
                                             ],
                                           ),
@@ -180,8 +178,7 @@ Widget buildStockWidget(BuildContext context) {
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Col.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -213,8 +210,7 @@ Widget buildStockWidget(BuildContext context) {
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
                                             colors: [
-                                              Col.primaryColor
-                                                  .withOpacity(.75),
+                                              Col.primaryColor.withOpacity(.75),
                                               Col.primaryColor
                                             ],
                                           ),
@@ -246,8 +242,7 @@ Widget buildStockWidget(BuildContext context) {
                               decoration: BoxDecoration(
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        Col.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -279,8 +274,7 @@ Widget buildStockWidget(BuildContext context) {
                                             begin: Alignment.topCenter,
                                             end: Alignment.bottomCenter,
                                             colors: [
-                                              Col.primaryColor
-                                                  .withOpacity(.75),
+                                              Col.primaryColor.withOpacity(.75),
                                               Col.primaryColor
                                             ],
                                           ),
