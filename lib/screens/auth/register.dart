@@ -147,7 +147,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       key: UniqueKey(),
       appBar: AppBar(
-          backgroundColor: DesignSystem.backgroundColor,
+          backgroundColor: Col.backgroundColor,
           surfaceTintColor: Colors.transparent,
           leading: IconButton(
               icon: const Icon(
@@ -172,8 +172,8 @@ class _SignUpPageState extends State<SignUpPage> {
                       "Daftar",
                       style: TextStyle(
                         fontSize: 27,
-                        fontWeight: DesignSystem.medium,
-                        color: DesignSystem.blackColor,
+                        fontWeight: Fw.medium,
+                        color: Col.blackColor,
                       ),
                     ),
                     const SizedBox(
@@ -182,9 +182,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                         const Text(
                           'Username',
-                          style: DesignSystem.bodyTextStyle,
+                          style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
@@ -193,11 +193,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.name,
                           textInputAction: TextInputAction.next,
                           style:
-                              const TextStyle(color: DesignSystem.blackColor),
+                              const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Username',
                             hintStyle: TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
@@ -218,9 +218,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                         const Text(
                           'Email',
-                          style: DesignSystem.bodyTextStyle,
+                          style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
@@ -229,11 +229,11 @@ class _SignUpPageState extends State<SignUpPage> {
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
                           style:
-                              const TextStyle(color: DesignSystem.blackColor),
+                              const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Email',
                             hintStyle: TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
@@ -256,25 +256,25 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                         const Text(
                           'Password',
-                          style: DesignSystem.bodyTextStyle,
+                          style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _passwordController,
                           style:
-                              const TextStyle(color: DesignSystem.blackColor),
+                              const TextStyle(color: Col.blackColor),
                           decoration: InputDecoration(
                             hintText: 'Password',
                             hintStyle: const TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                             ),
                             helperText:
                                 'Minimal 8 karakter, termasuk huruf dan angka',
                             helperStyle: const TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontStyle: FontStyle.italic,
                             ),
                             suffixIcon: Padding(
@@ -293,7 +293,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       ? Icons.visibility
                                       : Icons.visibility_off,
                                   color:
-                                      DesignSystem.greyColor.withOpacity(.50),
+                                      Col.greyColor.withOpacity(.50),
                                 ),
                               ),
                             ),
@@ -318,19 +318,19 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text(
+                         const Text(
                           'Konfirmasi Password',
-                          style: DesignSystem.bodyTextStyle,
+                          style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _confirmPasswordController,
                           style:
-                              const TextStyle(color: DesignSystem.blackColor),
+                              const TextStyle(color: Col.blackColor),
                           decoration: InputDecoration(
                             hintText: 'Konfirmasi Password',
                             hintStyle: const TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                             ),
                             errorText:
@@ -356,7 +356,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                       ? Icons.visibility
                                       : Icons.visibility_off,
                                   color:
-                                      DesignSystem.greyColor.withOpacity(.50),
+                                      Col.greyColor.withOpacity(.50),
                                 ),
                               ),
                             ),
@@ -388,14 +388,14 @@ class _SignUpPageState extends State<SignUpPage> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  color: DesignSystem.whiteColor,
+                                  color: Col.whiteColor,
                                   strokeWidth: 2,
                                 ),
                               )
                             : const Text(
                                 "Daftar akun",
                                 style: TextStyle(
-                                  color: DesignSystem.whiteColor,
+                                  color: Col.whiteColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -411,7 +411,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         children: [
                           Expanded(
                             child: Divider(
-                              color: DesignSystem.greyColor.withOpacity(.30),
+                              color: Col.greyColor.withOpacity(.30),
                               height: 0.5,
                             ),
                           ),
@@ -421,7 +421,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           Expanded(
                             child: Divider(
-                              color: DesignSystem.greyColor.withOpacity(.30),
+                              color: Col.greyColor.withOpacity(.30),
                               height: 0.5,
                             ),
                           ),
@@ -436,7 +436,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         _signUpWithGoogle();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignSystem.whiteColor,
+                        backgroundColor: Col.whiteColor,
                       ),
                       child: const Center(
                         child: Row(
@@ -444,7 +444,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           children: [
                             Icon(
                               FontAwesomeIcons.google,
-                              color: DesignSystem.blackColor,
+                              color: Col.blackColor,
                               size: 20,
                             ),
                             SizedBox(
@@ -453,7 +453,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             Text(
                               "Daftar dengan Google",
                               style: TextStyle(
-                                color: DesignSystem.blackColor,
+                                color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

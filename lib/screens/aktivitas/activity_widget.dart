@@ -22,9 +22,9 @@ class RecentActivityWidget extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Aktivitas Terbaru',
-                      style: DesignSystem.titleTextStyle,
+                      style: Typo.titleTextStyle,
                     ),
                     IconTextButton(
                       text: 'Lihat semua',
@@ -55,8 +55,8 @@ class RecentActivityWidget extends StatelessWidget {
                         );
                       },
                       iconOnRight: true,
-                      iconColor: DesignSystem.greyColor,
-                      textColor: DesignSystem.greyColor,
+                      iconColor: Col.greyColor,
+                      textColor: Col.greyColor,
                       iconSize: 15.0,
                     ),
                   ],
@@ -80,7 +80,7 @@ class RecentActivityWidget extends StatelessWidget {
                       height: 150,
                       child: Center(
                         child: CircularProgressIndicator(
-                          color: DesignSystem.primaryColor,
+                          color: Col.primaryColor,
                         ),
                       ),
                     );
@@ -103,12 +103,12 @@ class RecentActivityWidget extends StatelessWidget {
                         padding: const EdgeInsets.all(8.0),
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(15),
-                          color: DesignSystem.secondaryColor,
-                          border: Border.all(
-                              color: DesignSystem.greyColor.withOpacity(.10)),
+                          color: Col.secondaryColor,
+                          border:
+                              Border.all(color: Col.greyColor.withOpacity(.10)),
                           boxShadow: [
                             BoxShadow(
-                              color: DesignSystem.greyColor.withOpacity(.10),
+                              color: Col.greyColor.withOpacity(.10),
                               offset: const Offset(0, 5),
                               blurRadius: 10,
                             ),
@@ -126,7 +126,7 @@ class RecentActivityWidget extends StatelessWidget {
                                         : ''),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
-                                style: DesignSystem.emphasizedBodyTextStyle,
+                                style: Typo.emphasizedBodyTextStyle,
                               ),
                               subtitle: Text(
                                 (data['userName'] ?? '') +

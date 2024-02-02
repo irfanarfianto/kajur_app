@@ -62,7 +62,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
           builder: (BuildContext context, StateSetter setState) {
             return Container(
               decoration: const BoxDecoration(
-                color: DesignSystem.backgroundColor,
+                color: Col.backgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
               padding: const EdgeInsets.all(16),
@@ -75,20 +75,20 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     width: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: DesignSystem.greyColor.withOpacity(.50),
+                      color: Col.greyColor.withOpacity(.50),
                     ),
                   ),
                   const SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Urutkan', style: DesignSystem.titleTextStyle),
+                      Text('Urutkan', style: Typo.titleTextStyle),
                       const SizedBox(height: 16),
                       CheckboxListTile(
-                        activeColor: DesignSystem.primaryColor,
+                        activeColor: Col.primaryColor,
                         title: const Text(
                           'Terbaru',
-                          style: DesignSystem.subtitleTextStyle,
+                          style: Typo.subtitleTextStyle,
                         ),
                         value: isSelectedTerbaru,
                         onChanged: (value) {
@@ -99,10 +99,10 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                         },
                       ),
                       CheckboxListTile(
-                        activeColor: DesignSystem.primaryColor,
+                        activeColor: Col.primaryColor,
                         title: const Text(
                           'Terlama',
-                          style: DesignSystem.subtitleTextStyle,
+                          style: Typo.subtitleTextStyle,
                         ),
                         value: isSelectedTerlama,
                         onChanged: (value) {
@@ -120,7 +120,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     children: [
                       TextButton(
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: DesignSystem.greyColor,
+                          foregroundColor: Col.greyColor,
                           backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
@@ -164,18 +164,18 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
-        backgroundColor: DesignSystem.backgroundColor,
+        backgroundColor: Col.backgroundColor,
         appBar: AppBar(
           elevation: 2,
-          backgroundColor: DesignSystem.primaryColor,
-          foregroundColor: DesignSystem.whiteColor,
-          surfaceTintColor: DesignSystem.primaryColor,
+          backgroundColor: Col.primaryColor,
+          foregroundColor: Col.whiteColor,
+          surfaceTintColor: Col.primaryColor,
           title: const Text('Semua Aktivitas'),
         ),
         body: Scrollbar(
           child: RefreshIndicator(
-            color: DesignSystem.primaryColor,
-            backgroundColor: DesignSystem.secondaryColor,
+            color: Col.primaryColor,
+            backgroundColor: Col.secondaryColor,
             onRefresh: _refreshData,
             child: Skeletonizer(
               enabled: _enabled,
@@ -190,7 +190,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                       child: CircularProgressIndicator(
-                        color: DesignSystem.primaryColor,
+                        color: Col.primaryColor,
                       ),
                     );
                   }
@@ -236,12 +236,12 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                 child: Container(
                                   alignment: Alignment.centerLeft,
                                   width: double.infinity,
-                                  color: DesignSystem.backgroundColor,
+                                  color: Col.backgroundColor,
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 16, vertical: 10),
                                     child: Text(formattedDate,
-                                        style: DesignSystem.titleTextStyle),
+                                        style: Typo.titleTextStyle),
                                   ),
                                 ),
                               ),
@@ -250,14 +250,12 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                color: DesignSystem.secondaryColor,
+                                color: Col.secondaryColor,
                                 border: Border.all(
-                                    color: DesignSystem.greyColor
-                                        .withOpacity(.10)),
+                                    color: Col.greyColor.withOpacity(.10)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        DesignSystem.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
@@ -276,8 +274,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                               : ''),
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
-                                      style:
-                                          DesignSystem.emphasizedBodyTextStyle,
+                                      style: Typo.emphasizedBodyTextStyle,
                                     ),
                                     subtitle: Text(
                                       (data['userName'] ?? '') +
@@ -312,7 +309,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
         bottomNavigationBar: SizedBox(
           height: 60, // Set the desired height here
           child: BottomAppBar(
-            color: DesignSystem.whiteColor,
+            color: Col.whiteColor,
             shape: const CircularNotchedRectangle(),
             notchMargin: 8,
             elevation: 1,
@@ -321,7 +318,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
               children: [
                 TextButton.icon(
                   style: TextButton.styleFrom(
-                    foregroundColor: DesignSystem.primaryColor,
+                    foregroundColor: Col.primaryColor,
                   ),
                   label: Text(
                       'Urutkan "${_currentSortOrder == SortOrder.Terbaru ? 'Terbaru' : 'Terlama'}"'),
@@ -332,7 +329,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                 ),
                 TextButton.icon(
                   style: TextButton.styleFrom(
-                    foregroundColor: DesignSystem.primaryColor,
+                    foregroundColor: Col.primaryColor,
                   ),
                   label: const Text('Filter'),
                   icon: const Icon(Icons.filter_list),

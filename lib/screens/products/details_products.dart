@@ -101,7 +101,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
-        backgroundColor: DesignSystem.secondaryColor,
+        backgroundColor: Col.secondaryColor,
         body: _buildProductDetails(),
         bottomNavigationBar: _buildBottomAppBar(),
       ),
@@ -133,20 +133,20 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         return CustomScrollView(slivers: [
           SliverAppBar(
             iconTheme: const IconThemeData(
-              color: DesignSystem.whiteColor,
+              color: Col.whiteColor,
               size: 24,
             ),
             expandedHeight: 300,
             floating: true,
             pinned: true,
-            foregroundColor: DesignSystem.whiteColor,
+            foregroundColor: Col.whiteColor,
             title: Text(
               productName,
             ),
             scrolledUnderElevation: 2,
             automaticallyImplyLeading: true,
             centerTitle: true,
-            backgroundColor: DesignSystem.primaryColor,
+            backgroundColor: Col.primaryColor,
             flexibleSpace: FlexibleSpaceBar(
               background: GestureDetector(
                 onTap: () {
@@ -198,8 +198,8 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Detail produk',
-                              style: DesignSystem.titleTextStyle),
+                           Text('Detail produk',
+                              style: Typo.titleTextStyle),
                           Row(
                             children: [
                               StatusBadge(
@@ -211,7 +211,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                 color: data['kategori'] == 'Makanan'
                                     ? Colors.green
                                     : data['kategori'] == 'Minuman'
-                                        ? DesignSystem.primaryColor
+                                        ? Col.primaryColor
                                         : Colors.grey,
                               ),
                               const SizedBox(width: 8),
@@ -220,10 +220,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                                     ? 'Stok habis'
                                     : 'Sisa stok ${data['stok'] ?? 0}',
                                 color: data['stok'] == 0
-                                    ? DesignSystem.redAccent
+                                    ? Col.redAccent
                                     : data['stok'] < 5
-                                        ? DesignSystem.primaryColor
-                                        : DesignSystem.primaryColor,
+                                        ? Col.primaryColor
+                                        : Col.primaryColor,
                               ),
                             ],
                           ),
@@ -245,7 +245,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               ).format(data['hargaJual']),
                               style: const TextStyle(
                                 fontSize: 18,
-                                color: DesignSystem.blackColor,
+                                color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -257,7 +257,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               ).format(data['profitSatuan'].toInt())}',
                               style: const TextStyle(
                                 fontSize: 15,
-                                color: DesignSystem.greenAccent,
+                                color: Col.greenAccent,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -280,7 +280,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               ).format(data['hargaPokok']),
                               style: const TextStyle(
                                 fontSize: 18,
-                                color: DesignSystem.blackColor,
+                                color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -290,7 +290,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         const SizedBox(
                           height: 30, // Adjust the height as needed
                           child: VerticalDivider(
-                            color: DesignSystem
+                            color: Col
                                 .greyColor, // Set the color of the vertical line
                           ),
                         ),
@@ -303,7 +303,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               '${data['jumlahIsi']}pcs',
                               style: const TextStyle(
                                 fontSize: 18,
-                                color: DesignSystem.blackColor,
+                                color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -313,7 +313,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         const SizedBox(
                           height: 30, // Adjust the height as needed
                           child: VerticalDivider(
-                            color: DesignSystem
+                            color: Col
                                 .greyColor, // Set the color of the vertical line
                           ),
                         ),
@@ -330,7 +330,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               ).format(data['totalProfit'].toInt())}',
                               style: const TextStyle(
                                 fontSize: 18,
-                                color: DesignSystem.greenAccent,
+                                color: Col.greenAccent,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -342,25 +342,25 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Deskripsi produk',
-                            style: DesignSystem.subtitleTextStyle),
+                         Text('Deskripsi produk',
+                            style: Typo.subtitleTextStyle),
                         ReadMoreText(
                           '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
                           trimLines: 3,
-                          style: DesignSystem.bodyTextStyle,
-                          colorClickableText: DesignSystem.primaryColor,
+                          style: Typo.bodyTextStyle,
+                          colorClickableText: Col.primaryColor,
                           trimMode: TrimMode.Line,
                           trimCollapsedText: 'Baca selengkapnya',
                           trimExpandedText: 'Tutup',
                           moreStyle: const TextStyle(
                             fontSize: 14,
-                            color: DesignSystem.greyColor,
-                            fontWeight: DesignSystem.regular,
+                            color: Col.greyColor,
+                            fontWeight: Fw.regular,
                           ),
                           lessStyle: const TextStyle(
                             fontSize: 12,
-                            color: DesignSystem.greyColor,
-                            fontWeight: DesignSystem.regular,
+                            color: Col.greyColor,
+                            fontWeight: Fw.regular,
                           ),
                         ),
                       ],
@@ -386,7 +386,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                             Flexible(
                               child: Text(
                                   'Ditambah oleh ${data['addedByName']}',
-                                  style: DesignSystem.emphasizedBodyTextStyle),
+                                  style: Typo.emphasizedBodyTextStyle),
                             ),
                             IconButton(
                               padding: const EdgeInsets.all(0),
@@ -418,7 +418,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               },
                               icon: const Icon(
                                 Icons.east,
-                                color: DesignSystem.greyColor,
+                                color: Col.greyColor,
                                 size: 18,
                               ),
                             )
@@ -449,7 +449,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                         title: Flexible(
                           child: Text(
                             'Diupdate oleh ${data['lastEditedByName']}',
-                            style: DesignSystem.emphasizedBodyTextStyle,
+                            style: Typo.emphasizedBodyTextStyle,
                           ),
                         ),
                         subtitle: Text(
@@ -482,7 +482,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
           children: [
             IconButton(
               style: IconButton.styleFrom(
-                backgroundColor: DesignSystem.redAccent,
+                backgroundColor: Col.redAccent,
                 shape: const CircleBorder(),
                 padding:
                     const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
@@ -516,7 +516,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                 );
               },
               icon: const Icon(Icons.delete,
-                  color: DesignSystem.whiteColor, size: 20),
+                  color: Col.whiteColor, size: 20),
               tooltip: 'Hapus',
             ),
             const SizedBox(width: 8),

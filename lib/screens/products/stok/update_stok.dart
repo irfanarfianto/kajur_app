@@ -175,12 +175,12 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                     _productName.isEmpty ? 'Loading...' : _productName,
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        fontSize: 16, fontWeight: DesignSystem.bold),
+                        fontSize: 16, fontWeight: Fw.bold),
                   ),
                   const Text(
                     'Stok Sebelumnya',
                     style: TextStyle(
-                        fontSize: 16, fontWeight: DesignSystem.regular),
+                        fontSize: 16, fontWeight: Fw.regular),
                   ),
                   Container(
                     alignment: Alignment.topCenter,
@@ -190,12 +190,12 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                         Text(
                           '$_previousStok',
                           style: const TextStyle(
-                              fontSize: 100, fontWeight: DesignSystem.regular),
+                              fontSize: 100, fontWeight: Fw.regular),
                         ),
                         const Text(
                           '/pcs',
                           style: TextStyle(
-                              fontSize: 50, fontWeight: DesignSystem.regular),
+                              fontSize: 50, fontWeight: Fw.regular),
                         ),
                       ],
                     ),
@@ -219,9 +219,9 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                     child: ElevatedButton(
                       onPressed: _isUpdating ? null : _updateStok,
                       style: ElevatedButton.styleFrom(
-                        foregroundColor: DesignSystem.whiteColor,
+                        foregroundColor: Col.whiteColor,
                         backgroundColor: _isUpdating
-                            ? DesignSystem.primaryColor
+                            ? Col.primaryColor
                             : null, // Set blue color when updating
                       ).copyWith(
                         elevation: ButtonStyleButton.allOrNull(0.0),
@@ -229,10 +229,10 @@ class _UpdateStokProdukPageState extends State<UpdateStokProdukPage> {
                             MaterialStateProperty.resolveWith<Color>(
                                 (Set<MaterialState> states) {
                           if (_isUpdating) {
-                            return DesignSystem
+                            return Col
                                 .primaryColor; // Set blue color when updating
                           }
-                          return DesignSystem
+                          return Col
                               .primaryColor; // Default color when not updating
                         }),
                       ),

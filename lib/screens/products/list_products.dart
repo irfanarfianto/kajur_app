@@ -288,16 +288,16 @@ class _ListProdukPageState extends State<ListProdukPage>
       barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
-          surfaceTintColor: DesignSystem.secondaryColor,
-          backgroundColor: DesignSystem.secondaryColor,
-          title: const Row(
+          surfaceTintColor: Col.secondaryColor,
+          backgroundColor: Col.secondaryColor,
+          title: Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.update,
                 color: Colors.blue,
               ),
-              SizedBox(width: 8),
-              Text('Update Stok', style: DesignSystem.titleTextStyle),
+              const SizedBox(width: 8),
+              Text('Update Stok', style: Typo.titleTextStyle),
             ],
           ),
           contentPadding:
@@ -332,7 +332,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                           children: [
                             Text(
                               productName.isEmpty ? 'Loading...' : productName,
-                              style: DesignSystem.emphasizedBodyTextStyle,
+                              style: Typo.emphasizedBodyTextStyle,
                               overflow: TextOverflow.ellipsis,
                               maxLines: 2,
                             ),
@@ -343,8 +343,8 @@ class _ListProdukPageState extends State<ListProdukPage>
                               style: TextStyle(
                                 fontSize: 14,
                                 color: lastStock == 0
-                                    ? DesignSystem.redAccent
-                                    : DesignSystem.greyColor,
+                                    ? Col.redAccent
+                                    : Col.greyColor,
                               ),
                             ),
                           ],
@@ -416,12 +416,12 @@ class _ListProdukPageState extends State<ListProdukPage>
       child: DefaultTabController(
         length: _getNumberOfTabs(),
         child: Scaffold(
-          backgroundColor: DesignSystem.backgroundColor,
+          backgroundColor: Col.backgroundColor,
           appBar: AppBar(
             elevation: 2,
-            backgroundColor: DesignSystem.primaryColor,
-            foregroundColor: DesignSystem.whiteColor,
-            surfaceTintColor: DesignSystem.primaryColor,
+            backgroundColor: Col.primaryColor,
+            foregroundColor: Col.whiteColor,
+            surfaceTintColor: Col.primaryColor,
             actions: [
               Center(
                 child: Padding(
@@ -435,20 +435,19 @@ class _ListProdukPageState extends State<ListProdukPage>
                         TextField(
                           controller: _searchController,
                           style: const TextStyle(
-                            color: DesignSystem.whiteColor,
+                            color: Col.whiteColor,
                           ),
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: DesignSystem.whiteColor.withOpacity(0.1),
+                            fillColor: Col.whiteColor.withOpacity(0.1),
                             contentPadding: const EdgeInsets.all(8.0),
                             hintText: 'Cari produk',
                             hintStyle: TextStyle(
-                              color: DesignSystem.whiteColor.withOpacity(.50),
+                              color: Col.whiteColor.withOpacity(.50),
                               fontSize: 14.0,
                             ),
                             prefixIcon: const Icon(Icons.search),
-                            prefixIconColor:
-                                DesignSystem.whiteColor.withOpacity(.50),
+                            prefixIconColor: Col.whiteColor.withOpacity(.50),
                             enabledBorder: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(10),
@@ -476,7 +475,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                   const EdgeInsets.symmetric(horizontal: 10),
                               child: const Icon(
                                 Icons.clear,
-                                color: DesignSystem.greyColor,
+                                color: Col.greyColor,
                               ),
                             ),
                           ),
@@ -502,9 +501,9 @@ class _ListProdukPageState extends State<ListProdukPage>
                         ..toUpperCase(),
                       style: TextStyle(
                         color: _categoryFilter == _getCategoryFromIndex(i)
-                            ? DesignSystem.secondaryColor
-                            : DesignSystem.whiteColor,
-                        fontWeight: DesignSystem.regular,
+                            ? Col.secondaryColor
+                            : Col.whiteColor,
+                        fontWeight: Fw.regular,
                       ),
                     ),
                   ),
@@ -527,9 +526,8 @@ class _ListProdukPageState extends State<ListProdukPage>
                             enabled: true,
                             child: Card(
                               elevation: 0,
-                              color: DesignSystem.secondaryColor,
-                              shadowColor:
-                                  DesignSystem.greyColor.withOpacity(0.10),
+                              color: Col.secondaryColor,
+                              shadowColor: Col.greyColor.withOpacity(0.10),
                               child: Padding(
                                 padding: const EdgeInsets.all(8.0),
                                 child: Row(
@@ -548,7 +546,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                       ),
                                     ),
                                     const SizedBox(width: 16),
-                                    const Expanded(
+                                    Expanded(
                                       flex: 3,
                                       child: Column(
                                         crossAxisAlignment:
@@ -556,18 +554,17 @@ class _ListProdukPageState extends State<ListProdukPage>
                                         children: [
                                           Text(
                                             'Skeleton nama produk',
-                                            style: DesignSystem
-                                                .emphasizedBodyTextStyle,
+                                            style: Typo.emphasizedBodyTextStyle,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                           ),
-                                          Text(
+                                          const Text(
                                             'Skeleton stok',
                                             style: TextStyle(
                                               fontSize: 14,
                                             ),
                                           ),
-                                          SizedBox(height: 5),
+                                          const SizedBox(height: 5),
                                           Text(
                                             'Skeleton update produkkkkkkkkk',
                                             style: TextStyle(
@@ -590,7 +587,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                       return const Center(
                         child: Text(
                           'Error fetching data',
-                          style: TextStyle(color: DesignSystem.redAccent),
+                          style: TextStyle(color: Col.redAccent),
                         ),
                       );
                     }
@@ -599,7 +596,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                       return const Center(
                         child: Text(
                           'Tidak ada produk',
-                          style: TextStyle(color: DesignSystem.greyColor),
+                          style: TextStyle(color: Col.greyColor),
                         ),
                       );
                     }
@@ -624,8 +621,8 @@ class _ListProdukPageState extends State<ListProdukPage>
                         _sortProducts(categoryProducts);
 
                     return RefreshIndicator(
-                      backgroundColor: DesignSystem.secondaryColor,
-                      color: DesignSystem.primaryColor,
+                      backgroundColor: Col.secondaryColor,
+                      color: Col.primaryColor,
                       onRefresh: _refreshData,
                       child: ListView.builder(
                         key: UniqueKey(),
@@ -639,9 +636,8 @@ class _ListProdukPageState extends State<ListProdukPage>
 
                           return Card(
                             elevation: 0,
-                            color: DesignSystem.secondaryColor,
-                            shadowColor:
-                                DesignSystem.greyColor.withOpacity(0.10),
+                            color: Col.secondaryColor,
+                            shadowColor: Col.greyColor.withOpacity(0.10),
                             child: InkWell(
                               onTap: () {
                                 Navigator.push(
@@ -678,8 +674,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                         children: [
                                           Text(
                                             data['menu'],
-                                            style: DesignSystem
-                                                .emphasizedBodyTextStyle,
+                                            style: Typo.emphasizedBodyTextStyle,
                                             overflow: TextOverflow.ellipsis,
                                             maxLines: 1,
                                           ),
@@ -690,8 +685,8 @@ class _ListProdukPageState extends State<ListProdukPage>
                                             style: TextStyle(
                                               fontSize: 14,
                                               color: data['stok'] == 0
-                                                  ? DesignSystem.redAccent
-                                                  : DesignSystem.greyColor,
+                                                  ? Col.redAccent
+                                                  : Col.greyColor,
                                             ),
                                           ),
                                           const SizedBox(height: 5),
@@ -699,7 +694,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                             '*Diperbarui ${DateFormat('dd MMM y HH:mm', 'id_ID').format(data['updatedAt'].toDate())}',
                                             style: const TextStyle(
                                               fontSize: 10,
-                                              color: DesignSystem.greyColor,
+                                              color: Col.greyColor,
                                               fontStyle: FontStyle.italic,
                                             ),
                                           )
@@ -722,7 +717,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                           height: 100,
                                           child: Icon(
                                             Icons.more_vert,
-                                            color: DesignSystem.greyColor,
+                                            color: Col.greyColor,
                                             size: 18,
                                           ),
                                         ),

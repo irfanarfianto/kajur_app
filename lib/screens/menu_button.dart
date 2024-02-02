@@ -16,7 +16,7 @@ class MenuButton extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-        color: DesignSystem.backgroundColor,
+        color: Col.backgroundColor,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -26,7 +26,7 @@ class MenuButton extends StatelessWidget {
             width: 40,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: DesignSystem.greyColor.withOpacity(.50),
+              color: Col.greyColor.withOpacity(.50),
             ),
           ),
           const SizedBox(height: 16),
@@ -36,7 +36,7 @@ class MenuButton extends StatelessWidget {
               width: double.infinity,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: DesignSystem.greyColor.withOpacity(.10),
+                color: Col.greyColor.withOpacity(.10),
               )),
           const SizedBox(height: 16),
           Row(
@@ -79,7 +79,7 @@ class MenuButton extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(100),
-              color: DesignSystem.greyColor.withOpacity(.15),
+              color: Col.greyColor.withOpacity(.15),
             ),
             child: IconButton(
               onPressed: () {
@@ -87,7 +87,7 @@ class MenuButton extends StatelessWidget {
               },
               icon: const Icon(Icons.close),
               iconSize: 25,
-              color: DesignSystem.blackColor,
+              color: Col.blackColor,
             ),
           ),
         ],
@@ -108,7 +108,7 @@ class MenuButton extends StatelessWidget {
             width: 56,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(28),
-              color: DesignSystem.primaryColor,
+              color: Col.primaryColor,
             ),
             child: IconButton(
               onPressed: () {

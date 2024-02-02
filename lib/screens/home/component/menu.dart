@@ -4,7 +4,6 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/home/component/circularButton.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
-import 'package:kajur_app/screens/products/stok/stok_produk.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 Widget buildMenuWidget(BuildContext context) {
@@ -15,11 +14,11 @@ Widget buildMenuWidget(BuildContext context) {
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
-            color: DesignSystem.secondaryColor,
-            border: Border.all(color: DesignSystem.greyColor.withOpacity(.10)),
+            color: Col.secondaryColor,
+            border: Border.all(color: Col.greyColor.withOpacity(.10)),
             boxShadow: [
               BoxShadow(
-                color: DesignSystem.greyColor.withOpacity(.10),
+                color: Col.greyColor.withOpacity(.10),
                 offset: const Offset(0, 5),
                 blurRadius: 10,
               ),
@@ -32,9 +31,9 @@ Widget buildMenuWidget(BuildContext context) {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
+                    Text(
                       'Menu',
-                      style: DesignSystem.titleTextStyle,
+                      style: Typo.titleTextStyle,
                     ),
                   ],
                 ),

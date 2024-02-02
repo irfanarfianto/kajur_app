@@ -272,7 +272,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                       width: 250,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(10),
-                        color: DesignSystem.greyColor.withOpacity(.20),
+                        color: Col.greyColor.withOpacity(.20),
                       ),
                       child: _selectedImage != null
                           ? ClipRRect(
@@ -300,18 +300,18 @@ class _EditProdukPageState extends State<EditProdukPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Nama Produk',
-                          style: DesignSystem.emphasizedBodyTextStyle),
+                          style: Typo.emphasizedBodyTextStyle),
                       const SizedBox(height: 8.0),
                       TextFormField(
                         controller: _menuController,
                         keyboardType: TextInputType.name,
                         textCapitalization: TextCapitalization.words,
                         textInputAction: TextInputAction.next,
-                        style: const TextStyle(color: DesignSystem.blackColor),
+                        style: const TextStyle(color: Col.blackColor),
                         decoration: const InputDecoration(
                           hintText: 'Nama produk',
                           hintStyle: TextStyle(
-                            color: DesignSystem.greyColor,
+                            color: Col.greyColor,
                             fontWeight: FontWeight.normal,
                           ),
                         ),
@@ -333,16 +333,15 @@ class _EditProdukPageState extends State<EditProdukPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const Text('Harga Jual',
-                                style: DesignSystem.emphasizedBodyTextStyle),
+                                style: Typo.emphasizedBodyTextStyle),
                             const SizedBox(height: 8.0),
                             TextFormField(
-                              style: const TextStyle(
-                                  color: DesignSystem.blackColor),
+                              style: const TextStyle(color: Col.blackColor),
                               controller: _hargaJualController,
                               decoration: const InputDecoration(
                                 hintText: 'Harga jual',
                                 hintStyle: TextStyle(
-                                  color: DesignSystem.greyColor,
+                                  color: Col.greyColor,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -368,14 +367,14 @@ class _EditProdukPageState extends State<EditProdukPage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Text('Deskripsi',
-                          style: DesignSystem.emphasizedBodyTextStyle),
+                          style: Typo.emphasizedBodyTextStyle),
                       const SizedBox(height: 8.0),
                       TextFormField(
                         controller: _deskripsiController,
                         decoration: const InputDecoration(
                           hintText: 'Masukan deskripsi produk',
                           hintStyle: TextStyle(
-                            color: DesignSystem.greyColor,
+                            color: Col.greyColor,
                             fontWeight: FontWeight.normal,
                           ),
                           contentPadding: EdgeInsets.symmetric(
@@ -388,7 +387,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
                           return null;
                         },
                         maxLength: 1000,
-                        style: const TextStyle(color: DesignSystem.blackColor),
+                        style: const TextStyle(color: Col.blackColor),
                         keyboardType: TextInputType.multiline,
                         maxLines: 3,
                       ),

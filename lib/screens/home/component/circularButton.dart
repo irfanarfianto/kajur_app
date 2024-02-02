@@ -25,12 +25,12 @@ Widget buildCircularButton(
         },
         icon: Icon(icon),
         iconSize: 28,
-        color: DesignSystem.primaryColor,
+        color: Col.primaryColor,
       ),
       const SizedBox(height: 8),
       Text(
         label,
-        style: const TextStyle(fontSize: 12, color: DesignSystem.greyColor),
+        style: const TextStyle(fontSize: 12, color: Col.greyColor),
       ),
     ],
   );

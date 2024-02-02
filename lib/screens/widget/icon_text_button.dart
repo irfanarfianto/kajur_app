@@ -19,10 +19,10 @@ class IconTextButton extends StatelessWidget {
     required this.onPressed,
     this.iconOnRight = false,
     this.iconSize = 24.0,
-    this.textColor = DesignSystem.blackColor,
-    this.iconColor = DesignSystem.blackColor,
+    this.textColor = Col.blackColor,
+    this.iconColor = Col.blackColor,
     this.backgroundColor = Colors.transparent,
-    this.borderColor = DesignSystem.blackColor,
+    this.borderColor = Col.blackColor,
   });
 
   @override

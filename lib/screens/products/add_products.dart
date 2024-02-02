@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -233,7 +232,7 @@ class _AddDataPageState extends State<AddDataPage> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(10),
                           border: Border.all(
-                            color: DesignSystem.greyColor.withOpacity(.50),
+                            color: Col.greyColor.withOpacity(.50),
                             width: 1,
                           ),
                         ),
@@ -258,11 +257,11 @@ class _AddDataPageState extends State<AddDataPage> {
                                   builder: (BuildContext context) {
                                     return AlertDialog(
                                       surfaceTintColor:
-                                          DesignSystem.secondaryColor,
+                                          Col.secondaryColor,
                                       title: const Text("Pilih Sumber Gambar",
                                           textAlign: TextAlign.center,
                                           style: TextStyle(
-                                            color: DesignSystem.blackColor,
+                                            color: Col.blackColor,
                                             fontSize: 16,
                                           )),
                                       actions: <Widget>[
@@ -330,7 +329,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                             Icon(
                                               Icons.add_a_photo,
                                               size: 50,
-                                              color: DesignSystem.greyColor
+                                              color: Col.greyColor
                                                   .withOpacity(.20),
                                             ),
                                             const SizedBox(height: 8),
@@ -338,7 +337,7 @@ class _AddDataPageState extends State<AddDataPage> {
                                               'Upload Foto',
                                               style: TextStyle(
                                                 fontSize: 16,
-                                                color: DesignSystem.greyColor,
+                                                color: Col.greyColor,
                                               ),
                                             ),
                                           ],
@@ -354,17 +353,17 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                             const Row(
                               children: [
                                 Text(
                                   'Nama Produk',
-                                  style: DesignSystem.emphasizedBodyTextStyle,
+                                  style: Typo.emphasizedBodyTextStyle,
                                 ),
                                 Text(
                                   '*',
                                   style: TextStyle(
-                                    color: DesignSystem.redAccent,
-                                    fontWeight: DesignSystem.regular,
+                                    color: Col.redAccent,
+                                    fontWeight: Fw.regular,
                                   ),
                                 ),
                               ],
@@ -376,11 +375,11 @@ class _AddDataPageState extends State<AddDataPage> {
                               textCapitalization: TextCapitalization.words,
                               textInputAction: TextInputAction.next,
                               style: const TextStyle(
-                                  color: DesignSystem.blackColor),
+                                  color: Col.blackColor),
                               decoration: const InputDecoration(
                                 hintText: 'Nama produk',
                                 hintStyle: TextStyle(
-                                  color: DesignSystem.greyColor,
+                                  color: Col.greyColor,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -402,15 +401,15 @@ class _AddDataPageState extends State<AddDataPage> {
                   Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Row(
+                         const Row(
                           children: [
                             Text('Pilih kategori',
-                                style: DesignSystem.emphasizedBodyTextStyle),
+                                style: Typo.emphasizedBodyTextStyle),
                             Text(
                               '*',
                               style: TextStyle(
-                                color: DesignSystem.redAccent,
-                                fontWeight: DesignSystem.regular,
+                                color: Col.redAccent,
+                                fontWeight: Fw.regular,
                               ),
                             ),
                           ],
@@ -424,7 +423,7 @@ class _AddDataPageState extends State<AddDataPage> {
                           hint: const Text(
                             'Pilih kategori',
                             style: TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                               fontSize: 16,
                             ),
@@ -432,14 +431,14 @@ class _AddDataPageState extends State<AddDataPage> {
                           value: _selectedCategory.isNotEmpty
                               ? _selectedCategory
                               : null,
-                          style: const TextStyle(color: DesignSystem.greyColor),
+                          style: const TextStyle(color: Col.greyColor),
                           items: const [
                             DropdownMenuItem<String>(
                               value: 'Makanan',
                               child: Text(
                                 'Makanan',
                                 style: TextStyle(
-                                    color: DesignSystem.blackColor,
+                                    color: Col.blackColor,
                                     fontSize: 16),
                               ),
                             ),
@@ -448,7 +447,7 @@ class _AddDataPageState extends State<AddDataPage> {
                               child: Text(
                                 'Minuman',
                                 style: TextStyle(
-                                    color: DesignSystem.blackColor,
+                                    color: Col.blackColor,
                                     fontSize: 16),
                               ),
                             ),
@@ -456,10 +455,10 @@ class _AddDataPageState extends State<AddDataPage> {
                           dropdownStyleData: DropdownStyleData(
                             decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(10),
-                                color: DesignSystem.backgroundColor,
+                                color: Col.backgroundColor,
                                 border: Border.all(
                                   color:
-                                      DesignSystem.greyColor.withOpacity(.20),
+                                      Col.greyColor.withOpacity(.20),
                                 )),
                           ),
                           buttonStyleData: const ButtonStyleData(
@@ -492,17 +491,17 @@ class _AddDataPageState extends State<AddDataPage> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Row(
+                       const Row(
                         children: [
                           Text(
                             'Deskripsi',
-                            style: DesignSystem.emphasizedBodyTextStyle,
+                            style: Typo.emphasizedBodyTextStyle,
                           ),
                           Text(
                             '*',
                             style: TextStyle(
-                              color: DesignSystem.redAccent,
-                              fontWeight: DesignSystem.regular,
+                              color: Col.redAccent,
+                              fontWeight: Fw.regular,
                             ),
                           ),
                         ],
@@ -513,7 +512,7 @@ class _AddDataPageState extends State<AddDataPage> {
                         decoration: const InputDecoration(
                           hintText: 'Masukan deskripsi produk',
                           hintStyle: TextStyle(
-                            color: DesignSystem.greyColor,
+                            color: Col.greyColor,
                             fontWeight: FontWeight.normal,
                           ),
                           contentPadding: EdgeInsets.symmetric(
@@ -525,7 +524,7 @@ class _AddDataPageState extends State<AddDataPage> {
                           }
                           return null;
                         },
-                        style: const TextStyle(color: DesignSystem.blackColor),
+                        style: const TextStyle(color: Col.blackColor),
                         keyboardType: TextInputType.multiline,
                         maxLines: 3,
                         maxLength: 1000,
@@ -540,16 +539,16 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                             const Row(
                               children: [
                                 Text('Harga pokok/beli',
                                     style:
-                                        DesignSystem.emphasizedBodyTextStyle),
+                                        Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
-                                    color: DesignSystem.redAccent,
-                                    fontWeight: DesignSystem.regular,
+                                    color: Col.redAccent,
+                                    fontWeight: Fw.regular,
                                   ),
                                 ),
                               ],
@@ -557,12 +556,12 @@ class _AddDataPageState extends State<AddDataPage> {
                             const SizedBox(height: 8.0),
                             TextFormField(
                               style: const TextStyle(
-                                  color: DesignSystem.blackColor),
+                                  color: Col.blackColor),
                               controller: _hargaPokokController,
                               decoration: const InputDecoration(
                                 hintText: 'Harga pokok/beli',
                                 hintStyle: TextStyle(
-                                  color: DesignSystem.greyColor,
+                                  color: Col.greyColor,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -586,16 +585,16 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                             const Row(
                               children: [
                                 Text('Jumlah isi satuan',
                                     style:
-                                        DesignSystem.emphasizedBodyTextStyle),
+                                        Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
-                                    color: DesignSystem.redAccent,
-                                    fontWeight: DesignSystem.regular,
+                                    color: Col.redAccent,
+                                    fontWeight: Fw.regular,
                                   ),
                                 ),
                               ],
@@ -604,11 +603,11 @@ class _AddDataPageState extends State<AddDataPage> {
                             TextFormField(
                               controller: _jumlahIsiController,
                               style: const TextStyle(
-                                  color: DesignSystem.blackColor),
+                                  color: Col.blackColor),
                               decoration: const InputDecoration(
                                 hintText: 'Isi',
                                 hintStyle: TextStyle(
-                                  color: DesignSystem.greyColor,
+                                  color: Col.greyColor,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -636,16 +635,16 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                             const Row(
                               children: [
                                 Text('Harga jual',
                                     style:
-                                        DesignSystem.emphasizedBodyTextStyle),
+                                        Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
-                                    color: DesignSystem.redAccent,
-                                    fontWeight: DesignSystem.regular,
+                                    color: Col.redAccent,
+                                    fontWeight: Fw.regular,
                                   ),
                                 ),
                               ],
@@ -653,12 +652,12 @@ class _AddDataPageState extends State<AddDataPage> {
                             const SizedBox(height: 8.0),
                             TextFormField(
                               style: const TextStyle(
-                                  color: DesignSystem.blackColor),
+                                  color: Col.blackColor),
                               controller: _hargaJualController,
                               decoration: const InputDecoration(
                                 hintText: 'Harga jual',
                                 hintStyle: TextStyle(
-                                  color: DesignSystem.greyColor,
+                                  color: Col.greyColor,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -682,16 +681,16 @@ class _AddDataPageState extends State<AddDataPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                             const Row(
                               children: [
                                 Text('Stok yang akan dijual',
                                     style:
-                                        DesignSystem.emphasizedBodyTextStyle),
+                                        Typo.emphasizedBodyTextStyle),
                                 Text(
                                   '*',
                                   style: TextStyle(
-                                    color: DesignSystem.redAccent,
-                                    fontWeight: DesignSystem.regular,
+                                    color: Col.redAccent,
+                                    fontWeight: Fw.regular,
                                   ),
                                 ),
                               ],
@@ -700,11 +699,11 @@ class _AddDataPageState extends State<AddDataPage> {
                             TextFormField(
                               controller: _stokController,
                               style: const TextStyle(
-                                  color: DesignSystem.blackColor),
+                                  color: Col.blackColor),
                               decoration: const InputDecoration(
                                 hintText: 'Stok',
                                 hintStyle: TextStyle(
-                                  color: DesignSystem.greyColor,
+                                  color: Col.greyColor,
                                   fontWeight: FontWeight.normal,
                                 ),
                               ),
@@ -740,19 +739,19 @@ class _AddDataPageState extends State<AddDataPage> {
             }
           },
           style: ElevatedButton.styleFrom(
-            foregroundColor: DesignSystem.whiteColor,
+            foregroundColor: Col.whiteColor,
             backgroundColor: _isLoading
-                ? DesignSystem.primaryColor
+                ? Col.primaryColor
                 : null, // Set blue color when updating
           ).copyWith(
             elevation: ButtonStyleButton.allOrNull(0.0),
             backgroundColor: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
               if (_isLoading) {
-                return DesignSystem
+                return Col
                     .primaryColor; // Set blue color when updating
               }
-              return DesignSystem
+              return Col
                   .primaryColor; // Default color when not updating
             }),
           ),

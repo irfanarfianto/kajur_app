@@ -39,9 +39,9 @@ class AddProductDetailPage extends StatelessWidget {
         NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
-      backgroundColor: DesignSystem.backgroundColor,
+      backgroundColor: Col.backgroundColor,
       appBar: AppBar(
-        backgroundColor: DesignSystem.backgroundColor,
+        backgroundColor: Col.backgroundColor,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -51,10 +51,10 @@ class AddProductDetailPage extends StatelessWidget {
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(15),
               side: BorderSide(
-                  color: DesignSystem.greyColor.withOpacity(.20), width: 1),
+                  color: Col.greyColor.withOpacity(.20), width: 1),
             ),
             clipBehavior: Clip.antiAlias,
-            color: DesignSystem.secondaryColor,
+            color: Col.secondaryColor,
             child: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -72,7 +72,7 @@ class AddProductDetailPage extends StatelessWidget {
                       const SizedBox(height: 5),
                       Text(
                         productName,
-                        style: DesignSystem.headingTextStyle,
+                        style: Typo.headingTextStyle,
                       ),
                       const SizedBox(height: 2),
                       Row(
@@ -92,9 +92,9 @@ class AddProductDetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                   const Text(
                     'Rincian Produk',
-                    style: DesignSystem.emphasizedBodyTextStyle,
+                    style: Typo.emphasizedBodyTextStyle,
                   ),
                   const SizedBox(height: 8),
                   _buildDetailItem('Ditambahkan Oleh', addedByName),
@@ -104,11 +104,11 @@ class AddProductDetailPage extends StatelessWidget {
                     height: 0,
                     width: 100,
                     axis: Axis.horizontal,
-                    dashColor: DesignSystem.greyColor.withOpacity(.20),
+                    dashColor: Col.greyColor.withOpacity(.20),
                   ),
                   const SizedBox(height: 10),
-                  const Text('Deskripsi Produk',
-                      style: DesignSystem.emphasizedBodyTextStyle),
+                   const Text('Deskripsi Produk',
+                      style: Typo.emphasizedBodyTextStyle),
                   Text(
                     deskripsi,
                     maxLines: 2,
@@ -118,7 +118,7 @@ class AddProductDetailPage extends StatelessWidget {
                     height: 0,
                     width: 100,
                     axis: Axis.horizontal,
-                    dashColor: DesignSystem.greyColor.withOpacity(.20),
+                    dashColor: Col.greyColor.withOpacity(.20),
                   ),
                   const SizedBox(height: 10),
                   _buildDetailItem(
@@ -129,9 +129,9 @@ class AddProductDetailPage extends StatelessWidget {
                   Text(
                     '*bukan pack/dus',
                     style: TextStyle(
-                      color: DesignSystem.greyColor.withOpacity(.50),
+                      color: Col.greyColor.withOpacity(.50),
                       fontSize: 12,
-                      fontWeight: DesignSystem.regular,
+                      fontWeight: Fw.regular,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
@@ -140,7 +140,7 @@ class AddProductDetailPage extends StatelessWidget {
                     height: 0,
                     width: 100,
                     axis: Axis.horizontal,
-                    dashColor: DesignSystem.greyColor.withOpacity(.20),
+                    dashColor: Col.greyColor.withOpacity(.20),
                   ),
                   const SizedBox(height: 10),
                   _buildDetailItem('Stok di Kantin', '$stok'),
@@ -149,11 +149,11 @@ class AddProductDetailPage extends StatelessWidget {
                     height: 0,
                     width: 100,
                     axis: Axis.horizontal,
-                    dashColor: DesignSystem.greyColor.withOpacity(.20),
+                    dashColor: Col.greyColor.withOpacity(.20),
                   ),
                   const SizedBox(height: 10),
-                  const Text('Perkiraan Profit',
-                      style: DesignSystem.emphasizedBodyTextStyle),
+                   const Text('Perkiraan Profit',
+                      style: Typo.emphasizedBodyTextStyle),
                   _buildDetailItem(
                       'Satuan /pcs', currencyFormat.format(profitSatuan),
                       isProfit: true),
@@ -167,12 +167,12 @@ class AddProductDetailPage extends StatelessWidget {
                       Expanded(
                         child: ElevatedButton(
                           style: ElevatedButton.styleFrom(
-                              foregroundColor: DesignSystem.blackColor,
-                              backgroundColor: DesignSystem.secondaryColor,
-                              surfaceTintColor: DesignSystem.secondaryColor,
+                              foregroundColor: Col.blackColor,
+                              backgroundColor: Col.secondaryColor,
+                              surfaceTintColor: Col.secondaryColor,
                               elevation: 0,
                               side: BorderSide(
-                                color: DesignSystem.greyColor.withOpacity(.20),
+                                color: Col.greyColor.withOpacity(.20),
                               )),
                           onPressed: () {
                             Navigator.pushReplacementNamed(
@@ -219,17 +219,17 @@ class AddProductDetailPage extends StatelessWidget {
                 ? const Icon(
                     Icons.payments_outlined,
                     size: 12,
-                    color: DesignSystem.greenAccent,
+                    color: Col.greenAccent,
                   )
                 : Container(),
             Text(
               value,
               style: isProfit
                   ? const TextStyle(
-                      color: DesignSystem.greenAccent,
+                      color: Col.greenAccent,
                       fontWeight: FontWeight.bold,
                     )
-                  : DesignSystem.emphasizedBodyTextStyle,
+                  : Typo.emphasizedBodyTextStyle,
             ),
           ],
         ),
