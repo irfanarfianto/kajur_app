@@ -9,11 +9,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 
 import 'package:kajur_app/screens/aktivitas/activity_widget.dart';
-import 'package:kajur_app/screens/home/widget/images_widget.dart';
+import 'package:kajur_app/screens/home/component/menu.dart';
 
-import 'package:kajur_app/screens/home/widget/stock_widget.dart';
-import 'package:kajur_app/screens/home/widget/total_produk_widget.dart';
-import 'package:kajur_app/screens/menu_button.dart';
+import 'package:kajur_app/screens/home/component/stock_widget.dart';
+import 'package:kajur_app/screens/home/component/total_produk_widget.dart';
 
 import 'package:flutter/services.dart';
 import 'package:kajur_app/screens/user/profile.dart';
@@ -93,7 +92,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildAppBar(BuildContext context) {
     return AppBar(
       elevation: 0,
-      backgroundColor: DesignSystem.backgroundColor,
+      backgroundColor: Col.backgroundColor,
       surfaceTintColor: Colors.transparent,
       automaticallyImplyLeading: false,
       title: GestureDetector(
@@ -132,7 +131,7 @@ class _HomePageState extends State<HomePage> {
             backgroundColor: MaterialStateProperty.all(Colors.transparent),
             overlayColor: MaterialStateProperty.all(Colors.transparent),
           ),
-          color: DesignSystem.greyColor,
+          color: Col.greyColor,
           iconSize: 24,
           constraints: const BoxConstraints(),
           onPressed: () {
@@ -148,7 +147,7 @@ class _HomePageState extends State<HomePage> {
   Widget _buildUserWidget(User? currentUser) {
     if (_currentUser == null) {
       return const CircularProgressIndicator(
-        color: DesignSystem.whiteColor,
+        color: Col.whiteColor,
       );
     } else {
       return Container(
@@ -166,23 +165,23 @@ class _HomePageState extends State<HomePage> {
                 Text(
                   "${_currentUser!.displayName}",
                   style: const TextStyle(
-                    fontWeight: DesignSystem.regular,
+                    fontWeight: Fw.regular,
                     fontSize: 18,
-                    color: DesignSystem.blackColor,
+                    color: Col.blackColor,
                   ),
                 ),
                 Row(
                   children: [
                     const Icon(
                       Icons.email,
-                      color: DesignSystem.greyColor,
+                      color: Col.greyColor,
                       size: 12,
                     ),
                     const SizedBox(width: 2),
                     Text(
                       "${_currentUser!.email}",
                       style: const TextStyle(
-                        color: DesignSystem.greyColor,
+                        color: Col.greyColor,
                         fontSize: 12,
                       ),
                     ),
@@ -211,48 +210,49 @@ class _HomePageState extends State<HomePage> {
             child: _buildAppBar(context),
           ),
           body: RefreshIndicator(
-            color: DesignSystem.primaryColor,
+            color: Col.primaryColor,
             onRefresh: _refreshData,
             child: Skeletonizer(
               enabled: _enabled,
               child: ListView(
                 physics: const ClampingScrollPhysics(),
                 children: [
-                  const SizedBox(height: 20),
-                  buildTotalProductsWidget(context),
-                  buildStockWidget(context),
-                  const RecentActivityWidget(),
+                  const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      buildTotalProductsWidget(context),
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Column(
+                          children: [
+                            // buildStockWidget(context),
+                            // const SizedBox(height: 20),
+                            buildMenuWidget(context),
+                            const SizedBox(height: 20),
+                            const RecentActivityWidget(),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
                   Center(
-                    child: Image.asset(
-                      'images/gambar.png',
-                      fit: BoxFit.contain,
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        const Text('~ Segini dulu yaa ~',
+                            style: Typo.subtitleTextStyle),
+                        Image.asset(
+                          'images/gambar.png',
+                          fit: BoxFit.contain,
+                        ),
+                      ],
                     ),
                   ),
                 ],
               ),
             ),
           ),
-          floatingActionButton: FloatingActionButton.extended(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const MenuButton();
-                  },
-                );
-              },
-              extendedPadding: const EdgeInsets.symmetric(horizontal: 20),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(100),
-              ),
-              backgroundColor: DesignSystem.primaryColor,
-              foregroundColor: DesignSystem.whiteColor,
-              icon: const Icon(Icons.rocket_launch_outlined),
-              label: const Text('Menu',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14,
-                  ))),
         ),
       ),
     );

@@ -26,7 +26,7 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: DesignSystem.secondaryColor,
+      backgroundColor: Col.secondaryColor,
       body: Stack(
         children: [
           Center(
@@ -41,7 +41,7 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
             child: Align(
               alignment: Alignment.bottomCenter,
               child: Container(
-                color: DesignSystem.primaryColor.withOpacity(0.9),
+                color: Col.primaryColor.withOpacity(0.9),
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -54,7 +54,7 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
                                 'Nongki bentar ya, ${_currentUser!.displayName}! Bakal ada update seru nih!',
                                 style: const TextStyle(
                                   fontSize: 18,
-                                  color: DesignSystem.secondaryColor,
+                                  color: Col.secondaryColor,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -63,7 +63,7 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
                                 'See you..',
                                 style: TextStyle(
                                   fontSize: 14,
-                                  color: DesignSystem.secondaryColor,
+                                  color: Col.secondaryColor,
                                 ),
                               ),
                             ],
@@ -82,7 +82,7 @@ class _ComingSoonPageState extends State<ComingSoonPage> {
                 Navigator.pop(context);
               },
               icon: const Icon(Icons.close,
-                  color: DesignSystem.secondaryColor, size: 30),
+                  color: Col.secondaryColor, size: 30),
             ),
           ),
         ],

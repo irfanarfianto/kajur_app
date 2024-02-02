@@ -1,16 +1,17 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:kajur_app/comingsoon/comingsoon.dart';
-import 'package:kajur_app/screens/auth/login.dart';
-import 'package:kajur_app/screens/products/add_products.dart';
-import 'package:kajur_app/screens/products/list_products.dart';
-import 'package:kajur_app/screens/auth/register.dart';
-import 'package:kajur_app/screens/home/home.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:kajur_app/screens/splash_screen/splash_screen.dart';
+import 'package:timeago/timeago.dart' as timeago;
 import 'firebase_options.dart';
 import 'design/system.dart';
-import 'package:intl/date_symbol_data_local.dart';
-import 'package:timeago/timeago.dart' as timeago;
+import 'screens/auth/login.dart';
+import 'screens/auth/register.dart';
+import 'screens/home/home.dart';
+import 'screens/products/add_products.dart';
+import 'screens/products/list_products.dart';
+import 'comingsoon/comingsoon.dart';
 
 void main() async {
   timeago.setLocaleMessages('id', timeago.IdMessages());
@@ -21,96 +22,101 @@ void main() async {
   );
 
   initializeDateFormatting('id', null).then((_) {
-    runApp(const MyApp());
+    runApp(MyApp());
   });
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+class MyApp extends StatelessWidget {
+  static const String initialRoute = '/';
+  static const String loginRoute = '/login';
+  static const String signUpRoute = '/signUp';
+  static const String homeRoute = '/home';
+  static const String listProdukRoute = '/list_produk';
+  static const String addProdukRoute = '/add_produk';
+  static const String comingSoonRoute = '/comingsoon';
 
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
+  MyApp({Key? key}) : super(key: key);
 
-class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        indicatorColor: DesignSystem.primaryColor,
-        fontFamily: 'Roboto',
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        scaffoldBackgroundColor: DesignSystem.backgroundColor,
-        primaryColor: DesignSystem.primaryColor,
-        dialogBackgroundColor: DesignSystem.backgroundColor,
-        iconTheme: const IconThemeData(color: DesignSystem.blackColor),
-        appBarTheme: const AppBarTheme(
-          foregroundColor: DesignSystem.blackColor,
-        ),
-        cardTheme: CardTheme(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          color: DesignSystem.secondaryColor,
-        ),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                backgroundColor: DesignSystem.primaryColor,
-                foregroundColor: DesignSystem.backgroundColor)),
-        inputDecorationTheme: InputDecorationTheme(
-            contentPadding:
-                const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide:
-                  const BorderSide(color: DesignSystem.greyColor, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide:
-                  const BorderSide(color: DesignSystem.primaryColor, width: 1),
-            ),
-            focusedErrorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide:
-                  const BorderSide(color: DesignSystem.redAccent, width: 1),
-            ),
-            errorBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              borderSide:
-                  const BorderSide(color: DesignSystem.redAccent, width: 1),
-            )),
-        colorScheme: const ColorScheme(
-          primary: DesignSystem.primaryColor,
-          secondary: DesignSystem.secondaryColor,
-          background: DesignSystem.backgroundColor,
-          surface: DesignSystem.secondaryColor,
-          onBackground: Colors.black,
-          onSurface: Colors.black,
-          onError: Colors.white,
-          onPrimary: DesignSystem.secondaryColor,
-          onSecondary: Colors.black,
-          brightness: Brightness.light,
-          error: Colors.red,
-        ),
-      ),
+      theme: buildTheme(context),
+      initialRoute: initialRoute,
       routes: {
-        '/': (context) => const SplashScreen(
+        initialRoute: (context) => const SplashScreen(
               child: LoginPage(),
             ),
-        '/login': (context) => const LoginPage(),
-        '/signUp': (context) => const SignUpPage(),
-        '/home': (context) => const HomePage(),
-        '/list_produk': (context) => const ListProdukPage(),
-        '/add_produk': (context) => const AddDataPage(),
-        '/comingsoon': (context) => const ComingSoonPage(),
+        loginRoute: (context) => const LoginPage(),
+        signUpRoute: (context) => const SignUpPage(),
+        homeRoute: (context) => const HomePage(),
+        listProdukRoute: (context) => const ListProdukPage(),
+        addProdukRoute: (context) => const AddDataPage(),
+        comingSoonRoute: (context) => const ComingSoonPage(),
       },
+    );
+  }
+
+  ThemeData buildTheme(BuildContext context) {
+    return ThemeData(
+      indicatorColor: Col.primaryColor,
+      textTheme: GoogleFonts.nunitoSansTextTheme(
+        Theme.of(context).textTheme,
+      ),
+      visualDensity: VisualDensity.adaptivePlatformDensity,
+      scaffoldBackgroundColor: Col.backgroundColor,
+      primaryColor: Col.primaryColor,
+      dialogBackgroundColor: Col.backgroundColor,
+      iconTheme: const IconThemeData(color: Col.blackColor),
+      appBarTheme: const AppBarTheme(
+        foregroundColor: Col.blackColor,
+      ),
+      cardTheme: CardTheme(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        color: Col.secondaryColor,
+      ),
+      elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
+              backgroundColor: Col.primaryColor,
+              foregroundColor: Col.backgroundColor)),
+      inputDecorationTheme: InputDecorationTheme(
+          contentPadding:
+              const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Col.greyColor, width: 1),
+          ),
+          focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Col.primaryColor, width: 1),
+          ),
+          focusedErrorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Col.redAccent, width: 1),
+          ),
+          errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            borderSide: const BorderSide(color: Col.redAccent, width: 1),
+          )),
+      colorScheme: const ColorScheme(
+        primary: Col.primaryColor,
+        secondary: Col.secondaryColor,
+        background: Col.backgroundColor,
+        surface: Col.secondaryColor,
+        onBackground: Colors.black,
+        onSurface: Colors.black,
+        onError: Colors.white,
+        onPrimary: Col.secondaryColor,
+        onSecondary: Colors.black,
+        brightness: Brightness.light,
+        error: Colors.red,
+      ),
     );
   }
 }

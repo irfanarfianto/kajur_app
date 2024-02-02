@@ -48,14 +48,14 @@ class UserProfilePage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text("${currentUser.displayName}",
-              style: DesignSystem.headingTextStyle),
+              style: Typo.headingTextStyle),
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(
                 Icons.email,
-                color: DesignSystem.greyColor,
+                color: Col.greyColor,
                 size: 16,
               ),
               const SizedBox(width: 2),
@@ -76,7 +76,7 @@ class UserProfilePage extends StatelessWidget {
   Widget _buildLogoutButton(BuildContext context) {
     return ElevatedButton(
       style: ElevatedButton.styleFrom(
-        backgroundColor: DesignSystem.redAccent,
+        backgroundColor: Col.redAccent,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
         ),
@@ -116,7 +116,7 @@ class UserProfilePage extends StatelessWidget {
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: const Text("Cancel",
-                  style: TextStyle(color: DesignSystem.greyColor)),
+                  style: TextStyle(color: Col.greyColor)),
             ),
             TextButton(
               onPressed: () {
@@ -124,7 +124,7 @@ class UserProfilePage extends StatelessWidget {
                 Navigator.of(context).pop(); // Close the dialog
               },
               child: const Text("Keluar",
-                  style: TextStyle(color: DesignSystem.redAccent)),
+                  style: TextStyle(color: Col.redAccent)),
             ),
           ],
         );

@@ -5,6 +5,7 @@ import 'package:kajur_app/screens/widget/action_icons.dart';
 import 'package:kajur_app/utils/internet_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:collection/collection.dart';
 
 enum SortOrder { Terbaru, Terlama }
 
@@ -62,7 +63,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
           builder: (BuildContext context, StateSetter setState) {
             return Container(
               decoration: const BoxDecoration(
-                color: DesignSystem.backgroundColor,
+                color: Col.backgroundColor,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
               ),
               padding: const EdgeInsets.all(16),
@@ -75,20 +76,20 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     width: 40,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(100),
-                      color: DesignSystem.greyColor.withOpacity(.50),
+                      color: Col.greyColor.withOpacity(.50),
                     ),
                   ),
                   const SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Urutkan', style: DesignSystem.titleTextStyle),
+                      Text('Urutkan', style: Typo.titleTextStyle),
                       const SizedBox(height: 16),
                       CheckboxListTile(
-                        activeColor: DesignSystem.primaryColor,
+                        activeColor: Col.primaryColor,
                         title: const Text(
                           'Terbaru',
-                          style: DesignSystem.subtitleTextStyle,
+                          style: Typo.subtitleTextStyle,
                         ),
                         value: isSelectedTerbaru,
                         onChanged: (value) {
@@ -99,10 +100,10 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                         },
                       ),
                       CheckboxListTile(
-                        activeColor: DesignSystem.primaryColor,
+                        activeColor: Col.primaryColor,
                         title: const Text(
                           'Terlama',
-                          style: DesignSystem.subtitleTextStyle,
+                          style: Typo.subtitleTextStyle,
                         ),
                         value: isSelectedTerlama,
                         onChanged: (value) {
@@ -120,7 +121,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     children: [
                       TextButton(
                         style: ElevatedButton.styleFrom(
-                          foregroundColor: DesignSystem.greyColor,
+                          foregroundColor: Col.greyColor,
                           backgroundColor: Colors.transparent,
                         ),
                         onPressed: () {
@@ -164,18 +165,18 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: Scaffold(
-        backgroundColor: DesignSystem.backgroundColor,
+        backgroundColor: Col.backgroundColor,
         appBar: AppBar(
           elevation: 2,
-          backgroundColor: DesignSystem.primaryColor,
-          foregroundColor: DesignSystem.whiteColor,
-          surfaceTintColor: DesignSystem.primaryColor,
+          backgroundColor: Col.primaryColor,
+          foregroundColor: Col.whiteColor,
+          surfaceTintColor: Col.primaryColor,
           title: const Text('Semua Aktivitas'),
         ),
         body: Scrollbar(
           child: RefreshIndicator(
-            color: DesignSystem.primaryColor,
-            backgroundColor: DesignSystem.secondaryColor,
+            color: Col.primaryColor,
+            backgroundColor: Col.secondaryColor,
             onRefresh: _refreshData,
             child: Skeletonizer(
               enabled: _enabled,
@@ -188,11 +189,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                 builder: (BuildContext context,
                     AsyncSnapshot<QuerySnapshot> snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(
-                        color: DesignSystem.primaryColor,
-                      ),
-                    );
+                    return Container();
                   }
 
                   if (snapshot.hasError) {
@@ -208,95 +205,98 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                     return data;
                   }).toList();
 
+                  Map<String, List<Map<String, dynamic>>> groupedActivities =
+                      groupBy(
+                          activitiesData,
+                          (Map<String, dynamic> activity) =>
+                              DateFormat('dd MMMM y', 'id').format(
+                                  (activity['timestamp'] as Timestamp)
+                                      .toDate()));
+
                   return ListView.builder(
                     physics: const ClampingScrollPhysics(),
-                    itemCount: activitiesData.length,
+                    itemCount: groupedActivities.length,
                     itemBuilder: (BuildContext context, int index) {
-                      Map<String, dynamic> data = activitiesData[index];
-
-                      DateTime activityDate =
-                          (data['timestamp'] as Timestamp).toDate();
-
-                      String formattedDate =
-                          DateFormat('dd MMMM y', 'id').format(activityDate);
-
-                      bool isFirstActivityWithDate = index == 0 ||
-                          formattedDate !=
-                              DateFormat('dd MMMM y', 'id').format(
-                                  (activitiesData[index - 1]['timestamp']
-                                          as Timestamp)
-                                      .toDate());
+                      String date = groupedActivities.keys.toList()[index];
+                      List<Map<String, dynamic>> activities =
+                          groupedActivities[date]!;
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 8.0),
                         child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            if (isFirstActivityWithDate)
-                              Skeleton.keep(
-                                child: Container(
-                                  alignment: Alignment.centerLeft,
-                                  width: double.infinity,
-                                  color: DesignSystem.backgroundColor,
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 16, vertical: 10),
-                                    child: Text(formattedDate,
-                                        style: DesignSystem.titleTextStyle),
-                                  ),
-                                ),
-                              ),
+                            const SizedBox(height: 16),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Text(date, style: Typo.titleTextStyle),
+                            ),
+                            const SizedBox(height: 16),
                             Container(
-                              margin: const EdgeInsets.only(bottom: 10),
                               padding: const EdgeInsets.all(8.0),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(15),
-                                color: DesignSystem.secondaryColor,
+                                color: Col.secondaryColor,
                                 border: Border.all(
-                                    color: DesignSystem.greyColor
-                                        .withOpacity(.10)),
+                                    color: Col.greyColor.withOpacity(.10)),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                        DesignSystem.greyColor.withOpacity(.10),
+                                    color: Col.greyColor.withOpacity(.10),
                                     offset: const Offset(0, 5),
                                     blurRadius: 10,
                                   ),
                                 ],
                               ),
-                              child: Column(
-                                children: [
-                                  ListTile(
-                                    leading: Skeleton.leaf(
-                                        child: ActivityIcon(
-                                            action: data['action'])),
-                                    title: Text(
-                                      (data['action'] ?? '') +
-                                          (data['productName'] != null
-                                              ? ' - ${data['productName']}'
-                                              : ''),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style:
-                                          DesignSystem.emphasizedBodyTextStyle,
-                                    ),
-                                    subtitle: Text(
-                                      (data['userName'] ?? '') +
-                                          ' pada ' +
-                                          (data['timestamp'] != null
-                                              ? DateFormat('dd MMMM y • HH:mm ',
-                                                      'id')
-                                                  .format((data['timestamp']
-                                                          as Timestamp)
-                                                      .toDate())
-                                              : 'Timestamp tidak tersedia'),
-                                      style: const TextStyle(
-                                        fontFamily: 'Roboto',
-                                        fontSize: 14,
-                                        color: Colors.grey,
+                              child: ListView.builder(
+                                shrinkWrap: true,
+                                physics: const ClampingScrollPhysics(),
+                                itemCount: activities.length,
+                                itemBuilder:
+                                    (BuildContext context, int activityIndex) {
+                                  Map<String, dynamic> data =
+                                      activities[activityIndex];
+
+                                  return Column(
+                                    children: [
+                                      ListTile(
+                                        leading: ActivityIcon(
+                                            action: data['action']),
+                                        title: Text(
+                                          (data['action'] ?? '') +
+                                              (data['productName'] != null
+                                                  ? ' - ${data['productName']}'
+                                                  : ''),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: Typo.emphasizedBodyTextStyle,
+                                        ),
+                                        subtitle: Text(
+                                          (data['userName'] ?? '') +
+                                              ' pada ' +
+                                              (data['timestamp'] != null
+                                                  ? DateFormat(
+                                                          'dd MMMM y • HH:mm ',
+                                                          'id')
+                                                      .format((data['timestamp']
+                                                              as Timestamp)
+                                                          .toDate())
+                                                  : 'Timestamp tidak tersedia'),
+                                          style: const TextStyle(
+                                            fontSize: 14,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ],
+                                      if (activityIndex < activities.length - 1)
+                                        Divider(
+                                          thickness: 1,
+                                          color: Col.greyColor.withOpacity(0.1),
+                                        ),
+                                    ],
+                                  );
+                                },
                               ),
                             ),
                           ],
@@ -312,7 +312,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
         bottomNavigationBar: SizedBox(
           height: 60, // Set the desired height here
           child: BottomAppBar(
-            color: DesignSystem.whiteColor,
+            color: Col.whiteColor,
             shape: const CircularNotchedRectangle(),
             notchMargin: 8,
             elevation: 1,
@@ -321,7 +321,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
               children: [
                 TextButton.icon(
                   style: TextButton.styleFrom(
-                    foregroundColor: DesignSystem.primaryColor,
+                    foregroundColor: Col.primaryColor,
                   ),
                   label: Text(
                       'Urutkan "${_currentSortOrder == SortOrder.Terbaru ? 'Terbaru' : 'Terlama'}"'),
@@ -332,7 +332,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                 ),
                 TextButton.icon(
                   style: TextButton.styleFrom(
-                    foregroundColor: DesignSystem.primaryColor,
+                    foregroundColor: Col.primaryColor,
                   ),
                   label: const Text('Filter'),
                   icon: const Icon(Icons.filter_list),

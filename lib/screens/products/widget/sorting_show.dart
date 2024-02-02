@@ -35,7 +35,7 @@ class SortingOverlay extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: const BoxDecoration(
-            color: DesignSystem.backgroundColor,
+            color: Col.backgroundColor,
             borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
@@ -46,7 +46,7 @@ class SortingOverlay extends StatelessWidget {
                 width: 40,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
-                  color: DesignSystem.greyColor.withOpacity(.50),
+                  color: Col.greyColor.withOpacity(.50),
                 ),
               ),
               const SizedBox(height: 16),
@@ -58,7 +58,7 @@ class SortingOverlay extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: DesignSystem.blackColor,
+                      color: Col.blackColor,
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -92,10 +92,10 @@ class SortingOverlay extends StatelessWidget {
     ValueChanged<bool?> onChanged,
   ) {
     return CheckboxListTile(
-      activeColor: DesignSystem.primaryColor,
+      activeColor: Col.primaryColor,
       title: Text(
         title,
-        style: DesignSystem.subtitleTextStyle,
+        style: Typo.subtitleTextStyle,
       ),
       value: value,
       onChanged: onChanged,
@@ -105,7 +105,7 @@ class SortingOverlay extends StatelessWidget {
   TextButton _buildTextButton(String label, VoidCallback onPressed) {
     return TextButton(
       style: ElevatedButton.styleFrom(
-        foregroundColor: DesignSystem.greyColor,
+        foregroundColor: Col.greyColor,
         backgroundColor: Colors.transparent,
       ),
       onPressed: onPressed,

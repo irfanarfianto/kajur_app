@@ -3,10 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:timeago/timeago.dart' as timeago;
 
 class StockPage extends StatefulWidget {
-  const StockPage({super.key});
+  const StockPage({Key? key}) : super(key: key);
 
   @override
   State<StockPage> createState() => _StockPageState();
@@ -49,185 +48,379 @@ class _StockPageState extends State<StockPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(
-      behavior: const ScrollBehavior().copyWith(overscroll: false),
-      child: Scaffold(
-        appBar: AppBar(
-          elevation: 2,
-          backgroundColor: DesignSystem.primaryColor,
-          foregroundColor: DesignSystem.whiteColor,
-          surfaceTintColor: DesignSystem.primaryColor,
-          title: const Center(child: Text('Info Stok 📢')),
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: IconButton(
-                icon: const Icon(Icons.share),
-                onPressed: () {
-                  Navigator.pushNamed(context, '/comingsoon');
-                },
-              ),
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 2,
+        backgroundColor: Col.primaryColor,
+        foregroundColor: Col.whiteColor,
+        surfaceTintColor: Col.primaryColor,
+        title: const Center(child: Text('Info Stok 📢')),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: IconButton(
+              icon: const Icon(Icons.share),
+              onPressed: () {
+                Navigator.pushNamed(context, '/comingsoon');
+              },
             ),
-          ],
-        ),
-        body: RefreshIndicator(
-          backgroundColor: DesignSystem.backgroundColor,
-          color: DesignSystem.primaryColor,
-          onRefresh: _refreshData,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Skeletonizer(
-              enabled: _enabled,
-              child: StreamBuilder<QuerySnapshot>(
-                stream:
-                    FirebaseFirestore.instance.collection('kantin').snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        backgroundColor: Col.backgroundColor,
+        color: Col.primaryColor,
+        onRefresh: _refreshData,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: Skeletonizer(
+            enabled: _enabled,
+            child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  FirebaseFirestore.instance.collection('kantin').snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasError) {
+                  return Center(
+                    child: Text('Error: ${snapshot.error}'),
+                  );
+                }
+
+                switch (snapshot.connectionState) {
+                  case ConnectionState.waiting:
+                    return const Center(
+                      child: CircularProgressIndicator(),
                     );
-                  }
-
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.waiting:
+                  default:
+                    if (snapshot.data!.docs.isEmpty) {
                       return const Center(
-                        child: CircularProgressIndicator(),
+                        child: Text(
+                          'Belum ada info baru',
+                          style: TextStyle(color: Col.blackColor),
+                        ),
                       );
-                    default:
-                      if (snapshot.data!.docs.isEmpty) {
-                        return const Center(
-                          child: Text(
-                            'Belum ada info baru',
-                            style: TextStyle(color: DesignSystem.blackColor),
+                    }
+
+                    List<Widget> stockContainers = [];
+
+                    List<Widget> outOfStockContainers = snapshot.data!.docs
+                        .where((document) =>
+                            (document.data() as Map<String, dynamic>)['stok'] ==
+                            0)
+                        .map((DocumentSnapshot document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
+
+                      int stok = data['stok'];
+
+                      return Skeleton.leaf(
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Col.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
                           ),
-                        );
-                      }
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.network(
+                                  data['image'],
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: 120,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(8),
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: stok == 0
+                                            ? [
+                                                Col.redAccent
+                                                    .withOpacity(.75),
+                                                Col.redAccent
+                                              ]
+                                            : [
+                                                Col.primaryColor
+                                                    .withOpacity(.75),
+                                                Col.primaryColor
+                                              ],
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(
+                                        stok == 0
+                                            ? 'Stok habis'
+                                            : 'Sisa stok $stok',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Col.whiteColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList();
 
-                      List<Widget> stockContainers = [];
+                    List<Widget> criticalStockContainers = snapshot.data!.docs
+                        .where((document) =>
+                            (document.data() as Map<String, dynamic>)['stok'] <
+                                5 &&
+                            (document.data() as Map<String, dynamic>)['stok'] >
+                                0)
+                        .map((DocumentSnapshot document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
 
-                      List<Widget> outOfStockContainers = snapshot.data!.docs
-                          .where((document) =>
-                              (document.data()
-                                  as Map<String, dynamic>)['stok'] ==
-                              0)
-                          .map((DocumentSnapshot document) {
-                        Map<String, dynamic> data =
-                            document.data() as Map<String, dynamic>;
-                        String namaProduk = data['menu'];
-                        int stok = data['stok'];
-                        String documentId = document.id;
-                        Timestamp updatedAt =
-                            data['updatedAt'] ?? Timestamp.now();
+                      int stok = data['stok'];
 
-                        return buildStockContainer(
-                          context,
-                          namaProduk,
-                          stok,
-                          documentId,
-                          Colors.red.withOpacity(.10),
-                          Colors.red.withOpacity(.50),
-                          updatedAt,
-                        );
-                      }).toList();
+                      return Skeleton.leaf(
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Col.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.network(
+                                  data['image'],
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: 120,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(8),
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: stok == 0
+                                            ? [
+                                                Col.redAccent
+                                                    .withOpacity(.75),
+                                                Col.redAccent
+                                              ]
+                                            : [
+                                                Col.primaryColor
+                                                    .withOpacity(.75),
+                                                Col.primaryColor
+                                              ],
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(
+                                        stok == 0
+                                            ? 'Stok habis'
+                                            : 'Sisa stok $stok',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Col.whiteColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList();
 
-                      List<Widget> criticalStockContainers = snapshot.data!.docs
-                          .where((document) =>
-                              (document.data()
-                                      as Map<String, dynamic>)['stok'] <
-                                  5 &&
-                              (document.data()
-                                      as Map<String, dynamic>)['stok'] >
-                                  0)
-                          .map((DocumentSnapshot document) {
-                        Map<String, dynamic> data =
-                            document.data() as Map<String, dynamic>;
-                        String namaProduk = data['menu'];
-                        int stok = data['stok'];
-                        String documentId = document.id;
-                        Timestamp updatedAt =
-                            data['updatedAt'] ?? Timestamp.now();
+                    List<Widget> lowStockContainers = snapshot.data!.docs
+                        .where((document) =>
+                            (document.data() as Map<String, dynamic>)['stok'] <=
+                                10 &&
+                            (document.data() as Map<String, dynamic>)['stok'] >
+                                4)
+                        .map((DocumentSnapshot document) {
+                      Map<String, dynamic> data =
+                          document.data() as Map<String, dynamic>;
 
-                        return buildStockContainer(
-                          context,
-                          namaProduk,
-                          stok,
-                          documentId,
-                          Colors.red.withOpacity(.10),
-                          Colors.red.withOpacity(.20),
-                          updatedAt,
-                        );
-                      }).toList();
+                      int stok = data['stok'];
 
-                      List<Widget> lowStockContainers = snapshot.data!.docs
-                          .where((document) =>
-                              (document.data()
-                                      as Map<String, dynamic>)['stok'] <=
-                                  10 &&
-                              (document.data()
-                                      as Map<String, dynamic>)['stok'] >
-                                  4)
-                          .map((DocumentSnapshot document) {
-                        Map<String, dynamic> data =
-                            document.data() as Map<String, dynamic>;
-                        String namaProduk = data['menu'];
-                        int stok = data['stok'];
-                        String documentId = document.id;
-                        Timestamp updatedAt =
-                            data['updatedAt'] ?? Timestamp.now();
+                      return Skeleton.leaf(
+                        child: Container(
+                          width: 120,
+                          height: 120,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Col.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Image.network(
+                                  data['image'],
+                                  width: 120,
+                                  height: 120,
+                                  fit: BoxFit.cover,
+                                ),
+                                Positioned(
+                                  bottom: 0,
+                                  child: Container(
+                                    alignment: Alignment.center,
+                                    width: 120,
+                                    height: 35,
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.only(
+                                        bottomLeft: Radius.circular(8),
+                                        bottomRight: Radius.circular(8),
+                                      ),
+                                      gradient: LinearGradient(
+                                        begin: Alignment.topCenter,
+                                        end: Alignment.bottomCenter,
+                                        colors: stok == 0
+                                            ? [
+                                                Col.redAccent
+                                                    .withOpacity(.75),
+                                                Col.redAccent
+                                              ]
+                                            : [
+                                                Col.primaryColor
+                                                    .withOpacity(.75),
+                                                Col.primaryColor
+                                              ],
+                                      ),
+                                    ),
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 5,
+                                        horizontal: 10,
+                                      ),
+                                      child: Text(
+                                        stok == 0
+                                            ? 'Stok habis'
+                                            : 'Sisa stok $stok',
+                                        style: const TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: Col.whiteColor,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList();
 
-                        return buildStockContainer(
-                          context,
-                          namaProduk,
-                          stok,
-                          documentId,
-                          Colors.yellow.withOpacity(.30),
-                          Colors.yellow.withOpacity(.20),
-                          updatedAt,
-                        );
-                      }).toList();
+                    // Add the containers to the main list in the desired order
+                    if (outOfStockContainers.isNotEmpty) {
+                      stockContainers
+                          .add(buildCategoryTitle('Stok sudah habis'));
+                      stockContainers.addAll(outOfStockContainers);
+                    }
 
-                      // Add the containers to the main list in the desired order
-                      if (outOfStockContainers.isNotEmpty) {
-                        stockContainers
-                            .add(buildCategoryTitle('Stok sudah habis'));
-                        stockContainers.addAll(outOfStockContainers);
-                      }
+                    if (criticalStockContainers.isNotEmpty) {
+                      stockContainers
+                          .add(buildCategoryTitle('Stok kurang dari 5'));
+                      stockContainers.addAll(criticalStockContainers);
+                    }
 
-                      if (criticalStockContainers.isNotEmpty) {
-                        stockContainers
-                            .add(buildCategoryTitle('Stok kurang dari 5'));
-                        stockContainers.addAll(criticalStockContainers);
-                      }
+                    if (lowStockContainers.isNotEmpty) {
+                      stockContainers
+                          .add(buildCategoryTitle('Stok kurang dari 10'));
+                      stockContainers.addAll(lowStockContainers);
+                    }
 
-                      if (lowStockContainers.isNotEmpty) {
-                        stockContainers
-                            .add(buildCategoryTitle('Stok kurang dari 10'));
-                        stockContainers.addAll(lowStockContainers);
-                      }
-
-                      if (stockContainers.isNotEmpty) {
-                        return ListView(
-                          children: stockContainers,
-                        );
-                      } else {
-                        return ListView(
-                          children: [
-                            SizedBox(
-                                height: MediaQuery.of(context).size.height / 3),
-                            const Center(
+                    if (stockContainers.isNotEmpty) {
+                      return GridView(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.75,
+                        ),
+                        children: stockContainers,
+                      );
+                    } else {
+                      return GridView.builder(
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 16,
+                          childAspectRatio: 0.75,
+                        ),
+                        itemCount: 1,
+                        itemBuilder: (BuildContext context, int index) {
+                          return SizedBox(
+                            height: MediaQuery.of(context).size.height / 3,
+                            child: const Center(
                               child: Text(
                                 'Belum ada info stok',
                                 style:
-                                    TextStyle(color: DesignSystem.blackColor),
+                                    TextStyle(color: Col.blackColor),
                               ),
                             ),
-                          ],
-                        );
-                      }
-                  }
-                },
-              ),
+                          );
+                        },
+                      );
+                    }
+                }
+              },
             ),
           ),
         ),
@@ -249,94 +442,5 @@ class _StockPageState extends State<StockPage> {
         ),
       ),
     );
-  }
-
-  Widget buildStockContainer(
-    BuildContext context,
-    String namaProduk,
-    int stok,
-    String documentId,
-    Color containerColor,
-    Color borderColor,
-    Timestamp updatedAt,
-  ) {
-    return GestureDetector(
-      onTap: () async {
-        // await Navigator.of(context).push(
-        //   PageRouteBuilder(
-        //     pageBuilder: (context, animation, secondaryAnimation) =>
-        //         EditStockPage(
-        //       namaProduk: namaProduk,
-        //       stok: stok,
-        //       documentId: documentId,
-        //     ),
-        //     transitionsBuilder:
-        //         (context, animation, secondaryAnimation, child) {
-        //       const begin = Offset(0.0, 1.0);
-        //       const end = Offset.zero;
-
-        //       var tween = Tween(begin: begin, end: end);
-
-        //       var offsetAnimation = animation.drive(tween);
-
-        //       return SlideTransition(
-        //         position: offsetAnimation,
-        //         child: child,
-        //       );
-        //     },
-        //   ),
-        // );
-      },
-      child: Skeleton.leaf(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-          margin: const EdgeInsets.symmetric(vertical: 5),
-          decoration: BoxDecoration(
-            color: containerColor,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: borderColor,
-            ),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            mainAxisSize: MainAxisSize.max,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Flexible(
-                child: Text(
-                  getStockMessage(namaProduk, stok),
-                  style: const TextStyle(
-                    color: DesignSystem.blackColor,
-                    fontWeight: FontWeight.normal,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
-              const SizedBox(width: 20),
-              Text(
-                timeago.format(updatedAt.toDate(), locale: 'id'),
-                style: const TextStyle(
-                  color: DesignSystem.blackColor,
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  String getStockMessage(String namaProduk, int stok) {
-    if (stok == 0) {
-      return 'Produk $namaProduk sudah habis!';
-    } else if (stok <= 10 && stok > 4) {
-      return 'Pantau terus! $namaProduk sisa $stok, segera restock ya!';
-    } else if (stok < 5) {
-      return 'Woy! $namaProduk mau abis, sisa $stok!';
-    } else {
-      return ''; // Jika stok tidak rendah atau sedang, kembalikan string kosong
-    }
   }
 }

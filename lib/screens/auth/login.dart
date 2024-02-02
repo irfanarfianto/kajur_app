@@ -103,7 +103,7 @@ class _LoginPageState extends State<LoginPage> {
                       style: TextStyle(
                           fontSize: 27,
                           fontWeight: FontWeight.bold,
-                          color: DesignSystem.blackColor),
+                          color: Col.blackColor),
                     ),
                     const SizedBox(
                       height: 30,
@@ -113,7 +113,7 @@ class _LoginPageState extends State<LoginPage> {
                       children: [
                         const Text(
                           'Email',
-                          style: DesignSystem.bodyTextStyle,
+                          style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
@@ -121,12 +121,11 @@ class _LoginPageState extends State<LoginPage> {
                           textCapitalization: TextCapitalization.words,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
-                          style:
-                              const TextStyle(color: DesignSystem.blackColor),
+                          style: const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Email',
                             hintStyle: TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                             ),
                           ),
@@ -149,17 +148,15 @@ class _LoginPageState extends State<LoginPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Password',
-                            style: DesignSystem.bodyTextStyle),
+                        const Text('Password', style: Typo.bodyTextStyle),
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _passwordController,
-                          style:
-                              const TextStyle(color: DesignSystem.blackColor),
+                          style: const TextStyle(color: Col.blackColor),
                           decoration: InputDecoration(
                             hintText: 'Password',
                             hintStyle: const TextStyle(
-                              color: DesignSystem.greyColor,
+                              color: Col.greyColor,
                               fontWeight: FontWeight.normal,
                             ),
                             suffixIcon: Padding(
@@ -176,8 +173,7 @@ class _LoginPageState extends State<LoginPage> {
                                   _passwordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color:
-                                      DesignSystem.greyColor.withOpacity(.50),
+                                  color: Col.greyColor.withOpacity(.50),
                                 ),
                               ),
                             ),
@@ -228,7 +224,7 @@ class _LoginPageState extends State<LoginPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text("Belum punya akun?",
-                            style: TextStyle(color: DesignSystem.blackColor)),
+                            style: TextStyle(color: Col.blackColor)),
                         const SizedBox(
                           width: 5,
                         ),
@@ -263,8 +259,8 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text(
                             "Daftar",
                             style: TextStyle(
-                              color: DesignSystem.primaryColor,
-                              fontWeight: DesignSystem.medium,
+                              color: Col.primaryColor,
+                              fontWeight: Fw.medium,
                             ),
                           ),
                         ),
@@ -280,7 +276,7 @@ class _LoginPageState extends State<LoginPage> {
                         children: [
                           Expanded(
                             child: Divider(
-                              color: DesignSystem.greyColor.withOpacity(.30),
+                              color: Col.greyColor.withOpacity(.30),
                               height: 0.5,
                             ),
                           ),
@@ -290,7 +286,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           Expanded(
                             child: Divider(
-                              color: DesignSystem.greyColor.withOpacity(.30),
+                              color: Col.greyColor.withOpacity(.30),
                               height: 0.5,
                             ),
                           ),
@@ -305,7 +301,7 @@ class _LoginPageState extends State<LoginPage> {
                         _signInWithGoogle();
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: DesignSystem.whiteColor,
+                        backgroundColor: Col.whiteColor,
                       ),
                       child: const Center(
                         child: Row(
@@ -313,7 +309,7 @@ class _LoginPageState extends State<LoginPage> {
                           children: [
                             Icon(
                               FontAwesomeIcons.google,
-                              color: DesignSystem.blackColor,
+                              color: Col.blackColor,
                               size: 20,
                             ),
                             SizedBox(
@@ -322,7 +318,7 @@ class _LoginPageState extends State<LoginPage> {
                             Text(
                               "Masuk dengan Google",
                               style: TextStyle(
-                                color: DesignSystem.blackColor,
+                                color: Col.blackColor,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
