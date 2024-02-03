@@ -11,13 +11,13 @@ class Col {
   static const Color purpleAccent = Color(0xFF800080);
   static const Color redAccent = Color(0xFFFF0000);
   static const Color orangeAccent = Color(0xFFFFA500);
-  static const Color greenAccent = Color(0xFF00FF00);
+  static const Color greenAccent = Color(0xFF02A702);
   static const Color backgroundColor = Color(0xFFeeeff2);
 }
 
 class Fw {
   static const FontWeight regular = FontWeight.w400;
-  static const FontWeight medium = FontWeight.w500;
+  static const FontWeight medium = FontWeight.normal;
   static const FontWeight bold = FontWeight.bold;
 }
 

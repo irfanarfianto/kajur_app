@@ -8,10 +8,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:kajur_app/design/system.dart';
 
-import 'package:kajur_app/screens/aktivitas/activity_widget.dart';
+import 'package:kajur_app/screens/aktivitas/components/activity_widget.dart';
 import 'package:kajur_app/screens/home/component/menu.dart';
 
-import 'package:kajur_app/screens/home/component/stock_widget.dart';
 import 'package:kajur_app/screens/home/component/total_produk_widget.dart';
 
 import 'package:flutter/services.dart';
@@ -89,107 +88,16 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  Widget _buildAppBar(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      backgroundColor: Col.backgroundColor,
-      surfaceTintColor: Colors.transparent,
-      automaticallyImplyLeading: false,
-      title: GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            PageRouteBuilder(
-              pageBuilder: (context, animation, secondaryAnimation) =>
-                  UserProfilePage(currentUser: _currentUser),
-              transitionsBuilder:
-                  (context, animation, secondaryAnimation, child) {
-                const begin = Offset(1.0, 0.0);
-                const end = Offset.zero;
-                const curve = Curves.easeInOut;
-
-                var tween = Tween(begin: begin, end: end).chain(
-                  CurveTween(curve: curve),
-                );
-
-                var offsetAnimation = animation.drive(tween);
-
-                return SlideTransition(
-                  position: offsetAnimation,
-                  child: child,
-                );
-              },
-            ),
-          );
-        },
-        child: _buildUserWidget(_currentUser),
-      ),
-      actions: [
-        // notification icon
-        IconButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.transparent),
-            overlayColor: MaterialStateProperty.all(Colors.transparent),
-          ),
-          color: Col.greyColor,
-          iconSize: 24,
-          constraints: const BoxConstraints(),
-          onPressed: () {
-            // TODO: implement notification icon
-            Navigator.pushNamed(context, '/comingsoon');
-          },
-          icon: const Icon(Icons.notifications_none_outlined),
-        ),
-      ],
-    );
-  }
-
   Widget _buildUserWidget(User? currentUser) {
     if (_currentUser == null) {
       return const CircularProgressIndicator(
         color: Col.whiteColor,
       );
     } else {
-      return Container(
-        alignment: Alignment.topLeft,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            const CircleAvatar(
-              backgroundImage: AssetImage('images/avatar.png'),
-            ),
-            const SizedBox(width: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "${_currentUser!.displayName}",
-                  style: const TextStyle(
-                    fontWeight: Fw.regular,
-                    fontSize: 18,
-                    color: Col.blackColor,
-                  ),
-                ),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.email,
-                      color: Col.greyColor,
-                      size: 12,
-                    ),
-                    const SizedBox(width: 2),
-                    Text(
-                      "${_currentUser!.email}",
-                      style: const TextStyle(
-                        color: Col.greyColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ],
+      return Hero(
+        tag: _currentUser!.uid,
+        child: const CircleAvatar(
+          backgroundImage: AssetImage('images/avatar.png'),
         ),
       );
     }
@@ -203,54 +111,109 @@ class _HomePageState extends State<HomePage> {
         return true;
       },
       child: ScrollConfiguration(
-        behavior: const ScrollBehavior().copyWith(overscroll: false),
+        behavior: const ScrollBehavior().copyWith(overscroll: true),
         child: Scaffold(
-          appBar: PreferredSize(
-            preferredSize: const Size.fromHeight(kToolbarHeight),
-            child: _buildAppBar(context),
-          ),
           body: RefreshIndicator(
             color: Col.primaryColor,
             onRefresh: _refreshData,
-            child: Skeletonizer(
-              enabled: _enabled,
-              child: ListView(
-                physics: const ClampingScrollPhysics(),
-                children: [
-                  const SizedBox(height: 10),
-                  Column(
-                    children: [
-                      buildTotalProductsWidget(context),
-                      const SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: CustomScrollView(
+              physics: const ClampingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+                    statusBarColor: Col.backgroundColor,
+                  ),
+                  elevation: 0,
+                  backgroundColor: Col.backgroundColor,
+                  title: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  UserProfilePage(currentUser: _currentUser),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(0.5, 0.0); // Mulai dari tengah layar
+                            const end = Offset.zero;
+                            const curve = Curves.linearToEaseOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(
+                              CurveTween(curve: curve),
+                            );
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: _buildUserWidget(_currentUser),
+                  ),
+                  actions: [
+                    // notification icon
+                    IconButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                        overlayColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                      ),
+                      color: Col.greyColor,
+                      iconSize: 24,
+                      constraints: const BoxConstraints(),
+                      onPressed: () {
+                        // TODO: implement notification icon
+                        Navigator.pushNamed(context, '/comingsoon');
+                      },
+                      icon: const Icon(Icons.notifications_none_outlined),
+                    ),
+                  ],
+                  floating: true,
+                  snap: true,
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      const SizedBox(height: 10),
+                      Column(
+                        children: [
+                          buildTotalProductsWidget(context),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: [
+                                buildMenuWidget(context),
+                                const SizedBox(height: 20),
+                                const RecentActivityWidget(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Center(
                         child: Column(
                           children: [
-                            // buildStockWidget(context),
-                            // const SizedBox(height: 20),
-                            buildMenuWidget(context),
                             const SizedBox(height: 20),
-                            const RecentActivityWidget(),
+                            const Text('~ Segini dulu yaa ~',
+                                style: Typo.subtitleTextStyle),
+                            Image.asset(
+                              'images/gambar.png',
+                              fit: BoxFit.contain,
+                            ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  Center(
-                    child: Column(
-                      children: [
-                        const SizedBox(height: 20),
-                        const Text('~ Segini dulu yaa ~',
-                            style: Typo.subtitleTextStyle),
-                        Image.asset(
-                          'images/gambar.png',
-                          fit: BoxFit.contain,
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

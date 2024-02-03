@@ -196,29 +196,35 @@ class _ListProdukPageState extends State<ListProdukPage>
     return CategoryFilter.values.length;
   }
 
-  void _updateStock(String documentId, int newStock) async {
+  Future<void> _updateStock(String documentId, int newStock) async {
     try {
-      FirebaseFirestore.instance.collection('kantin').doc(documentId).update({
-        'stok': newStock,
-        'updatedAt': DateTime.now(),
-      });
-
-      // Fetch the old product data
+      // Fetch the old product data before updating the stock
       DocumentSnapshot oldProductSnapshot =
           await _produkCollection.doc(documentId).get();
       Map<String, dynamic> oldProductData =
           oldProductSnapshot.data() as Map<String, dynamic>;
 
-      // Record activity log
+      // Perform the stock update
+      await FirebaseFirestore.instance
+          .collection('kantin')
+          .doc(documentId)
+          .update({
+        'stok': newStock,
+        'updatedAt': DateTime.now(),
+      });
+
+      // Record activity log using the old product data
       await _recordActivityLog(
         action: 'Update Stok',
+        productId: documentId,
         oldProductData: oldProductData,
         newProductData: {
           'stok': newStock,
           'updatedAt': FieldValue.serverTimestamp(),
         },
       );
-      // Tampilkan notifikasi atau pesan sukses jika diperlukan
+
+      // Show success message or notification if needed
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           backgroundColor: Colors.green,
@@ -227,9 +233,8 @@ class _ListProdukPageState extends State<ListProdukPage>
         ),
       );
     } catch (error) {
-      // Tangani kesalahan jika terjadi
+      // Handle errors if they occur
       print('Error updating stock: $error');
-      // Tampilkan notifikasi atau pesan kesalahan jika diperlukan
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Gagal memperbarui stok.'),
@@ -239,8 +244,10 @@ class _ListProdukPageState extends State<ListProdukPage>
     }
   }
 
+
   Future<void> _recordActivityLog({
     required String action,
+    required String productId,
     required Map<String, dynamic> oldProductData,
     required Map<String, dynamic> newProductData,
   }) async {
@@ -263,6 +270,7 @@ class _ListProdukPageState extends State<ListProdukPage>
         'userId': userId,
         'userName': userName,
         'action': action,
+        'productId': productId,
         'productName': oldProductData['menu'],
         'oldProductData': oldProductData,
         'newProductData': newProductData,
@@ -693,7 +701,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                           ),
                                           const SizedBox(height: 5),
                                           Text(
-                                            '*Diperbarui ${DateFormat('dd MMM y HH:mm', 'id_ID').format(data['updatedAt'].toDate())}',
+                                            '*Diperbarui ${DateFormat('dd MMM y HH:mm', 'id_ID').format(data['updatedAt']?.toDate() ?? DateTime.now())}',
                                             style: const TextStyle(
                                               fontSize: 10,
                                               color: Col.greyColor,

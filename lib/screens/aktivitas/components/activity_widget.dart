@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:intl/intl.dart';
+import 'package:kajur_app/screens/aktivitas/detail_activity.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
 import 'package:kajur_app/screens/widget/icon_text_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -51,9 +52,9 @@ class RecentActivityWidget extends StatelessWidget {
                                   const AllActivitiesPage(),
                           transitionsBuilder:
                               (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(1.0, 0.0);
+                            const begin = Offset(0.0, 0.5);
                             const end = Offset.zero;
-                            const curve = Curves.easeInOut;
+                            const curve = Curves.linearToEaseOut;
 
                             var tween = Tween(begin: begin, end: end)
                                 .chain(CurveTween(curve: curve));
@@ -115,33 +116,81 @@ class RecentActivityWidget extends StatelessWidget {
 
                   Map<String, dynamic> data =
                       doc.data() as Map<String, dynamic>;
+                  data['id'] =
+                      doc.id; // Menyertakan ID dokumen ke dalam data aktivitas
 
                   return Column(
                     children: [
-                      ListTile(
-                        leading: Skeleton.leaf(
-                          child: ActivityIcon(action: data['action']),
-                        ),
-                        title: Text(
-                          (data['action'] ?? '') +
-                              (data['productName'] != null
-                                  ? ' - ${data['productName']}'
-                                  : ''),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: Typo.emphasizedBodyTextStyle,
-                        ),
-                        subtitle: Text(
-                          (data['userName'] ?? '') +
-                              ' pada ' +
-                              (data['timestamp'] != null
-                                  ? DateFormat('dd MMMM y • HH:mm ', 'id')
-                                      .format((data['timestamp'] as Timestamp)
-                                          .toDate())
-                                  : 'Timestamp tidak tersedia'),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey,
+                      InkWell(
+                        onTap: () {
+                          // Navigasi ke halaman detail dan kirimkan data aktivitas
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  ActivityDetailPage(activityData: data),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Row(
+                            children: [
+                              Skeleton.leaf(
+                                child: ActivityIcon(action: data['action']),
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      (data['action'] ?? '') +
+                                          (data['productName'] != null
+                                              ? ' - ${data['productName']}'
+                                              : ''),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: Typo.emphasizedBodyTextStyle,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Text(
+                                          (data['userName'] ?? ''),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Row(
+                                          children: [
+                                            Text(
+                                              (data['timestamp'] != null
+                                                  ? DateFormat(' HH:mm ', 'id')
+                                                      .format((data['timestamp']
+                                                              as Timestamp)
+                                                          .toDate())
+                                                  : 'Timestamp tidak tersedia'),
+                                              style: const TextStyle(
+                                                fontSize: 12,
+                                                color: Colors.grey,
+                                              ),
+                                            ),
+                                            const Icon(Icons.history,
+                                                color: Col.greyColor, size: 15),
+                                          ],
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
