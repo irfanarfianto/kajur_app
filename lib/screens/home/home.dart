@@ -120,10 +120,11 @@ class _HomePageState extends State<HomePage> {
               physics: const ClampingScrollPhysics(),
               slivers: [
                 SliverAppBar(
+                  surfaceTintColor: Col.backgroundColor,
                   systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
                     statusBarColor: Col.backgroundColor,
                   ),
-                  elevation: 0,
+                  elevation: 2,
                   backgroundColor: Col.backgroundColor,
                   title: GestureDetector(
                     onTap: () {

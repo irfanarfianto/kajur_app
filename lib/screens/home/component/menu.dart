@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/home/component/circularButton.dart';
+import 'package:kajur_app/screens/home/menu_page.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -38,12 +39,12 @@ Widget buildMenuWidget(BuildContext context) {
                       Icons.add_shopping_cart_rounded, const AddDataPage()),
                 ),
                 Expanded(
-                  child: buildCircularButton(context, "Pengeluaran",
-                      Icons.money_off, const ComingSoonPage()),
+                  child: buildCircularButton(context, "Keuangan",
+                      Icons.account_balance_wallet, const ComingSoonPage()),
                 ),
                 Expanded(
-                  child: buildCircularButton(context, "Pemasukan",
-                      Icons.account_balance_wallet, const ComingSoonPage()),
+                  child: buildCircularButton(
+                      context, "Lainnya", Icons.apps, const MenuPage()),
                 ),
               ],
             ),
