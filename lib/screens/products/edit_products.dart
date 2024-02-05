@@ -116,6 +116,8 @@ class _EditProdukPageState extends State<EditProdukPage> {
         // Merekam log aktivitas
         await _recordActivityLog(
           action: 'Edit Produk',
+          productId:
+              widget.documentId, // Sertakan ID produk saat memanggil fungsi
           oldProductData: oldProductData,
           productName: _menuController.text,
           newProductData: {
@@ -166,6 +168,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
   Future<void> _recordActivityLog({
     required String action,
+    required String productId, // Tambahkan parameter ID produk
     required Map<String, dynamic> oldProductData,
     required Map<String, dynamic> newProductData,
     required String productName,
@@ -183,6 +186,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
       'userId': userId,
       'userName': userName,
       'action': action,
+      'productId': productId, // Menyertakan ID produk dalam log
       'productName': productName,
       'oldProductData': oldProductData,
       'newProductData': newProductData,

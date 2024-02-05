@@ -43,6 +43,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       // Merekam log aktivitas
       await _recordActivityLog(
         action: 'Hapus Produk',
+        productId: documentId, // Sertakan productId saat memanggil fungsi
         productName: productData['menu'],
         productData: productData,
       );
@@ -58,24 +59,30 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
 
   Future<void> _recordActivityLog({
     required String action,
+    required String productId, // Tambahkan parameter productId
     required String productName,
     required Map<String, dynamic> productData,
   }) async {
-    User? user = FirebaseAuth.instance.currentUser;
-    String? userId = user?.uid;
-    String? userName = user?.displayName ?? 'Unknown User';
+    try {
+      User? user = FirebaseAuth.instance.currentUser;
+      String? userId = user?.uid;
+      String? userName = user?.displayName ?? 'Unknown User';
 
-    CollectionReference activityLogCollection =
-        FirebaseFirestore.instance.collection('activity_log');
+      CollectionReference activityLogCollection =
+          FirebaseFirestore.instance.collection('activity_log');
 
-    await activityLogCollection.add({
-      'userId': userId,
-      'userName': userName,
-      'action': action,
-      'productName': productName,
-      'productData': productData,
-      'timestamp': FieldValue.serverTimestamp(),
-    });
+      await activityLogCollection.add({
+        'userId': userId,
+        'userName': userName,
+        'action': action,
+        'productId': productId, // Sertakan productId dalam log aktivitas
+        'productName': productName,
+        'productData': productData,
+        'timestamp': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      print('Error recording activity log: $e');
+    }
   }
 
   Future<void> _refreshData() async {
@@ -371,56 +378,16 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.green.withOpacity(0.1),
+                            color: Col.greenAccent.withOpacity(0.1),
                           ),
                           child: const Icon(
-                            Icons.add,
-                            color: Colors.green,
+                            Icons.add_business,
+                            color: Col.greenAccent,
                           ),
                         ),
-                        title: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                  'Ditambah oleh ${data['addedByName']}',
-                                  style: Typo.emphasizedBodyTextStyle),
-                            ),
-                            IconButton(
-                              padding: const EdgeInsets.all(0),
-                              visualDensity: VisualDensity.compact,
-                              onPressed: () {
-                                Navigator.of(context).pushReplacement(
-                                  PageRouteBuilder(
-                                    pageBuilder: (context, animation,
-                                            secondaryAnimation) =>
-                                        const AllActivitiesPage(),
-                                    transitionsBuilder: (context, animation,
-                                        secondaryAnimation, child) {
-                                      const begin = Offset(1.0, 0.0);
-                                      const end = Offset.zero;
-                                      const curve = Curves.easeInOut;
-
-                                      var tween = Tween(begin: begin, end: end)
-                                          .chain(CurveTween(curve: curve));
-                                      var offsetAnimation =
-                                          animation.drive(tween);
-
-                                      return SlideTransition(
-                                        position: offsetAnimation,
-                                        child: child,
-                                      );
-                                    },
-                                  ),
-                                );
-                              },
-                              icon: const Icon(
-                                Icons.east,
-                                color: Col.greyColor,
-                                size: 18,
-                              ),
-                            )
-                          ],
+                        title: Text(
+                          'Ditambah oleh ${data['addedByName'] != null && data['addedByName'].length > 20 ? data['addedByName'].substring(0, 20) + '...' : data['addedByName'] ?? ''}',
+                          style: Typo.emphasizedBodyTextStyle,
                         ),
                         subtitle: Text(
                           DateFormat('EEEE, dd MMMM y HH:mm', 'id')
@@ -437,18 +404,16 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                           padding: const EdgeInsets.all(8),
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.orange.withOpacity(0.1),
+                            color: Col.orangeAccent.withOpacity(0.1),
                           ),
                           child: const Icon(
-                            Icons.edit,
-                            color: Colors.orange,
+                            Icons.edit_note,
+                            color: Col.orangeAccent,
                           ),
                         ),
-                        title: Flexible(
-                          child: Text(
-                            'Diupdate oleh ${data['lastEditedByName']}',
-                            style: Typo.emphasizedBodyTextStyle,
-                          ),
+                        title: Text(
+                          'Diupdate oleh ${data['lastEditedByName'] != null && data['addedByName'].length > 20 ? data['addedByName'].substring(0, 20) + '...' : data['addedByName'] ?? ''}',
+                          style: Typo.emphasizedBodyTextStyle,
                         ),
                         subtitle: Text(
                           DateFormat('EEEE, dd MMMM y HH:mm', 'id')

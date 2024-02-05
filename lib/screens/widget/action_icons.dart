@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:kajur_app/design/system.dart';
 
 class ActivityIcon extends StatelessWidget {
   final String? action;
@@ -14,24 +14,24 @@ class ActivityIcon extends StatelessWidget {
 
     switch (action) {
       case 'Tambah Produk':
-        iconData = Icons.add;
-        iconColor = Colors.green;
-        backgroundColor = Colors.green.withOpacity(0.1);
+        iconData = Icons.add_business;
+        iconColor = Col.greenAccent;
+        backgroundColor = Col.greenAccent.withOpacity(0.1);
         break;
       case 'Edit Produk':
-        iconData = Icons.edit;
-        iconColor = Colors.orange;
-        backgroundColor = Colors.orange.withOpacity(0.1);
+        iconData = Icons.edit_note;
+        iconColor = Col.orangeAccent;
+        backgroundColor = Col.orangeAccent.withOpacity(0.1);
         break;
       case 'Hapus Produk':
-        iconData = Icons.delete;
-        iconColor = Colors.red;
-        backgroundColor = Colors.red.withOpacity(0.1);
+        iconData = Icons.delete_sharp;
+        iconColor = Col.redAccent;
+        backgroundColor = Col.redAccent.withOpacity(0.1);
         break;
       default:
-        iconData = Icons.error;
-        iconColor = Colors.grey;
-        backgroundColor = Colors.grey.withOpacity(0.1);
+        iconData = Icons.campaign;
+        iconColor = Col.greyColor;
+        backgroundColor = Col.greyColor.withOpacity(0.1);
     }
 
     return Container(

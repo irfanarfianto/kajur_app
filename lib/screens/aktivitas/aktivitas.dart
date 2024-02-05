@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/screens/aktivitas/detail_activity.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
 import 'package:kajur_app/utils/internet_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -163,18 +165,28 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-      behavior: const ScrollBehavior().copyWith(overscroll: false),
+      behavior: const ScrollBehavior().copyWith(overscroll: true),
       child: Scaffold(
         backgroundColor: Col.backgroundColor,
-        appBar: AppBar(
-          elevation: 2,
-          backgroundColor: Col.primaryColor,
-          foregroundColor: Col.whiteColor,
-          surfaceTintColor: Col.primaryColor,
-          title: const Text('Semua Aktivitas'),
-        ),
-        body: Scrollbar(
-          child: RefreshIndicator(
+        body: NestedScrollView(
+          physics: const ClampingScrollPhysics(),
+          headerSliverBuilder: (context, innerBoxIsScrolled) {
+            return [
+              SliverAppBar(
+                systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+                  statusBarColor: Col.primaryColor,
+                  statusBarIconBrightness: Brightness.light,
+                ),
+                elevation: 2,
+                backgroundColor: Col.primaryColor,
+                foregroundColor: Col.whiteColor,
+                floating: true,
+                snap: true,
+                title: const Text('Semua Aktivitas'),
+              ),
+            ];
+          },
+          body: RefreshIndicator(
             color: Col.primaryColor,
             backgroundColor: Col.secondaryColor,
             onRefresh: _refreshData,
@@ -202,6 +214,8 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                       snapshot.data!.docs.map((DocumentSnapshot doc) {
                     Map<String, dynamic> data =
                         doc.data() as Map<String, dynamic>;
+                    data['id'] = doc
+                        .id; // Menyertakan ID dokumen ke dalam data aktivitas
                     return data;
                   }).toList();
 
@@ -222,17 +236,12 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                           groupedActivities[date]!;
 
                       return Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 8.0),
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             const SizedBox(height: 16),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Text(date, style: Typo.titleTextStyle),
-                            ),
+                            Text(date, style: Typo.titleTextStyle),
                             const SizedBox(height: 16),
                             Container(
                               padding: const EdgeInsets.all(8.0),
@@ -260,32 +269,94 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
 
                                   return Column(
                                     children: [
-                                      ListTile(
-                                        leading: ActivityIcon(
-                                            action: data['action']),
-                                        title: Text(
-                                          (data['action'] ?? '') +
-                                              (data['productName'] != null
-                                                  ? ' - ${data['productName']}'
-                                                  : ''),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                          style: Typo.emphasizedBodyTextStyle,
-                                        ),
-                                        subtitle: Text(
-                                          (data['userName'] ?? '') +
-                                              ' pada ' +
-                                              (data['timestamp'] != null
-                                                  ? DateFormat(
-                                                          'dd MMMM y • HH:mm ',
-                                                          'id')
-                                                      .format((data['timestamp']
-                                                              as Timestamp)
-                                                          .toDate())
-                                                  : 'Timestamp tidak tersedia'),
-                                          style: const TextStyle(
-                                            fontSize: 14,
-                                            color: Colors.grey,
+                                      InkWell(
+                                        onTap: () {
+                                          // Navigasi ke halaman detail dan kirimkan data aktivitas
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (context) =>
+                                                  ActivityDetailPage(
+                                                      activityData: data),
+                                            ),
+                                          );
+                                        },
+                                        child: Container(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Skeleton.leaf(
+                                                child: ActivityIcon(
+                                                    action: data['action']),
+                                              ),
+                                              const SizedBox(width: 8),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Text(
+                                                      (data['action'] ?? '') +
+                                                          (data['productName'] !=
+                                                                  null
+                                                              ? ' - ${data['productName']}'
+                                                              : ''),
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: Typo
+                                                          .emphasizedBodyTextStyle,
+                                                    ),
+                                                    const SizedBox(height: 4),
+                                                    Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceBetween,
+                                                      children: [
+                                                        Text(
+                                                          (data['userName'] ??
+                                                              ''),
+                                                          style:
+                                                              const TextStyle(
+                                                            fontSize: 12,
+                                                            color: Colors.grey,
+                                                          ),
+                                                          maxLines: 1,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                        Row(
+                                                          children: [
+                                                            Text(
+                                                              (data['timestamp'] !=
+                                                                      null
+                                                                  ? DateFormat(
+                                                                          ' HH:mm ',
+                                                                          'id')
+                                                                      .format((data['timestamp']
+                                                                              as Timestamp)
+                                                                          .toDate())
+                                                                  : 'Timestamp tidak tersedia'),
+                                                              style:
+                                                                  const TextStyle(
+                                                                fontSize: 12,
+                                                                color:
+                                                                    Colors.grey,
+                                                              ),
+                                                            ),
+                                                            const Icon(
+                                                                Icons.history,
+                                                                color: Col
+                                                                    .greyColor,
+                                                                size: 15),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ),
