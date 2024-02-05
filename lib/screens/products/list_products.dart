@@ -512,7 +512,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                     child: Text(
                       _getCategoryFromIndex(i).toString().split('.').last
                         ..toUpperCase(),
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: Fw.regular,
                       ),
                     ),

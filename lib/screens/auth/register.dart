@@ -1,12 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 import 'package:kajur_app/screens/auth/login.dart';
-import 'package:kajur_app/screens/home/home.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -37,46 +34,46 @@ class _SignUpPageState extends State<SignUpPage> {
     super.dispose();
   }
 
-  void _signUpWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+  // void _signUpWithGoogle() async {
+  //   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
+  //   try {
+  //     final GoogleSignInAccount? googleSignInAccount =
+  //         await googleSignIn.signIn();
 
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+  //     if (googleSignInAccount != null) {
+  //       final GoogleSignInAuthentication googleSignInAuthentication =
+  //           await googleSignInAccount.authentication;
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
+  //       final AuthCredential credential = GoogleAuthProvider.credential(
+  //         idToken: googleSignInAuthentication.idToken,
+  //         accessToken: googleSignInAuthentication.accessToken,
+  //       );
 
-        User? user = await _auth.signUpWithGoogle(credential);
+  //       User? user = await _auth.signUpWithGoogle(credential);
 
-        if (user != null) {
-          try {
-            // ignore: deprecated_member_use
-            await user.updateProfile(displayName: user.displayName);
-            showToast(message: "Berhasil daftar akun dengan Google");
-            // ignore: use_build_context_synchronously
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const HomePage()),
-            );
-          } catch (e) {
-            showToast(message: "Error setting username: $e");
-          }
-        } else {}
-      } else {
-        showToast(message: "Pendaftaran dengan Google dibatalkan.");
-      }
-    } catch (e) {
-      showToast(
-          message: "Gagal mendaftar dengan Google, terjadi kesalahan: $e");
-    }
-  }
+  //       if (user != null) {
+  //         try {
+  //           // ignore: deprecated_member_use
+  //           await user.updateProfile(displayName: user.displayName);
+  //           showToast(message: "Berhasil daftar akun dengan Google");
+  //           // ignore: use_build_context_synchronously
+  //           Navigator.pushReplacement(
+  //             context,
+  //             MaterialPageRoute(builder: (context) => const HomePage()),
+  //           );
+  //         } catch (e) {
+  //           showToast(message: "Error setting username: $e");
+  //         }
+  //       } else {}
+  //     } else {
+  //       showToast(message: "Pendaftaran dengan Google dibatalkan.");
+  //     }
+  //   } catch (e) {
+  //     showToast(
+  //         message: "Gagal mendaftar dengan Google, terjadi kesalahan: $e");
+  //   }
+  // }
 
   void _signUp() async {
     setState(() {
@@ -93,16 +90,6 @@ class _SignUpPageState extends State<SignUpPage> {
       showToast(
         message: "Password minimal 8 karakter, termasuk huruf dan angka",
       );
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
-
-    bool isUsernameAvailable = await _auth.isUsernameAvailable(username);
-
-    if (!isUsernameAvailable) {
-      showToast(message: "Username sudah dipakai, pilih yang lain ya");
       setState(() {
         isSigningUp = false;
       });
@@ -182,7 +169,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         const Text(
+                        const Text(
                           'Username',
                           style: Typo.bodyTextStyle,
                         ),
@@ -192,8 +179,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           textCapitalization: TextCapitalization.words,
                           keyboardType: TextInputType.name,
                           textInputAction: TextInputAction.next,
-                          style:
-                              const TextStyle(color: Col.blackColor),
+                          style: const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Username',
                             hintStyle: TextStyle(
@@ -218,7 +204,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         const Text(
+                        const Text(
                           'Email',
                           style: Typo.bodyTextStyle,
                         ),
@@ -228,8 +214,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           textCapitalization: TextCapitalization.words,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
-                          style:
-                              const TextStyle(color: Col.blackColor),
+                          style: const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Email',
                             hintStyle: TextStyle(
@@ -256,15 +241,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         const Text(
+                        const Text(
                           'Password',
                           style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _passwordController,
-                          style:
-                              const TextStyle(color: Col.blackColor),
+                          style: const TextStyle(color: Col.blackColor),
                           decoration: InputDecoration(
                             hintText: 'Password',
                             hintStyle: const TextStyle(
@@ -292,8 +276,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   _passwordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color:
-                                      Col.greyColor.withOpacity(.50),
+                                  color: Col.greyColor.withOpacity(.50),
                                 ),
                               ),
                             ),
@@ -318,15 +301,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                         const Text(
+                        const Text(
                           'Konfirmasi Password',
                           style: Typo.bodyTextStyle,
                         ),
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _confirmPasswordController,
-                          style:
-                              const TextStyle(color: Col.blackColor),
+                          style: const TextStyle(color: Col.blackColor),
                           decoration: InputDecoration(
                             hintText: 'Konfirmasi Password',
                             hintStyle: const TextStyle(
@@ -355,8 +337,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   _confirmPasswordVisible
                                       ? Icons.visibility
                                       : Icons.visibility_off,
-                                  color:
-                                      Col.greyColor.withOpacity(.50),
+                                  color: Col.greyColor.withOpacity(.50),
                                 ),
                               ),
                             ),
@@ -401,66 +382,66 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Col.greyColor.withOpacity(.30),
-                              height: 0.5,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("Atau"),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Col.greyColor.withOpacity(.30),
-                              height: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _signUpWithGoogle();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Col.whiteColor,
-                      ),
-                      child: const Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.google,
-                              color: Col.blackColor,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "Daftar dengan Google",
-                              style: TextStyle(
-                                color: Col.blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Expanded(
+                    //         child: Divider(
+                    //           color: Col.greyColor.withOpacity(.30),
+                    //           height: 0.5,
+                    //         ),
+                    //       ),
+                    //       const Padding(
+                    //         padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    //         child: Text("Atau"),
+                    //       ),
+                    //       Expanded(
+                    //         child: Divider(
+                    //           color: Col.greyColor.withOpacity(.30),
+                    //           height: 0.5,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     _signUpWithGoogle();
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Col.whiteColor,
+                    //   ),
+                    //   child: const Center(
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         Icon(
+                    //           FontAwesomeIcons.google,
+                    //           color: Col.blackColor,
+                    //           size: 20,
+                    //         ),
+                    //         SizedBox(
+                    //           width: 5,
+                    //         ),
+                    //         Text(
+                    //           "Daftar dengan Google",
+                    //           style: TextStyle(
+                    //             color: Col.blackColor,
+                    //             fontWeight: FontWeight.bold,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

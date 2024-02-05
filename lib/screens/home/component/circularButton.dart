@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 
-Widget buildCircularButton(
-    BuildContext context, String label, IconData icon, Widget screen) {
+Widget buildCircularButton(BuildContext context, String label, IconData icon,
+    Widget screen, bool isStaffOrAdmin) {
   return Column(
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.center,
@@ -20,8 +20,40 @@ Widget buildCircularButton(
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(16.0),
         onPressed: () {
-          // Handle button tap
-          Navigator.of(context).push(_createRoute(screen));
+          // Check if user is staff or admin before navigating to screen
+          if (isStaffOrAdmin || label != 'Tambah') {
+            Navigator.of(context).push(_createRoute(screen));
+          } else {
+            // Show dialog for ordinary users
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  contentPadding: const EdgeInsets.all(15),
+                  title: const Row(
+                    children: [
+                      Icon(
+                        Icons.warning,
+                      ),
+                      SizedBox(width: 10),
+                      Text('Akses Ditolak'),
+                    ],
+                  ),
+                  content: const Text(
+                    'Anda tidak memiliki izin untuk mengakses halaman ini.',
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text('Tutup'),
+                    ),
+                  ],
+                );
+              },
+            );
+          }
         },
         icon: Icon(icon),
         iconSize: 28,

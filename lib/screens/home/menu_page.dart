@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
@@ -6,8 +8,49 @@ import 'package:kajur_app/screens/home/web_view.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
 
-class MenuPage extends StatelessWidget {
+class MenuPage extends StatefulWidget {
   const MenuPage({Key? key}) : super(key: key);
+
+  @override
+  State<MenuPage> createState() => _MenuPageState();
+}
+
+class _MenuPageState extends State<MenuPage> {
+  late User? user;
+  bool isStaffOrAdmin = false;
+
+  @override
+  void initState() {
+    super.initState();
+    user = FirebaseAuth.instance.currentUser;
+    _checkUserRole();
+  }
+
+  // Method to check user role and update isStaffOrAdmin accordingly
+  void _checkUserRole() {
+    if (user != null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(user!.uid)
+          .get()
+          .then((DocumentSnapshot document) {
+        if (document.exists) {
+          Map<String, dynamic> userData =
+              document.data() as Map<String, dynamic>;
+          String userRole = userData['role'];
+
+          // Check if user is staff or admin
+          if (userRole == 'staf' || userRole == 'admin') {
+            setState(() {
+              isStaffOrAdmin = true;
+            });
+          }
+        }
+      }).catchError((error) {
+        print("Error getting user role: $error");
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +106,7 @@ class MenuPage extends StatelessWidget {
                 "List Produk",
                 Icons.ballot,
                 const ListProdukPage(),
+                isStaffOrAdmin,
               ),
               const SizedBox(width: 16),
               buildCircularButton(
@@ -70,6 +114,7 @@ class MenuPage extends StatelessWidget {
                 "Tambah",
                 Icons.add_shopping_cart_rounded,
                 const AddDataPage(),
+                isStaffOrAdmin,
               ),
             ],
           ),
@@ -108,6 +153,7 @@ class MenuPage extends StatelessWidget {
                 "Keuangan",
                 Icons.account_balance_wallet,
                 const ComingSoonPage(),
+                isStaffOrAdmin,
               ),
             ],
           ),
@@ -148,6 +194,7 @@ class MenuPage extends StatelessWidget {
                 const WebViewPage(
                   url: 'https://fst.scalsa.uhb.ac.id/',
                 ),
+                isStaffOrAdmin,
               ),
               const SizedBox(width: 16),
               buildCircularButton(
@@ -157,6 +204,7 @@ class MenuPage extends StatelessWidget {
                 const WebViewPage(
                   url: 'https://siakad.uhb.ac.id/a/www/auth?retselectedUrl=/',
                 ),
+                isStaffOrAdmin,
               ),
               const SizedBox(width: 16),
               buildCircularButton(
@@ -166,6 +214,7 @@ class MenuPage extends StatelessWidget {
                 const WebViewPage(
                   url: 'https://www.google.com/',
                 ),
+                isStaffOrAdmin,
               ),
             ],
           ),

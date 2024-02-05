@@ -96,8 +96,13 @@ class _HomePageState extends State<HomePage> {
     } else {
       return Hero(
         tag: _currentUser!.uid,
-        child: const CircleAvatar(
-          backgroundImage: AssetImage('images/avatar.png'),
+        child: Skeleton.keep(
+          child: Container(
+            margin: const EdgeInsets.only(left: 16),
+            child: const CircleAvatar(
+              backgroundImage: AssetImage('images/avatar.png'),
+            ),
+          ),
         ),
       );
     }
@@ -105,102 +110,98 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async {
-        SystemNavigator.pop();
-        return true;
-      },
-      child: ScrollConfiguration(
-        behavior: const ScrollBehavior().copyWith(overscroll: true),
-        child: Skeletonizer(
-          enabled: _enabled,
-          child: Scaffold(
-            body: RefreshIndicator(
-              color: Col.primaryColor,
-              onRefresh: _refreshData,
-              child: CustomScrollView(
-                physics: const ClampingScrollPhysics(),
-                slivers: [
-                  SliverAppBar(
-                    surfaceTintColor: Col.backgroundColor,
-                    systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
-                      statusBarColor: Col.backgroundColor,
-                    ),
-                    elevation: 2,
-                    backgroundColor: Col.backgroundColor,
-                    title: GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    UserProfilePage(currentUser: _currentUser),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              const begin =
-                                  Offset(0.5, 0.0); // Mulai dari tengah layar
-                              const end = Offset.zero;
-                              const curve = Curves.linearToEaseOut;
-
-                              var tween = Tween(begin: begin, end: end).chain(
-                                CurveTween(curve: curve),
-                              );
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      child: _buildUserWidget(_currentUser),
-                    ),
-                    actions: [
-                      // notification icon
-                      IconButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                        ),
-                        color: Col.greyColor,
-                        iconSize: 24,
-                        constraints: const BoxConstraints(),
-                        onPressed: () {
-                          // TODO: implement notification icon
-                          Navigator.pushNamed(context, '/comingsoon');
-                        },
-                        icon: const Icon(Icons.notifications_none_outlined),
-                      ),
-                    ],
-                    floating: true,
-                    snap: true,
+    return Skeletonizer(
+      enabled: _enabled,
+      child: Scaffold(
+        body: RefreshIndicator(
+          color: Col.primaryColor,
+          onRefresh: _refreshData,
+          child: ScrollConfiguration(
+            behavior: const ScrollBehavior().copyWith(overscroll: true),
+            child: CustomScrollView(
+              physics: const ClampingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  surfaceTintColor: Col.backgroundColor,
+                  systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+                    statusBarColor: Col.backgroundColor,
                   ),
-                  SliverList(
-                    delegate: SliverChildListDelegate(
-                      [
-                        const SizedBox(height: 10),
-                        Column(
-                          children: [
-                            buildTotalProductsWidget(context),
-                            const SizedBox(height: 20),
-                            Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16.0),
-                              child: Column(
-                                children: [
-                                  buildMenuWidget(context),
-                                  const SizedBox(height: 20),
-                                  const RecentActivityWidget(),
-                                ],
-                              ),
-                            ),
-                          ],
+                  elevation: 2,
+                  backgroundColor: Col.backgroundColor,
+                  leading: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  UserProfilePage(currentUser: _currentUser),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin =
+                                Offset(0.5, 0.0); // Mulai dari tengah layar
+                            const end = Offset.zero;
+                            const curve = Curves.linearToEaseOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(
+                              CurveTween(curve: curve),
+                            );
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
                         ),
-                        Center(
+                      );
+                    },
+                    child: _buildUserWidget(_currentUser),
+                  ),
+                  actions: [
+                    // notification icon
+                    IconButton(
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                        overlayColor:
+                            MaterialStateProperty.all(Colors.transparent),
+                      ),
+                      color: Col.greyColor,
+                      iconSize: 24,
+                      constraints: const BoxConstraints(),
+                      onPressed: () {
+                        // TODO: implement notification icon
+                        Navigator.pushNamed(context, '/comingsoon');
+                      },
+                      icon: const Icon(Icons.notifications_none_outlined),
+                    ),
+                  ],
+                  floating: true,
+                  snap: true,
+                ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      const SizedBox(height: 10),
+                      Column(
+                        children: [
+                          buildTotalProductsWidget(context),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: [
+                                buildMenuWidget(context),
+                                const SizedBox(height: 20),
+                                const RecentActivityWidget(),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Skeleton.keep(
+                        child: Center(
                           child: Column(
                             children: [
                               const SizedBox(height: 20),
@@ -213,11 +214,11 @@ class _HomePageState extends State<HomePage> {
                             ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

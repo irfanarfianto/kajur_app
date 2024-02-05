@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
@@ -266,66 +265,66 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              color: Col.greyColor.withOpacity(.30),
-                              height: 0.5,
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("Atau"),
-                          ),
-                          Expanded(
-                            child: Divider(
-                              color: Col.greyColor.withOpacity(.30),
-                              height: 0.5,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 20,
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        _signInWithGoogle();
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Col.whiteColor,
-                      ),
-                      child: const Center(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              FontAwesomeIcons.google,
-                              color: Col.blackColor,
-                              size: 20,
-                            ),
-                            SizedBox(
-                              width: 5,
-                            ),
-                            Text(
-                              "Masuk dengan Google",
-                              style: TextStyle(
-                                color: Col.blackColor,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
+                    // const SizedBox(
+                    //   height: 40,
+                    // ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    //   child: Row(
+                    //     mainAxisAlignment: MainAxisAlignment.center,
+                    //     children: [
+                    //       Expanded(
+                    //         child: Divider(
+                    //           color: Col.greyColor.withOpacity(.30),
+                    //           height: 0.5,
+                    //         ),
+                    //       ),
+                    //       const Padding(
+                    //         padding: EdgeInsets.symmetric(horizontal: 8.0),
+                    //         child: Text("Atau"),
+                    //       ),
+                    //       Expanded(
+                    //         child: Divider(
+                    //           color: Col.greyColor.withOpacity(.30),
+                    //           height: 0.5,
+                    //         ),
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
+                    // const SizedBox(
+                    //   height: 20,
+                    // ),
+                    // ElevatedButton(
+                    //   onPressed: () {
+                    //     _signInWithGoogle();
+                    //   },
+                    //   style: ElevatedButton.styleFrom(
+                    //     backgroundColor: Col.whiteColor,
+                    //   ),
+                    //   child: const Center(
+                    //     child: Row(
+                    //       mainAxisAlignment: MainAxisAlignment.center,
+                    //       children: [
+                    //         Icon(
+                    //           FontAwesomeIcons.google,
+                    //           color: Col.blackColor,
+                    //           size: 20,
+                    //         ),
+                    //         SizedBox(
+                    //           width: 5,
+                    //         ),
+                    //         Text(
+                    //           "Masuk dengan Google",
+                    //           style: TextStyle(
+                    //             color: Col.blackColor,
+                    //             fontWeight: FontWeight.bold,
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),

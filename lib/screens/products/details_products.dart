@@ -23,12 +23,31 @@ class DetailProdukPage extends StatefulWidget {
 
 class _DetailProdukPageState extends State<DetailProdukPage> {
   late CollectionReference _produkCollection;
+  String? _userRole;
 
   @override
   void initState() {
     super.initState();
     _produkCollection = FirebaseFirestore.instance.collection('kantin');
     _refreshData();
+    _getUserRole();
+  }
+
+  // Add _getUserRole method to retrieve user role
+  Future<void> _getUserRole() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        final userData = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+        setState(() {
+          _userRole = userData['role'];
+        });
+      }
+      // ignore: empty_catches
+    } catch (e) {}
   }
 
   void _deleteProduct(String documentId) async {
@@ -105,11 +124,13 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
-      behavior: const ScrollBehavior().copyWith(overscroll: false),
+      behavior: const ScrollBehavior().copyWith(overscroll: true),
       child: Scaffold(
         backgroundColor: Col.secondaryColor,
         body: _buildProductDetails(),
-        bottomNavigationBar: _buildBottomAppBar(),
+        bottomNavigationBar: _userRole == 'staf' || _userRole == 'admin'
+            ? _buildBottomAppBar()
+            : null,
       ),
     );
   }
