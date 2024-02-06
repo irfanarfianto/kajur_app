@@ -98,12 +98,21 @@ class _WebViewPageState extends State<WebViewPage> {
                   filled: true,
                   fillColor: Col.whiteColor.withOpacity(0.1),
                   contentPadding: const EdgeInsets.all(8.0),
-                  hintText: 'Cari produk',
+                  hintText: 'Cari',
                   hintStyle: TextStyle(
                     color: Col.whiteColor.withOpacity(.50),
                     fontSize: 14.0,
                   ),
-                  suffixIcon: const Icon(Icons.replay_outlined),
+                  suffixIcon: IconButton(
+                    tooltip: 'Refresh',
+                    iconSize: 20,
+                    visualDensity: VisualDensity.compact,
+                    padding: const EdgeInsets.all(0),
+                    onPressed: () {
+                      controller.reload();
+                    },
+                    icon: const Icon(Icons.replay_outlined),
+                  ),
                   suffixIconColor: Col.whiteColor.withOpacity(.50),
                   enabledBorder: const OutlineInputBorder(
                     borderRadius: BorderRadius.all(

@@ -23,6 +23,11 @@ class ActivityIcon extends StatelessWidget {
         iconColor = Col.orangeAccent;
         backgroundColor = Col.orangeAccent.withOpacity(0.1);
         break;
+      case 'Update Stok':
+        iconData = Icons.inventory;
+        iconColor = Col.primaryColor;
+        backgroundColor = Col.primaryColor.withOpacity(0.1);
+        break;
       case 'Hapus Produk':
         iconData = Icons.delete_sharp;
         iconColor = Col.redAccent;

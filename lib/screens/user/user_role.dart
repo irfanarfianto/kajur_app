@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/design/system.dart';
 
 class ManageUserRolePage extends StatefulWidget {
   const ManageUserRolePage({Key? key}) : super(key: key);
@@ -12,6 +13,8 @@ class ManageUserRolePage extends StatefulWidget {
 class _ManageUserRolePageState extends State<ManageUserRolePage> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   String? _userRole;
+  List<String> selectedUsers = [];
+  Map<String, String> dropdownValues = {};
 
   @override
   void initState() {
@@ -32,7 +35,6 @@ class _ManageUserRolePageState extends State<ManageUserRolePage> {
             _userRole = userData['role'] ?? 'biasa';
           });
         } else {
-          // Handle the case where 'role' field doesn't exist in the user document.
           setState(() {
             _userRole = 'biasa';
           });
@@ -40,7 +42,6 @@ class _ManageUserRolePageState extends State<ManageUserRolePage> {
       }
     } catch (e) {
       print('Error getting user role: $e');
-      // Handle the error by setting _userRole to a default value or displaying an error message.
       setState(() {
         _userRole = 'biasa';
       });
@@ -54,6 +55,16 @@ class _ManageUserRolePageState extends State<ManageUserRolePage> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Kelola Peran Pengguna'),
+          actions: [
+            if (selectedUsers.isNotEmpty)
+              IconButton(
+                onPressed: () {
+                  // Handle delete action
+                  _confirmDeleteSelectedUsers();
+                },
+                icon: const Icon(Icons.delete),
+              ),
+          ],
         ),
         body: _userRole == null
             ? const Center(child: CircularProgressIndicator())
@@ -86,34 +97,130 @@ class _ManageUserRolePageState extends State<ManageUserRolePage> {
 
         var users = snapshot.data!.docs;
 
-        return ListView.builder(
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            var user = users[index];
-            var userId = user.id;
+        // Mengelompokkan pengguna berdasarkan peran
+        var adminUsers = <DocumentSnapshot>[];
+        var staffUsers = <DocumentSnapshot>[];
+        var normalUsers = <DocumentSnapshot>[];
 
-            // Periksa keberadaan field role
+        for (var user in users) {
+          var role = user['role'] ?? 'biasa';
+          if (role == 'admin') {
+            adminUsers.add(user);
+          } else if (role == 'staf') {
+            staffUsers.add(user);
+          } else {
+            normalUsers.add(user);
+          }
+        }
+
+        return ListView.builder(
+          itemCount:
+              adminUsers.length + staffUsers.length + normalUsers.length + 2,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return Divider(
+                thickness: 1,
+                color: Col.greyColor.withOpacity(0.1),
+              );
+            }
+            if (index == adminUsers.length + 1) {
+              return Divider(
+                thickness: 1,
+                color: Col.greyColor.withOpacity(0.1),
+              );
+            }
+            if (index == adminUsers.length + staffUsers.length + 2) {
+              return Divider(
+                thickness: 1,
+                color: Col.greyColor.withOpacity(0.1),
+              );
+            }
+            DocumentSnapshot<Object?> user;
+            if (index <= adminUsers.length) {
+              user = adminUsers[index - 1];
+            } else if (index <= adminUsers.length + staffUsers.length + 1) {
+              user = staffUsers[index - adminUsers.length - 2];
+            } else {
+              user = normalUsers[
+                  index - adminUsers.length - staffUsers.length - 3];
+            }
+
+            var userId = user.id;
             var role = user['role'] ?? 'biasa';
             var displayName = user['displayName'] ?? 'No Name';
             var email = user['email'];
+            var username = user['username'] ?? 'No Username';
+
+            Color badgeColor;
+            switch (role) {
+              case 'admin':
+                badgeColor = Colors.red;
+                break;
+              case 'staf':
+                badgeColor = Colors.blue;
+                break;
+              default:
+                badgeColor = Colors.green;
+            }
 
             return ListTile(
-              title: Text(displayName),
-              subtitle: Text(email),
-              trailing: DropdownButton<String>(
-                value: role,
-                onChanged: (String? newValue) {
-                  if (newValue != null) {
-                    _updateUserRole(userId, newValue);
-                  }
-                },
-                items: <String>['admin', 'staf', 'biasa'].map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
+              title: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Row(
+                    children: [
+                      Text(displayName),
+                      const SizedBox(width: 10),
+                      Badge(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        label: Text(role),
+                        backgroundColor: badgeColor,
+                      ),
+                    ],
+                  ),
+                  PopupMenuButton<String>(
+                    icon: const Icon(Icons.more_vert),
+                    onSelected: (String newValue) {
+                      setState(() {
+                        dropdownValues[userId] = newValue;
+                      });
+                      _updateUserRole(userId, newValue);
+                    },
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      const PopupMenuItem<String>(
+                        value: 'admin',
+                        child: Text('Admin'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'staf',
+                        child: Text('Staf'),
+                      ),
+                      const PopupMenuItem<String>(
+                        value: 'biasa',
+                        child: Text('Biasa'),
+                      ),
+                    ],
+                  ),
+                ],
               ),
+              subtitle: Text('$username | $email',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Col.greyColor,
+                  )),
+              tileColor: selectedUsers.contains(userId)
+                  ? Colors.grey.withOpacity(0.5)
+                  : null,
+              onLongPress: () {
+                setState(() {
+                  if (selectedUsers.contains(userId)) {
+                    selectedUsers.remove(userId);
+                  } else {
+                    selectedUsers.add(userId);
+                  }
+                });
+              },
             );
           },
         );
@@ -122,7 +229,7 @@ class _ManageUserRolePageState extends State<ManageUserRolePage> {
   }
 
   Widget _buildUnauthorizedPage() {
-    return Center(
+    return const Center(
       child: Text('Anda tidak diizinkan mengakses halaman ini.'),
     );
   }
@@ -143,6 +250,58 @@ class _ManageUserRolePageState extends State<ManageUserRolePage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Terjadi kesalahan saat memperbarui peran pengguna.'),
+        ),
+      );
+    }
+  }
+
+  Future<void> _confirmDeleteSelectedUsers() async {
+    // Tampilkan dialog konfirmasi penghapusan
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi"),
+          content: const Text(
+              "Apakah Anda yakin ingin menghapus pengguna terpilih?"),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("Batal"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                _deleteSelectedUsers();
+              },
+              child: const Text("Hapus"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteSelectedUsers() async {
+    try {
+      for (var userId in selectedUsers) {
+        await _firestore.collection('users').doc(userId).delete();
+      }
+      setState(() {
+        selectedUsers.clear();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pengguna terpilih berhasil dihapus.'),
+        ),
+      );
+    } catch (e) {
+      print('Error deleting selected users: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Terjadi kesalahan saat menghapus pengguna terpilih.'),
         ),
       );
     }

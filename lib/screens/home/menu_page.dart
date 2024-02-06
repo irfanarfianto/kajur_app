@@ -99,24 +99,28 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ],
           ),
-          child: Row(
-            children: [
-              buildCircularButton(
-                context,
-                "List Produk",
-                Icons.ballot,
-                const ListProdukPage(),
-                isStaffOrAdmin,
-              ),
-              const SizedBox(width: 16),
-              buildCircularButton(
-                context,
-                "Tambah",
-                Icons.add_shopping_cart_rounded,
-                const AddDataPage(),
-                isStaffOrAdmin,
-              ),
-            ],
+          child: SizedBox(
+            height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                buildCircularButton(
+                  context,
+                  "List Produk",
+                  Icons.ballot,
+                  const ListProdukPage(),
+                  isStaffOrAdmin,
+                ),
+                const SizedBox(width: 30),
+                buildCircularButton(
+                  context,
+                  "Tambah",
+                  Icons.add_shopping_cart_rounded,
+                  const AddDataPage(),
+                  isStaffOrAdmin,
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -146,16 +150,20 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ],
           ),
-          child: Row(
-            children: [
-              buildCircularButton(
-                context,
-                "Keuangan",
-                Icons.account_balance_wallet,
-                const ComingSoonPage(),
-                isStaffOrAdmin,
-              ),
-            ],
+          child: SizedBox(
+            height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                buildCircularButton(
+                  context,
+                  "Keuangan",
+                  Icons.account_balance_wallet,
+                  const ComingSoonPage(),
+                  isStaffOrAdmin,
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -185,38 +193,52 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ],
           ),
-          child: Row(
-            children: [
-              buildCircularButton(
-                context,
-                "Scalsa",
-                Icons.school,
-                const WebViewPage(
-                  url: 'https://fst.scalsa.uhb.ac.id/',
+          child: SizedBox(
+            height: 100,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                buildCircularButton(
+                  context,
+                  "Scalsa",
+                  Icons.school,
+                  const WebViewPage(
+                    url: 'https://fst.scalsa.uhb.ac.id/',
+                  ),
+                  isStaffOrAdmin,
                 ),
-                isStaffOrAdmin,
-              ),
-              const SizedBox(width: 16),
-              buildCircularButton(
-                context,
-                "Siakad",
-                Icons.school,
-                const WebViewPage(
-                  url: 'https://siakad.uhb.ac.id/a/www/auth?retselectedUrl=/',
+                const SizedBox(width: 16),
+                buildCircularButton(
+                  context,
+                  "Siakad",
+                  Icons.school,
+                  const WebViewPage(
+                    url: 'https://siakad.uhb.ac.id/a/www/auth?retselectedUrl=/',
+                  ),
+                  isStaffOrAdmin,
                 ),
-                isStaffOrAdmin,
-              ),
-              const SizedBox(width: 16),
-              buildCircularButton(
-                context,
-                "Google",
-                Icons.public,
-                const WebViewPage(
-                  url: 'https://www.google.com/',
+                const SizedBox(width: 16),
+                buildCircularButton(
+                  context,
+                  "Google",
+                  Icons.public,
+                  const WebViewPage(
+                    url: 'https://www.google.com/',
+                  ),
+                  isStaffOrAdmin,
                 ),
-                isStaffOrAdmin,
-              ),
-            ],
+                const SizedBox(width: 16),
+                buildCircularButton(
+                  context,
+                  "Chat GPT",
+                  Icons.chat_bubble_outline_outlined,
+                  const WebViewPage(
+                    url: 'https://chat.openai.com/',
+                  ),
+                  isStaffOrAdmin,
+                ),
+              ],
+            ),
           ),
         ),
       ],

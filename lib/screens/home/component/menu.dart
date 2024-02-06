@@ -10,11 +10,11 @@ import 'package:kajur_app/screens/products/list_products.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 Widget buildMenuWidget(BuildContext context) {
-  return FutureBuilder<DocumentSnapshot>(
-    future: FirebaseFirestore.instance
+  return StreamBuilder<DocumentSnapshot>(
+    stream: FirebaseFirestore.instance
         .collection('users')
         .doc(FirebaseAuth.instance.currentUser!.uid)
-        .get(),
+        .snapshots(),
     builder: (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
       if (snapshot.hasError) {
         return Center(
@@ -22,6 +22,13 @@ Widget buildMenuWidget(BuildContext context) {
         );
       }
 
+      // Jika data belum dimuat
+      if (snapshot.connectionState == ConnectionState.waiting) {
+        // Tampilkan widget kosong
+        return SizedBox.shrink();
+      }
+
+      // Jika data sudah dimuat
       if (snapshot.hasData) {
         // Setelah mendapatkan data user, cek peran user
         Map<String, dynamic>? userData =
@@ -50,7 +57,7 @@ Widget buildMenuWidget(BuildContext context) {
                   child: SizedBox(
                     height: 100,
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Expanded(
                           child: buildCircularButton(

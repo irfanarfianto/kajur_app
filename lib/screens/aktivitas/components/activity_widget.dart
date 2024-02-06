@@ -108,7 +108,6 @@ class RecentActivityWidget extends StatelessWidget {
                 );
               }
 
-              // Use ListView.builder instead of ListView
               return Column(
                 children: snapshot.data!.docs.asMap().entries.map((entry) {
                   int index = entry.key;
