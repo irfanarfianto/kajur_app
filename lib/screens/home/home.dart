@@ -143,7 +143,7 @@ class _HomePageState extends State<HomePage> {
                   child: CircleAvatar(
                     backgroundImage: photoUrl != null
                         ? CachedNetworkImageProvider(photoUrl)
-                        : const AssetImage('avatar.png') as ImageProvider<
+                        : const AssetImage('images/avatar.png') as ImageProvider<
                             Object>, // Ganti placeholder_image_path dengan path gambar placeholder Anda
                     radius:
                         20, // Sesuaikan dengan ukuran avatar yang diinginkan

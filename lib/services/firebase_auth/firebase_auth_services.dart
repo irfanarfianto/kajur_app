@@ -144,10 +144,17 @@ class FirebaseAuthService {
       String email, String password) async {
     try {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       User? user = credential.user;
 
       if (user != null) {
+        // Periksa apakah email pengguna telah diverifikasi
+        if (!user.emailVerified) {
+          return null;
+        }
+
         // Update timestamp login terakhir
         await updateLastLogin(user.uid);
       }

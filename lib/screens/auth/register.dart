@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/auth/email_verification_page.dart';
+import 'package:kajur_app/screens/auth/login.dart';
 import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 
 class SignUpPage extends StatefulWidget {
@@ -103,10 +104,10 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
-        showToast(message: "Berhasil daftar akun");
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => EmailVerifPage()),
+          MaterialPageRoute(builder: (context) => const LoginPage()),
         ); // Menampilkan CountdownPage setelah berhasil mendaftar
       } catch (e) {
         showToast(message: "Error setting username: $e");

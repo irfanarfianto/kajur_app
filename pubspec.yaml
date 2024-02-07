@@ -37,6 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   dotted_dashed_line: ^0.0.3
   dropdown_button2: ^2.3.9
+  firebase_app_check: ^0.2.1+13
   firebase_auth: ^4.15.3
   firebase_core: ^2.24.2
   firebase_database: ^10.3.8

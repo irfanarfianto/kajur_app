@@ -13,6 +13,7 @@ import 'screens/home/home.dart';
 import 'screens/products/add_products.dart';
 import 'screens/products/list_products.dart';
 import 'comingsoon/comingsoon.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 
 void main() async {
   timeago.setLocaleMessages('id', timeago.IdMessages());
@@ -20,6 +21,12 @@ void main() async {
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  await FirebaseAppCheck.instance.activate(
+    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
+    androidProvider: AndroidProvider.playIntegrity,
+    appleProvider: AppleProvider.appAttest,
   );
 
   initializeDateFormatting('id', null).then((_) {
