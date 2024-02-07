@@ -2,8 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/screens/auth/email_verification_page.dart';
 import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
-import 'package:kajur_app/screens/auth/login.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -99,24 +99,23 @@ class _SignUpPageState extends State<SignUpPage> {
     User? user =
         await _auth.signUpWithEmailAndPassword(email, password, username);
 
-    setState(() {
-      isSigningUp = false;
-    });
-
     if (user != null) {
       try {
         // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
         showToast(message: "Berhasil daftar akun");
-        // ignore: use_build_context_synchronously
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
-        );
+          MaterialPageRoute(builder: (context) => EmailVerifPage()),
+        ); // Menampilkan CountdownPage setelah berhasil mendaftar
       } catch (e) {
         showToast(message: "Error setting username: $e");
       }
-    } else {}
+    } else {
+      setState(() {
+        isSigningUp = false;
+      });
+    }
   }
 
   bool _isPasswordValid(String password) {

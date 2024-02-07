@@ -14,7 +14,7 @@ class FormContainerWidget extends StatefulWidget {
   final TextInputType? inputType;
   
   const FormContainerWidget(
-      {this.controller,
+      {super.key, this.controller,
       this.isPasswordField,
       this.fieldKey,
       this.hintText,

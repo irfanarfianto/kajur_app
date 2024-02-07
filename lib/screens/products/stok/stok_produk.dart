@@ -5,7 +5,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class StockPage extends StatefulWidget {
-  const StockPage({Key? key}) : super(key: key);
+  const StockPage({super.key});
 
   @override
   State<StockPage> createState() => _StockPageState();

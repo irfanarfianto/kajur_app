@@ -2,9 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import '../../global/common/toast.dart';
+import 'package:uuid/uuid.dart';
 
 class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  String? _verificationToken;
+  DateTime? _verificationRequestTime;
 
   // Future<User?> signUpWithGoogle(AuthCredential credential) async {
   //   try {
@@ -41,7 +44,6 @@ class FirebaseAuthService {
   Future<User?> signUpWithEmailAndPassword(
       String email, String password, String username) async {
     try {
-      // Cek apakah username sudah digunakan
       bool isUsernameTaken = await isUsernameAlreadyTaken(username);
 
       if (isUsernameTaken) {
@@ -49,24 +51,25 @@ class FirebaseAuthService {
         return null;
       }
 
-      // Jika username belum digunakan, lanjutkan dengan pembuatan pengguna
       UserCredential credential = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
+
       User? user = credential.user;
 
       if (user != null) {
-        // Update profil user dengan username yang dimasukkan
-        // ignore: deprecated_member_use
-        await user.updateProfile(displayName: username);
+        // Kirim email verifikasi jika pengguna belum diverifikasi sebelumnya
+        await _sendEmailVerification(user);
 
-        // Simpan data tambahan user ke Firestore
         await saveUserDataToFirestore(
-            user.uid, username, email, user.displayName ?? '');
-
-        return user;
+          user.uid,
+          username,
+          email,
+          user.displayName ?? '',
+        );
       }
+
+      return user;
     } on FirebaseAuthException catch (e) {
-      // Handle error dari Firebase authentication
       if (e.code == 'email-already-in-use') {
         showToast(message: 'Alamat email sudah digunakan.');
       } else {
@@ -74,6 +77,50 @@ class FirebaseAuthService {
       }
     }
     return null;
+  }
+
+  Future<void> _sendEmailVerification(User user) async {
+    if (!user.emailVerified) {
+      if (!isVerificationTokenValid()) {
+        // Jika token verifikasi tidak valid, buat token baru
+        _verificationToken = generateVerificationToken();
+        _verificationRequestTime = DateTime.now();
+      }
+
+      try {
+        await user.sendEmailVerification();
+        showToast(message: 'Email verifikasi telah dikirim ke ${user.email}');
+      } catch (e) {
+        showToast(message: 'Gagal mengirim email verifikasi: $e');
+      }
+    } else {
+      showToast(message: 'Alamat email sudah diverifikasi.');
+    }
+  }
+
+  String generateVerificationToken() {
+    var uuid = Uuid();
+    return uuid.v4();
+  }
+
+  bool isVerificationTokenValid() {
+    if (_verificationRequestTime == null || _verificationToken == null) {
+      return false;
+    }
+
+    final currentTime = DateTime.now();
+    final difference = currentTime.difference(_verificationRequestTime!);
+    if (difference.inMinutes > 2) {
+      // Waktu sudah lebih dari 2 menit, token tidak valid
+      return false;
+    }
+
+    return true;
+  }
+
+  void disableVerificationToken() {
+    _verificationToken = null;
+    _verificationRequestTime = null;
   }
 
   Future<void> saveUserDataToFirestore(

@@ -6,7 +6,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 class EditProfilePage extends StatefulWidget {
   final String documentId;
 
-  const EditProfilePage({Key? key, required this.documentId}) : super(key: key);
+  const EditProfilePage({super.key, required this.documentId});
 
   @override
   _EditProfilePageState createState() => _EditProfilePageState();

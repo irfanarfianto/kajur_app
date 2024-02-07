@@ -507,14 +507,14 @@ class _UserProfilePageState extends State<UserProfilePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Image Selected'),
-          content: Text('Do you want to upload this image?'),
+          title: const Text('Image Selected'),
+          content: const Text('Do you want to upload this image?'),
           actions: [
             TextButton(
               onPressed: () {
                 Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
@@ -522,7 +522,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 // You can call _uploadImage() here to start uploading the image
                 Navigator.of(context).pop();
               },
-              child: Text('Upload'),
+              child: const Text('Upload'),
             ),
           ],
         );

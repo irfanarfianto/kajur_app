@@ -21,7 +21,7 @@ enum SortingOption {
 }
 
 class ListProdukPage extends StatefulWidget {
-  const ListProdukPage({Key? key}) : super(key: key);
+  const ListProdukPage({super.key});
 
   @override
   _ListProdukPageState createState() => _ListProdukPageState();

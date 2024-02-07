@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/screens/auth/email_verification_page.dart';
 import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 import 'package:kajur_app/screens/auth/register.dart';
 
@@ -47,8 +48,17 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     if (user != null) {
-      showToast(message: "Selamat datang");
-      Navigator.pushNamed(context, "/home");
+      if (user.emailVerified) {
+        // Email telah diverifikasi, arahkan pengguna ke halaman utama
+        showToast(message: "Selamat datang");
+        Navigator.pushNamed(context, "/home");
+      } else {
+        // Email belum diverifikasi, arahkan pengguna ke halaman verifikasi email
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => EmailVerifPage()),
+        );
+      }
     } else {
       // Handle unsuccessful login
     }

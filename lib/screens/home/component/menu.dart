@@ -7,7 +7,6 @@ import 'package:kajur_app/screens/home/component/circularButton.dart';
 import 'package:kajur_app/screens/home/menu_page.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 Widget buildMenuWidget(BuildContext context) {
   return StreamBuilder<DocumentSnapshot>(
@@ -25,7 +24,7 @@ Widget buildMenuWidget(BuildContext context) {
       // Jika data belum dimuat
       if (snapshot.connectionState == ConnectionState.waiting) {
         // Tampilkan widget kosong
-        return SizedBox.shrink();
+        return const SizedBox.shrink();
       }
 
       // Jika data sudah dimuat
@@ -106,7 +105,7 @@ Widget buildMenuWidget(BuildContext context) {
       }
 
       // Jika tidak ada data, Anda dapat menampilkan widget kosong atau pesan lain
-      return SizedBox.shrink(); // Misalnya, widget kosong
+      return const SizedBox.shrink(); // Misalnya, widget kosong
     },
   );
 }
