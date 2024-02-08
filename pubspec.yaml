@@ -45,7 +45,6 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_image_compress: ^2.1.0
-  flutter_money_formatter: ^0.8.3
   flutter_speed_dial: ^7.0.0
   fluttertoast: ^8.2.2
   font_awesome_flutter: ^10.6.0
