@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/screens/home/component/kirim_data_produk.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -777,6 +778,21 @@ class _ListProdukPageState extends State<ListProdukPage>
                 ),
             ],
           ),
+          floatingActionButton: FloatingActionButton.extended(
+              extendedPadding: const EdgeInsets.symmetric(horizontal: 16),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(100),
+              ),
+              icon: const Icon(Icons.send),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const ShareProduk(),
+                  )
+                );
+              },
+              label: const Text('Kirim Data Stok')),
         ),
       ),
     );
