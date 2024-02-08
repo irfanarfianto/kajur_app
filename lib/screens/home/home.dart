@@ -141,12 +141,17 @@ class _HomePageState extends State<HomePage> {
                 Hero(
                   tag: currentUser.uid,
                   child: CircleAvatar(
-                    backgroundImage: photoUrl != null
-                        ? CachedNetworkImageProvider(photoUrl)
-                        : const AssetImage('images/avatar.png') as ImageProvider<
-                            Object>, // Ganti placeholder_image_path dengan path gambar placeholder Anda
-                    radius:
-                        20, // Sesuaikan dengan ukuran avatar yang diinginkan
+                    backgroundColor: Colors.grey,
+                    backgroundImage:
+                        photoUrl != null ? NetworkImage(photoUrl) : null,
+                    radius: 20,
+                    child: photoUrl == null
+                        ? const Icon(
+                            Icons.account_circle,
+                            size: 20,
+                            color: Colors.grey,
+                          )
+                        : null, // Sesuaikan dengan ukuran avatar yang diinginkan
                   ),
                 ),
                 const SizedBox(width: 16),

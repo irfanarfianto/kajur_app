@@ -5,19 +5,12 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
-import 'package:kajur_app/screens/products/widget/sorting_show.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
   Semua,
   Makanan,
   Minuman,
-}
-
-enum SortingOption {
-  Terbaru,
-  AZ,
-  ZA,
 }
 
 class ListProdukPage extends StatefulWidget {
@@ -33,11 +26,8 @@ class _ListProdukPageState extends State<ListProdukPage>
   late CollectionReference _produkCollection;
   late bool _isRefreshing = false;
   final CategoryFilter _categoryFilter = CategoryFilter.Semua;
-  SortingOption _sortingOption = SortingOption.Terbaru;
   String _searchQuery = '';
-  bool isSelectedTerbaru = true;
-  bool isSelectedAZ = false;
-  bool isSelectedZA = false;
+  String _sortingCriteria = 'terbaru';
 
   @override
   void initState() {
@@ -49,19 +39,9 @@ class _ListProdukPageState extends State<ListProdukPage>
   @override
   bool get wantKeepAlive => true;
 
-  void _resetSortingOption() {
-    setState(() {
-      _sortingOption = SortingOption.Terbaru;
-      isSelectedTerbaru = false;
-      isSelectedAZ = false;
-      isSelectedZA = false;
-    });
-  }
-
   Future<void> _refreshData() async {
     setState(() {
       _isRefreshing = true;
-      _resetSortingOption();
     });
 
     try {
@@ -79,67 +59,101 @@ class _ListProdukPageState extends State<ListProdukPage>
 
   void _showSortingOverlay() {
     showModalBottomSheet(
-      context: context,
+      enableDrag: true,
       isScrollControlled: true,
+      showDragHandle: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.7,
+      ),
+      context: context,
       builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return SortingOverlay(
-              isSelectedTerbaru: isSelectedTerbaru,
-              isSelectedAZ: isSelectedAZ,
-              isSelectedZA: isSelectedZA,
-              onTerbaruChanged: (value) {
-                setState(() {
-                  isSelectedTerbaru = value!;
-                  isSelectedAZ = false;
-                  isSelectedZA = false;
-                });
-              },
-              onAZChanged: (value) {
-                setState(() {
-                  isSelectedAZ = value!;
-                  isSelectedTerbaru = false;
-                  isSelectedZA = false;
-                });
-              },
-              onZAChanged: (value) {
-                setState(() {
-                  isSelectedZA = value!;
-                  isSelectedTerbaru = false;
-                  isSelectedAZ = false;
-                });
-              },
-              onReset: () {
-                setState(() {
-                  _resetSortingOption(); // Panggil fungsi reset di sini
-                });
-              },
-              onTerapkan: () {
-                _applySortingOption();
-                _refreshData();
-                Navigator.pop(context);
-              },
-            );
-          },
+        return Column(
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 8),
+                IconButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    icon: const Icon(
+                      Icons.close,
+                    )),
+                const SizedBox(width: 16),
+                const Text('Urutkan Berdasarkan', style: Typo.headingTextStyle),
+              ],
+            ),
+            SizedBox(
+              height: 12,
+              child: Divider(
+                thickness: 2,
+                color: Col.greyColor.withOpacity(0.1),
+              ),
+            ),
+            Wrap(
+              children: [
+                ListTile(
+                  title: const Text('🆕 Baru ditambahkan'),
+                  onTap: () {
+                    setState(() {
+                      _sortingCriteria = 'terbaru';
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('🙌 Sudah lama'),
+                  onTap: () {
+                    setState(() {
+                      _sortingCriteria = 'terlama';
+                    });
+                  },
+                ),
+                Divider(
+                  thickness: 1,
+                  color: Col.greyColor.withOpacity(0.1),
+                ),
+                ListTile(
+                  title: const Text('Urutan A-Z'),
+                  onTap: () {
+                    setState(() {
+                      _sortingCriteria = 'A-Z';
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('Urutan Z-A'),
+                  onTap: () {
+                    setState(() {
+                      _sortingCriteria = 'Z-A';
+                    });
+                  },
+                ),
+                Divider(
+                  thickness: 1,
+                  color: Col.greyColor.withOpacity(0.1),
+                ),
+                ListTile(
+                  title: const Text('Stok Terendah'),
+                  onTap: () {
+                    setState(() {
+                      _sortingCriteria = 'stok terendah';
+                    });
+                  },
+                ),
+                ListTile(
+                  title: const Text('Stok Terbanyak'),
+                  onTap: () {
+                    setState(() {
+                      _sortingCriteria = 'stok terbanyak';
+                    });
+                  },
+                ),
+              ],
+            ),
+          ],
         );
       },
     );
-  }
-
-  void _applySortingOption() {
-    if (isSelectedTerbaru) {
-      _setSortingOption(SortingOption.Terbaru);
-    } else if (isSelectedAZ) {
-      _setSortingOption(SortingOption.AZ);
-    } else if (isSelectedZA) {
-      _setSortingOption(SortingOption.ZA);
-    }
-  }
-
-  void _setSortingOption(SortingOption option) {
-    setState(() {
-      _sortingOption = option;
-    });
   }
 
   CategoryFilter _getCategoryFromIndex(int index) {
@@ -168,28 +182,47 @@ class _ListProdukPageState extends State<ListProdukPage>
     }).toList();
   }
 
-  List<DocumentSnapshot> _sortProducts(List<DocumentSnapshot> products) {
-    return List.from(products)
-      ..sort((a, b) {
-        Map<String, dynamic> dataA = a.data() as Map<String, dynamic>;
-        Map<String, dynamic> dataB = b.data() as Map<String, dynamic>;
-
-        if (_sortingOption == SortingOption.Terbaru) {
-          Timestamp timeA = dataA['updatedAt'] ?? Timestamp.now();
-          Timestamp timeB = dataB['updatedAt'] ?? Timestamp.now();
-          return timeB.compareTo(timeA);
-        } else if (_sortingOption == SortingOption.AZ) {
-          return dataA['menu']
-              .toString()
-              .toLowerCase()
-              .compareTo(dataB['menu'].toString().toLowerCase());
-        } else {
-          return dataB['menu']
-              .toString()
-              .toLowerCase()
-              .compareTo(dataA['menu'].toString().toLowerCase());
-        }
-      });
+  List<DocumentSnapshot> _sortProducts(
+      List<DocumentSnapshot> products, String sortCriteria) {
+    switch (sortCriteria) {
+      case 'terbaru':
+        products.sort((a, b) {
+          var aDate = (a['updatedAt'] as Timestamp).toDate();
+          var bDate = (b['updatedAt'] as Timestamp).toDate();
+          return bDate.compareTo(aDate);
+        });
+        break;
+      case 'terlama':
+        products.sort((a, b) {
+          var aDate = (a['updatedAt'] as Timestamp).toDate();
+          var bDate = (b['updatedAt'] as Timestamp).toDate();
+          return aDate.compareTo(bDate);
+        });
+        break;
+      case 'A-Z':
+        products.sort((a, b) {
+          var aName = a['menu'].toString().toLowerCase();
+          var bName = b['menu'].toString().toLowerCase();
+          return aName.compareTo(bName);
+        });
+        break;
+      case 'Z-A':
+        products.sort((a, b) {
+          var aName = a['menu'].toString().toLowerCase();
+          var bName = b['menu'].toString().toLowerCase();
+          return bName.compareTo(aName);
+        });
+        break;
+      case 'stok terendah':
+        products.sort((a, b) => a['stok'].compareTo(b['stok']));
+        break;
+      case 'stok terbanyak':
+        products.sort((a, b) => b['stok'].compareTo(a['stok']));
+        break;
+      default:
+        break;
+    }
+    return products;
   }
 
   int _getNumberOfTabs() {
@@ -243,7 +276,6 @@ class _ListProdukPageState extends State<ListProdukPage>
       );
     }
   }
-
 
   Future<void> _recordActivityLog({
     required String action,
@@ -497,7 +529,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                 onPressed: () {
                   _showSortingOverlay();
                 },
-                icon: const Icon(Icons.sort_outlined),
+                icon: const Icon(Icons.filter_alt),
               ),
             ],
             bottom: TabBar(
@@ -628,7 +660,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                     }).toList();
 
                     List<DocumentSnapshot> sortedProducts =
-                        _sortProducts(categoryProducts);
+                        _sortProducts(categoryProducts, _sortingCriteria);
 
                     return RefreshIndicator(
                       backgroundColor: Col.secondaryColor,

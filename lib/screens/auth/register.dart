@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
-import 'package:kajur_app/screens/auth/email_verification_page.dart';
 import 'package:kajur_app/screens/auth/login.dart';
 import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 
@@ -85,17 +84,6 @@ class _SignUpPageState extends State<SignUpPage> {
         _usernameController.text.replaceAll(' ', '').toLowerCase();
     String email = _emailController.text;
     String password = _passwordController.text;
-
-    // Pemeriksaan apakah password memenuhi persyaratan
-    if (!_isPasswordValid(password)) {
-      showToast(
-        message: "Password minimal 8 karakter, termasuk huruf dan angka",
-      );
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
 
     User? user =
         await _auth.signUpWithEmailAndPassword(email, password, username);
@@ -286,6 +274,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               return 'Password harus diisi';
                             } else if (value.length < 8) {
                               return 'Password harus memiliki minimal 8 karakter';
+                            } else if (!value.contains(RegExp(r'[0-9]')) ||
+                                !value.contains(RegExp(r'[a-zA-Z]'))) {
+                              return 'Password harus terdiri dari angka dan huruf';
                             }
                             return null;
                           },

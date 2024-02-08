@@ -139,21 +139,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
           children: [
             Hero(
               tag: currentUser.uid,
-              child: ClipOval(
-                child: Image.network(
-                  photoUrl ?? '',
-                  width: 100,
-                  height: 100,
-                  fit: BoxFit.cover,
-                  errorBuilder: (BuildContext context, Object error,
-                      StackTrace? stackTrace) {
-                    return const Icon(
-                      Icons.account_circle,
-                      size: 100,
-                      color: Col.greyColor,
-                    );
-                  },
-                ),
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: Colors.grey,
+                backgroundImage:
+                    photoUrl != null ? NetworkImage(photoUrl) : null,
+                child: photoUrl == null
+                    ? const Icon(
+                        Icons.account_circle,
+                        size: 40,
+                        color: Colors.grey,
+                      )
+                    : null,
               ),
             ),
             const SizedBox(width: 16),

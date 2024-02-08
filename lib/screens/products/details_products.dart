@@ -368,7 +368,8 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Text('Deskripsi produk', style: Typo.subtitleTextStyle),
+                        const Text('Deskripsi produk',
+                            style: Typo.subtitleTextStyle),
                         ReadMoreText(
                           '${data['deskripsi'] ?? 'Tidak ada deskripsi'}',
                           trimLines: 3,

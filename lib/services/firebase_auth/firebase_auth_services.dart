@@ -160,12 +160,8 @@ class FirebaseAuthService {
       }
 
       return user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        showToast(message: 'Email atau password nggak valid.');
-      } else {
-        showToast(message: 'Ada kesalahan nih: ${e.code}');
-      }
+    } on FirebaseAuthException {
+      showToast(message: 'Akun tidak ditemukan');
     }
 
     return null;
