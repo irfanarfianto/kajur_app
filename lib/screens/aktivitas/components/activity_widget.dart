@@ -5,7 +5,6 @@ import 'package:kajur_app/screens/aktivitas/aktivitas.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/screens/aktivitas/detail_activity.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
-import 'package:kajur_app/screens/widget/icon_text_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class RecentActivityWidget extends StatelessWidget {
@@ -19,7 +18,7 @@ class RecentActivityWidget extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: Col.secondaryColor,
-        border: Border.all(color: Col.greyColor.withOpacity(.10)),
+        border: Border.all(color: const Color(0x309E9E9E), width: 1),
         boxShadow: [
           BoxShadow(
             color: Col.greyColor.withOpacity(.10),
@@ -41,9 +40,10 @@ class RecentActivityWidget extends StatelessWidget {
                     'Aktivitas Terbaru',
                     style: Typo.titleTextStyle,
                   ),
-                  IconTextButton(
-                    text: 'Lihat semua',
-                    iconData: Icons.east,
+                  TextButton(
+                    child: const Text(
+                      'Lihat semua',
+                    ),
                     onPressed: () {
                       Navigator.of(context).push(
                         PageRouteBuilder(
@@ -69,10 +69,6 @@ class RecentActivityWidget extends StatelessWidget {
                         ),
                       );
                     },
-                    iconOnRight: true,
-                    iconColor: Col.greyColor,
-                    textColor: Col.greyColor,
-                    iconSize: 15.0,
                   ),
                 ],
               ),
@@ -83,7 +79,7 @@ class RecentActivityWidget extends StatelessWidget {
             stream: FirebaseFirestore.instance
                 .collection('activity_log')
                 .orderBy('timestamp', descending: true)
-                .limit(3)
+                .limit(5)
                 .snapshots(),
             builder:
                 (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -115,14 +111,12 @@ class RecentActivityWidget extends StatelessWidget {
 
                   Map<String, dynamic> data =
                       doc.data() as Map<String, dynamic>;
-                  data['id'] =
-                      doc.id; // Menyertakan ID dokumen ke dalam data aktivitas
+                  data['id'] = doc.id;
 
                   return Column(
                     children: [
-                      InkWell(
+                      ListTile(
                         onTap: () {
-                          // Navigasi ke halaman detail dan kirimkan data aktivitas
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -131,72 +125,57 @@ class RecentActivityWidget extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Container(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            children: [
-                              Skeleton.leaf(
-                                child: ActivityIcon(action: data['action']),
+                        leading: Skeleton.leaf(
+                          child: ActivityIcon(action: data['action']),
+                        ),
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            SizedBox(
+                              width: 200,
+                              child: Text(
+                                (data['action'] ?? '') +
+                                    (data['productName'] != null
+                                        ? ' - ${data['productName']}'
+                                        : ''),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: Typo.emphasizedBodyTextStyle,
                               ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      (data['action'] ?? '') +
-                                          (data['productName'] != null
-                                              ? ' - ${data['productName']}'
-                                              : ''),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: Typo.emphasizedBodyTextStyle,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          (data['userName'] ?? ''),
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                        Row(
-                                          children: [
-                                            Text(
-                                              (data['timestamp'] != null
-                                                  ? DateFormat(' HH:mm ', 'id')
-                                                      .format((data['timestamp']
-                                                              as Timestamp)
-                                                          .toDate())
-                                                  : 'Timestamp tidak tersedia'),
-                                              style: const TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.grey,
-                                              ),
-                                            ),
-                                            const Icon(Icons.history,
-                                                color: Col.greyColor, size: 15),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                            ),
+                            Row(
+                              children: [
+                                const Icon(Icons.history,
+                                    color: Col.greyColor, size: 15),
+                                Text(
+                                  (data['timestamp'] != null
+                                      ? DateFormat(' HH:mm ', 'id').format(
+                                          (data['timestamp'] as Timestamp)
+                                              .toDate())
+                                      : 'Timestamp tidak tersedia'),
+                                  style: const TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.grey,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
+                          ],
+                        ),
+                        subtitle: Text(
+                          (data['userName'] ?? ''),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       if (index < snapshot.data!.docs.length - 1)
                         Divider(
                           thickness: 1,
-                          color: Col.greyColor.withOpacity(0.1),
+                          color: Col.greyColor.withOpacity(0.2),
                         ),
                     ],
                   );

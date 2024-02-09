@@ -9,6 +9,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 
 class EditProdukPage extends StatefulWidget {
@@ -113,11 +114,13 @@ class _EditProdukPageState extends State<EditProdukPage> {
                 .toInt();
         num newTotalProfit = newProfitSatuan * oldProductData['jumlahIsi'];
 
+        // Setelah semua validasi, tentukan waktu pembaruan
+        DateTime updatedAt = DateTime.now();
+
         // Merekam log aktivitas
         await _recordActivityLog(
           action: 'Edit Produk',
-          productId:
-              widget.documentId, // Sertakan ID produk saat memanggil fungsi
+          productId: widget.documentId,
           oldProductData: oldProductData,
           productName: _menuController.text,
           newProductData: {
@@ -127,6 +130,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
             'image': imageUrl,
             'totalProfit': newTotalProfit,
             'profitSatuan': newProfitSatuan,
+            'updatedAt': updatedAt, // Tetapkan waktu pembaruan di sini
           },
         );
 
@@ -137,16 +141,12 @@ class _EditProdukPageState extends State<EditProdukPage> {
           'image': imageUrl,
           'totalProfit': newTotalProfit,
           'profitSatuan': newProfitSatuan,
-          'updatedAt': FieldValue.serverTimestamp(),
+          'updatedAt': updatedAt, // Tetapkan waktu pembaruan di sini juga
           'lastEditedBy': userId,
           'lastEditedByName': userName,
         });
 
-        // ignore: use_build_context_synchronously
-        AnimatedSnackBar.material(
-          'Produk berhasil diperbarui',
-          type: AnimatedSnackBarType.success,
-        ).show(context);
+        showToast(message: 'Produk berhasil diperbarui');
 
         setState(() {
           _isUpdating = false;
@@ -154,10 +154,7 @@ class _EditProdukPageState extends State<EditProdukPage> {
 
         Navigator.pop(context);
       } else {
-        AnimatedSnackBar.material(
-          'Mohon isi harga dan stok dengan angka',
-          type: AnimatedSnackBarType.info,
-        ).show(context);
+        showToast(message: 'Mohon isi harga dan stok dengan angka');
       }
     } catch (e) {
       setState(() {

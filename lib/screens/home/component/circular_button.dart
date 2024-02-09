@@ -20,11 +20,9 @@ Widget buildCircularButton(BuildContext context, String label, IconData icon,
         constraints: const BoxConstraints(),
         padding: const EdgeInsets.all(16.0),
         onPressed: () {
-          // Check if user is staff or admin before navigating to screen
           if (isStaffOrAdmin || label != 'Tambah') {
             Navigator.of(context).push(_createRoute(screen));
           } else {
-            // Show dialog for ordinary users
             showDialog(
               context: context,
               builder: (BuildContext context) {

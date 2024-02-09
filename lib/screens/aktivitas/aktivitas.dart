@@ -228,7 +228,6 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                       .toDate()));
 
                   return ListView.builder(
-                    physics: const ClampingScrollPhysics(),
                     itemCount: groupedActivities.length,
                     itemBuilder: (BuildContext context, int index) {
                       String date = groupedActivities.keys.toList()[index];
@@ -249,7 +248,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                 borderRadius: BorderRadius.circular(15),
                                 color: Col.secondaryColor,
                                 border: Border.all(
-                                    color: Col.greyColor.withOpacity(.10)),
+                                    color: const Color(0x309E9E9E), width: 1),
                                 boxShadow: [
                                   BoxShadow(
                                     color: Col.greyColor.withOpacity(.10),
@@ -269,9 +268,8 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
 
                                   return Column(
                                     children: [
-                                      InkWell(
+                                      ListTile(
                                         onTap: () {
-                                          // Navigasi ke halaman detail dan kirimkan data aktivitas
                                           Navigator.push(
                                             context,
                                             MaterialPageRoute(
@@ -281,89 +279,64 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                             ),
                                           );
                                         },
-                                        child: Container(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Row(
-                                            children: [
-                                              Skeleton.leaf(
-                                                child: ActivityIcon(
-                                                    action: data['action']),
+                                        leading: Skeleton.leaf(
+                                          child: ActivityIcon(
+                                              action: data['action']),
+                                        ),
+                                        title: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            SizedBox(
+                                              width: 200,
+                                              child: Text(
+                                                (data['action'] ?? '') +
+                                                    (data['productName'] != null
+                                                        ? ' - ${data['productName']}'
+                                                        : ''),
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: Typo
+                                                    .emphasizedBodyTextStyle,
                                               ),
-                                              const SizedBox(width: 8),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    Text(
-                                                      (data['action'] ?? '') +
-                                                          (data['productName'] !=
-                                                                  null
-                                                              ? ' - ${data['productName']}'
-                                                              : ''),
-                                                      maxLines: 1,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      style: Typo
-                                                          .emphasizedBodyTextStyle,
-                                                    ),
-                                                    const SizedBox(height: 4),
-                                                    Row(
-                                                      mainAxisAlignment:
-                                                          MainAxisAlignment
-                                                              .spaceBetween,
-                                                      children: [
-                                                        Text(
-                                                          (data['userName'] ??
-                                                              ''),
-                                                          style:
-                                                              const TextStyle(
-                                                            fontSize: 12,
-                                                            color: Colors.grey,
-                                                          ),
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                        ),
-                                                        Row(
-                                                          children: [
-                                                            Text(
-                                                              (data['timestamp'] !=
-                                                                      null
-                                                                  ? DateFormat(
-                                                                          ' HH:mm ',
-                                                                          'id')
-                                                                      .format((data['timestamp']
-                                                                              as Timestamp)
-                                                                          .toDate())
-                                                                  : 'Timestamp tidak tersedia'),
-                                                              style:
-                                                                  const TextStyle(
-                                                                fontSize: 12,
-                                                                color:
-                                                                    Colors.grey,
-                                                              ),
-                                                            ),
-                                                            const Icon(
-                                                                Icons.history,
-                                                                color: Col
-                                                                    .greyColor,
-                                                                size: 15),
-                                                          ],
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                const Icon(Icons.history,
+                                                    color: Col.greyColor,
+                                                    size: 15),
+                                                Text(
+                                                  (data['timestamp'] != null
+                                                      ? DateFormat(
+                                                              ' HH:mm ', 'id')
+                                                          .format((data[
+                                                                      'timestamp']
+                                                                  as Timestamp)
+                                                              .toDate())
+                                                      : 'Timestamp tidak tersedia'),
+                                                  style: const TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.grey,
+                                                  ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        subtitle: Text(
+                                          (data['userName'] ?? ''),
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                            color: Colors.grey,
                                           ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
                                       if (activityIndex < activities.length - 1)
                                         Divider(
                                           thickness: 1,
-                                          color: Col.greyColor.withOpacity(0.1),
+                                          color: Col.greyColor.withOpacity(0.2),
                                         ),
                                     ],
                                   );

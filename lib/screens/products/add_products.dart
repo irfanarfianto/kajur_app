@@ -1,5 +1,5 @@
 import 'dart:io';
-import 'package:animated_snack_bar/animated_snack_bar.dart';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +9,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
+import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/products/tambah%20produk/details_add_product.dart';
 import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 
@@ -163,19 +164,7 @@ class _AddDataPageState extends State<AddDataPage> {
         ),
       );
     } else {
-      AnimatedSnackBar.material(
-        'Mohon isi gambar produknya',
-        type: AnimatedSnackBarType.info,
-      ).show(context);
-
-      // Setelah beberapa detik, reset kembali variabel untuk memungkinkan snackbar muncul lagi
-      Future.delayed(const Duration(seconds: 5), () {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
-      });
+      showToast(message: 'Mohon isi gambar produknya');
     }
   }
 

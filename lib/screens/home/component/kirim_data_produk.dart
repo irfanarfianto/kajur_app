@@ -91,69 +91,131 @@ class ShareProdukState extends State<ShareProduk> {
 
   @override
   Widget build(BuildContext context) {
-    return ScrollConfiguration(
-      behavior: const ScrollBehavior().copyWith(overscroll: true),
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: Col.primaryColor,
-          foregroundColor: Col.whiteColor,
-          title: const Text('Kirim Data Produk'),
+    return Scaffold(
+      backgroundColor: Col.secondaryColor,
+      appBar: AppBar(
+        backgroundColor: Col.primaryColor,
+        foregroundColor: Col.whiteColor,
+        surfaceTintColor: Col.primaryColor,
+        title: const Text(
+          'Kirim Data',
         ),
-        body: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
+      ),
+      body: Stack(
+        children: [
+          Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text(
-                'Batasi stok < ${_sliderValue.toInt()}',
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Slider(
-                value: _sliderValue.toDouble(),
-                min: 0,
-                max: 15,
-                divisions: 15,
-                label: _sliderValue.toInt().toString(),
-                onChanged: (newValue) {
-                  setState(() {
-                    _sliderValue = newValue;
-                  });
-                },
-              ),
-              FutureBuilder(
-                future: _getDataFromFirestore(),
-                builder: (context, snapshot) {
-                  return SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          text,
-                          style: const TextStyle(fontSize: 16),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Col.secondaryColor,
+                    borderRadius: BorderRadius.circular(15),
+                    border: Border.all(color: Col.greyColor.withOpacity(.50)),
+                  ),
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Batasi stok < ${_sliderValue.toInt()}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
-                      ],
+                      ),
+                      const SizedBox(height: 8),
+                      Slider(
+                        activeColor: Col.primaryColor,
+                        inactiveColor: Col.primaryColor.withOpacity(0.1),
+                        value: _sliderValue.toDouble(),
+                        min: 0,
+                        max: 15,
+                        divisions: 15,
+                        label: _sliderValue.toInt().toString(),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _sliderValue = newValue;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: Col.secondaryColor,
+                  ),
+                  child: ScrollConfiguration(
+                    behavior: const ScrollBehavior().copyWith(overscroll: true),
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: FutureBuilder(
+                        future: _getDataFromFirestore(),
+                        builder: (context, snapshot) {
+                          return Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  text,
+                                  style: const TextStyle(fontSize: 16),
+                                ),
+                                // Other widgets from FutureBuilder if any...
+                              ],
+                            ),
+                          );
+                        },
+                      ),
                     ),
-                  );
-                },
+                  ),
+                ),
               ),
             ],
           ),
-        ),
-        floatingActionButton: FloatingActionButton.extended(
-            extendedPadding: const EdgeInsets.symmetric(horizontal: 16),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              // gradien
+              decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      stops: const [
+                    0.0,
+                    1.0
+                  ],
+                      colors: [
+                    Col.secondaryColor.withOpacity(0.1),
+                    Col.secondaryColor,
+                  ])),
+              height: 50,
             ),
-            icon: const Icon(Icons.send),
-            onPressed: text.isEmpty ? null : () => _onShare(context),
-            label: const Row(
-              children: [
-                Text('Kirim'),
-              ],
-            )),
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        extendedPadding: const EdgeInsets.symmetric(horizontal: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(100),
+        ),
+        onPressed: text.isEmpty ? null : () => _onShare(context),
+        label: Row(
+          children: [
+            const Text('Kirim'),
+            const SizedBox(width: 10),
+            Transform.rotate(
+              angle: -45 * 3.141592653589793 / 180,
+              child: const Icon(Icons.send),
+            ),
+          ],
+        ),
       ),
     );
   }

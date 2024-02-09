@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/home/component/circularButton.dart';
+import 'package:kajur_app/screens/home/component/circular_button.dart';
 import 'package:kajur_app/screens/home/menu_page.dart';
 import 'package:kajur_app/screens/products/add_products.dart';
 import 'package:kajur_app/screens/products/list_products.dart';
@@ -42,11 +42,10 @@ Widget buildMenuWidget(BuildContext context) {
               Center(
                 child: Skeleton.keep(
                   child: Container(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(15),
                       color: Col.secondaryColor,
-                      border: Border.all(color: Col.greyColor.withOpacity(.10)),
                       boxShadow: [
                         BoxShadow(
                           color: Col.greyColor.withOpacity(.10),

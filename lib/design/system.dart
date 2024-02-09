@@ -12,7 +12,8 @@ class Col {
   static const Color redAccent = Color(0xFFFF0000);
   static const Color orangeAccent = Color(0xFFFFA500);
   static const Color greenAccent = Color(0xFF02A702);
-  static const Color backgroundColor = Color(0xFFeeeff2);
+  // static const Color backgroundColor = Color(0xFFeeeff2);
+  static const Color backgroundColor = Color(0xFFf9fafc);
 }
 
 class Fw {
