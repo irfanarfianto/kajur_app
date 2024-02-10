@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class EditProfilePage extends StatefulWidget {
   final String documentId;
@@ -120,17 +121,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
     }
   }
 
-  // Method untuk memperbarui data pengguna
   Future<void> _updateUserData() async {
+    if (_displayNameController.text.isEmpty) {
+      return;
+    }
+
+    setState(() {
+      _isUpdating = true;
+    });
+
     try {
-      if (_displayNameController.text.isEmpty) {
-        return;
-      }
-
-      setState(() {
-        _isUpdating = true;
-      });
-
+      // Your update logic goes here
       await _firestore.collection('users').doc(widget.documentId).update({
         'displayName': _displayNameController.text,
         'whatsapp': _whatsappController.text,
@@ -138,10 +139,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
         'photoUrl':
             _selectedImageUrl.isNotEmpty ? _selectedImageUrl : _photoUrl,
       });
+
       Fluttertoast.showToast(msg: 'Profile berhasil diubah');
       Navigator.pop(context);
     } catch (e) {
       print('Error updating user data: $e');
+      // Handle error if needed
     } finally {
       setState(() {
         _isUpdating = false;
@@ -164,142 +167,163 @@ class _EditProfilePageState extends State<EditProfilePage> {
         appBar: AppBar(
           title: const Text('Edit Profile'),
         ),
-        body: Form(
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text('Pilih gambar '),
-                ),
-                // Tampilkan daftar gambar
-                if (_profileImageUrls.isNotEmpty)
-                  ScrollConfiguration(
-                    behavior: const ScrollBehavior().copyWith(overscroll: true),
-                    child: SingleChildScrollView(
-                      physics: const BouncingScrollPhysics(),
-                      controller: _scrollController,
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 8),
-                          for (int i = 0; i < _profileImageUrls.length; i++)
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    _selectedImageUrl = _profileImageUrls[i];
-                                  });
-                                },
-                                child: Stack(
-                                  children: [
-                                    CircleAvatar(
-                                      radius: 30,
-                                      backgroundImage:
-                                          CachedNetworkImageProvider(
-                                        _profileImageUrls[i],
-                                      ),
-                                      backgroundColor: _selectedImageUrl ==
-                                              _profileImageUrls[i]
-                                          ? Colors.blue
-                                          : null,
-                                    ),
-                                    if (_selectedImageUrl ==
-                                        _profileImageUrls[i])
-                                      Positioned(
-                                        bottom: 0,
-                                        right: 0,
-                                        child: Container(
-                                          height: 24,
-                                          width: 24,
-                                          padding: const EdgeInsets.all(4),
-                                          decoration: BoxDecoration(
-                                            color: Col.primaryColor,
-                                            borderRadius:
-                                                BorderRadius.circular(12),
-                                          ),
-                                          child: const Icon(
-                                            Icons.check,
-                                            color: Col.secondaryColor,
-                                            size: 16,
-                                          ),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          if (_isLoadingMore)
-                            const Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(child: CircularProgressIndicator()),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ),
-
-                // Tampilkan indikator loading jika belum ada gambar yang dimuat
-                if (_profileImageUrls.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(16.0),
-                    child: CircularProgressIndicator(),
-                  ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
+        body: _isUpdating
+            ? Center(
+                child: LoadingAnimationWidget.prograssiveDots(
+                    color: Col.primaryColor, size: 50))
+            : Form(
+                key: _formKey,
+                child: SingleChildScrollView(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      TextFormField(
-                        controller: _displayNameController,
-                        decoration:
-                            const InputDecoration(labelText: 'Display Name'),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your display name';
-                          }
-                          return null;
-                        },
+                      const Padding(
+                        padding: EdgeInsets.all(16.0),
+                        child: Text('Pilih gambar '),
                       ),
+                      // Tampilkan daftar gambar
+                      if (_profileImageUrls.isNotEmpty)
+                        ScrollConfiguration(
+                          behavior:
+                              const ScrollBehavior().copyWith(overscroll: true),
+                          child: SingleChildScrollView(
+                            physics: const BouncingScrollPhysics(),
+                            controller: _scrollController,
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: [
+                                const SizedBox(width: 8),
+                                for (int i = 0;
+                                    i < _profileImageUrls.length;
+                                    i++)
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: GestureDetector(
+                                      onTap: () {
+                                        setState(() {
+                                          _selectedImageUrl =
+                                              _profileImageUrls[i];
+                                        });
+                                      },
+                                      child: Stack(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 30,
+                                            backgroundImage:
+                                                CachedNetworkImageProvider(
+                                              _profileImageUrls[i],
+                                            ),
+                                            backgroundColor:
+                                                _selectedImageUrl ==
+                                                        _profileImageUrls[i]
+                                                    ? Colors.blue
+                                                    : null,
+                                          ),
+                                          if (_selectedImageUrl ==
+                                              _profileImageUrls[i])
+                                            Positioned(
+                                              bottom: 0,
+                                              right: 0,
+                                              child: Container(
+                                                height: 24,
+                                                width: 24,
+                                                padding:
+                                                    const EdgeInsets.all(4),
+                                                decoration: BoxDecoration(
+                                                  color: Col.primaryColor,
+                                                  borderRadius:
+                                                      BorderRadius.circular(12),
+                                                ),
+                                                child: const Icon(
+                                                  Icons.check,
+                                                  color: Col.secondaryColor,
+                                                  size: 16,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                if (_isLoadingMore)
+                                  Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Center(
+                                        child: LoadingAnimationWidget
+                                            .prograssiveDots(
+                                          color: Col.primaryColor,
+                                          size: 30,
+                                        ),
+                                      )),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                      // Tampilkan indikator loading jika belum ada gambar yang dimuat
+                      if (_profileImageUrls.isEmpty)
+                        Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Center(
+                              child: LoadingAnimationWidget.prograssiveDots(
+                                color: Col.primaryColor,
+                                size: 30,
+                              ),
+                            )),
                       const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _whatsappController,
-                        decoration: const InputDecoration(
-                            prefix: Text('+62 '), hintText: 'Nomor WhatsApp'),
-                        keyboardType: TextInputType.phone,
-                        validator: (value) {
-                          RegExp whatsappRegExp = RegExp(r'^[0-9]+$');
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter your WhatsApp number';
-                          } else if (!whatsappRegExp.hasMatch(value)) {
-                            return 'Invalid WhatsApp number';
-                          }
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: const InputDecoration(labelText: 'Email'),
-                        enabled: false,
-                      ),
-                      const SizedBox(height: 20),
-                      TextFormField(
-                        controller: _usernameController,
-                        decoration:
-                            const InputDecoration(labelText: 'Username'),
-                        enabled: false,
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: _displayNameController,
+                              decoration: const InputDecoration(
+                                  labelText: 'Display Name'),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your display name';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _whatsappController,
+                              decoration: const InputDecoration(
+                                  prefix: Text('+62 '),
+                                  hintText: 'Nomor WhatsApp'),
+                              keyboardType: TextInputType.phone,
+                              validator: (value) {
+                                RegExp whatsappRegExp = RegExp(r'^[0-9]+$');
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter your WhatsApp number';
+                                } else if (!whatsappRegExp.hasMatch(value)) {
+                                  return 'Invalid WhatsApp number';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _emailController,
+                              decoration:
+                                  const InputDecoration(labelText: 'Email'),
+                              enabled: false,
+                            ),
+                            const SizedBox(height: 20),
+                            TextFormField(
+                              controller: _usernameController,
+                              decoration:
+                                  const InputDecoration(labelText: 'Username'),
+                              enabled: false,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
         bottomNavigationBar: BottomAppBar(
           color: Colors.transparent,
           elevation: 0,
@@ -309,16 +333,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 _updateUserData();
               }
             },
-            child: _isUpdating
-                ? const SizedBox(
-                    height: 20,
-                    width: 20,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: Col.secondaryColor,
-                    ),
-                  )
-                : const Text('Perbarui'),
+            child: const Text('Perbarui'),
           ),
         ),
       ),

@@ -177,6 +177,7 @@ Future<void> _updateStock(
       'stok': newStock,
       'updatedAt': DateTime.now(),
     });
+    
 
     // Record activity log using the old product data
     await _recordActivityLog(

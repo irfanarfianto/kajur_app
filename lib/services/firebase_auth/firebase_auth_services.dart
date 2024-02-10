@@ -126,6 +126,14 @@ class FirebaseAuthService {
   Future<void> saveUserDataToFirestore(
       String userId, String username, String email, String displayName) async {
     try {
+      await FirebaseFirestore.instance.collection('messages').add({
+        'userId': userId,
+        'username': username,
+        'title': 'Selamat Bergabung $displayName!',
+        'subtitle' : 'Menyala selalu abangkuhh 🔥🙌',
+        'timestamp': Timestamp.now(),
+      });
+
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'username': username,
         'email': email,

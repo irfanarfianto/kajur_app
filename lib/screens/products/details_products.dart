@@ -24,6 +24,7 @@ class DetailProdukPage extends StatefulWidget {
 class _DetailProdukPageState extends State<DetailProdukPage> {
   late CollectionReference _produkCollection;
   String? _userRole;
+  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -51,6 +52,10 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   }
 
   void _deleteProduct(String documentId) async {
+    setState(() {
+      _isUpdating = true;
+    });
+
     try {
       // Mendapatkan detail produk sebelum dihapus
       DocumentSnapshot productSnapshot =
@@ -66,11 +71,17 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         productData: productData,
       );
 
+      setState(() {
+        _isUpdating = false;
+      });
+
       // Menghapus produk dari Firestore
       await _produkCollection.doc(documentId).delete();
       showToast(message: 'Produk berhasil dihapus');
     } catch (e) {
-      print('Error: $e');
+      setState(() {
+        _isUpdating = false;
+      });
       showToast(message: 'Terjadi kesalahan saat menghapus produk');
     }
   }

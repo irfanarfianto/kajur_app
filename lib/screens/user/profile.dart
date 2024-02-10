@@ -1,13 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/user/edit_profile.dart';
@@ -30,7 +25,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
   bool isAdmin = false;
   bool isStaf = false;
   bool isBiasa = false;
-  File? _selectedImage;
   late String _photoUrl = '';
 
   @override
@@ -117,7 +111,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
       BuildContext context, User? currentUser, String? photoUrl) {
     if (currentUser == null) {
       return const CircularProgressIndicator(
-        color: Colors.white, // Adjust the color as needed
+        color: Colors.white,
       );
     } else {
       return Container(
@@ -141,7 +135,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
               tag: currentUser.uid,
               child: CircleAvatar(
                 radius: 40,
-                backgroundColor: Colors.grey,
                 backgroundImage:
                     photoUrl != null ? NetworkImage(photoUrl) : null,
                 child: photoUrl == null
@@ -158,25 +151,30 @@ class _UserProfilePageState extends State<UserProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Badge(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  backgroundColor: _getBadgeColor(),
-                  label: Text(
-                    isAdmin
-                        ? 'Admin'
-                        : isStaf
-                            ? 'Staf'
-                            : isBiasa
-                                ? 'User Biasa'
-                                : '',
-                    style: const TextStyle(
-                      color: Col.whiteColor,
+                Row(
+                  children: [
+                    Text(
+                      "${currentUser.displayName}",
+                      style: Typo.headingTextStyle,
                     ),
-                  ),
-                  child: Text(
-                    "${currentUser.displayName}",
-                    style: Typo.headingTextStyle,
-                  ),
+                    const SizedBox(width: 4),
+                    Badge(
+                      padding: const EdgeInsets.symmetric(horizontal: 8),
+                      backgroundColor: _getBadgeColor(),
+                      label: Text(
+                        isAdmin
+                            ? 'Admin'
+                            : isStaf
+                                ? 'Staf'
+                                : isBiasa
+                                    ? 'User Biasa'
+                                    : '',
+                        style: const TextStyle(
+                          color: Col.whiteColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -260,7 +258,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 const Row(
                   children: [
                     Icon(
-                      Icons.history,
+                      Icons.auto_awesome_mosaic_outlined,
                     ),
                     SizedBox(width: 10),
                     Text(
@@ -296,10 +294,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Widget _buildActionSummary(String actionName, int count) {
     return Container(
-      padding: const EdgeInsets.all(12.0), // Sesuaikan ukuran padding
+      padding: const EdgeInsets.all(12.0),
       decoration: BoxDecoration(
-        borderRadius:
-            BorderRadius.circular(20), // Sesuaikan ukuran borderRadius
+        borderRadius: BorderRadius.circular(20),
         color: Col.secondaryColor,
         border: Border.all(color: Col.greyColor.withOpacity(.10)),
       ),
@@ -313,13 +310,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
           const SizedBox(height: 8),
           Text(
             actionName,
-            style: Typo.emphasizedBodyTextStyle, // Sesuaikan ukuran font teks
+            style: Typo.emphasizedBodyTextStyle,
           ),
           Text(
             '$count kali',
-            style: const TextStyle(
-                fontSize: 12,
-                color: Col.greyColor), // Sesuaikan ukuran font teks
+            style: const TextStyle(fontSize: 12, color: Col.greyColor),
           ),
         ],
       ),
@@ -371,7 +366,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.manage_accounts,
+                      Icons.manage_accounts_outlined,
                     ),
                     SizedBox(width: 10),
                     Text('Manajemen User', style: Typo.emphasizedBodyTextStyle),
@@ -393,7 +388,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 child: Row(
                   children: [
                     Icon(
-                      Icons.settings,
+                      Icons.settings_outlined,
                     ),
                     SizedBox(width: 10),
                     Text('Pengaturan', style: Typo.emphasizedBodyTextStyle),
@@ -444,107 +439,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
         ),
       );
     }
-  }
-
-  Widget _uploadFotoProfil(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        color: Col.secondaryColor,
-        border: Border.all(color: Col.greyColor.withOpacity(.10)),
-        boxShadow: [
-          BoxShadow(
-            color: Col.greyColor.withOpacity(.10),
-            offset: const Offset(0, 5),
-            blurRadius: 10,
-          ),
-        ],
-      ),
-      child: InkWell(
-        onTap: () {
-          _getImage(ImageSource.gallery);
-        },
-        child: SizedBox(
-          height: 30,
-          child: Row(
-            children: [
-              Icon(
-                Icons.photo_camera, // Ganti ikon dengan ikon kamera atau galeri
-                color: Col.redAccent.withOpacity(0.5),
-              ),
-              const SizedBox(width: 10),
-              const Text(
-                'Upload Foto',
-                style: TextStyle(fontSize: 14, color: Col.redAccent),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Future<void> _getImage(ImageSource source) async {
-    final pickedFile = await ImagePicker().pickImage(source: source);
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-
-      // Add this line to display a dialog after image is selected
-      _showDialog();
-    } else {
-      print('No image selected.');
-    }
-  }
-
-  void _showDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Image Selected'),
-          content: const Text('Do you want to upload this image?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                _uploadImage();
-                // You can call _uploadImage() here to start uploading the image
-                Navigator.of(context).pop();
-              },
-              child: const Text('Upload'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<String> _uploadImage() async {
-    if (_selectedImage == null) return '';
-
-    Uint8List? compressedImage = await FlutterImageCompress.compressWithFile(
-      _selectedImage!.path,
-      quality: 70,
-    );
-    File compressedFile = File(_selectedImage!.path)
-      ..writeAsBytesSync(compressedImage!);
-
-    Reference ref = FirebaseStorage.instance
-        .ref()
-        .child('foto_profile')
-        .child('image_${DateTime.now().millisecondsSinceEpoch}.jpg');
-
-    await ref.putFile(compressedFile);
-
-    return await ref.getDownloadURL();
   }
 
   Widget _buildLogoutButton(BuildContext context) {

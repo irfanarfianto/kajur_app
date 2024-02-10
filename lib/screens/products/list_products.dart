@@ -6,11 +6,9 @@ import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/home/component/kirim_data_produk.dart';
 import 'package:kajur_app/screens/products/details_products.dart';
-import 'package:kajur_app/screens/products/widget/detail_produk_show.dart';
 import 'package:kajur_app/screens/products/widget/sorting_overlay.dart';
 import 'package:kajur_app/screens/products/widget/update_stock_dialog.dart';
 import 'package:skeletonizer/skeletonizer.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 enum CategoryFilter {
   Semua,
@@ -433,7 +431,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                                       child: ClipRRect(
                                                         borderRadius:
                                                             BorderRadius
-                                                                .circular(8),
+                                                                .circular(15),
                                                         child:
                                                             CachedNetworkImage(
                                                           imageUrl:
@@ -603,7 +601,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                                     'product_image_$documentId',
                                                 child: ClipRRect(
                                                   borderRadius:
-                                                      BorderRadius.circular(8),
+                                                      BorderRadius.circular(15),
                                                   child: CachedNetworkImage(
                                                     imageUrl: data['image'],
                                                     fit: BoxFit.cover,
