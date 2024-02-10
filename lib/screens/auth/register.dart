@@ -85,17 +85,6 @@ class _SignUpPageState extends State<SignUpPage> {
     String email = _emailController.text;
     String password = _passwordController.text;
 
-    // Pemeriksaan apakah password memenuhi persyaratan
-    if (!_isPasswordValid(password)) {
-      showToast(
-        message: "Password minimal 8 karakter, termasuk huruf dan angka",
-      );
-      setState(() {
-        isSigningUp = false;
-      });
-      return;
-    }
-
     User? user =
         await _auth.signUpWithEmailAndPassword(email, password, username);
 
@@ -103,10 +92,10 @@ class _SignUpPageState extends State<SignUpPage> {
       try {
         // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
-        showToast(message: "Berhasil daftar akun");
+
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => EmailVerifPage()),
+          MaterialPageRoute(builder: (context) => const EmailVerifPage()),
         ); // Menampilkan CountdownPage setelah berhasil mendaftar
       } catch (e) {
         showToast(message: "Error setting username: $e");
@@ -285,6 +274,9 @@ class _SignUpPageState extends State<SignUpPage> {
                               return 'Password harus diisi';
                             } else if (value.length < 8) {
                               return 'Password harus memiliki minimal 8 karakter';
+                            } else if (!value.contains(RegExp(r'[0-9]')) ||
+                                !value.contains(RegExp(r'[a-zA-Z]'))) {
+                              return 'Password harus terdiri dari angka dan huruf';
                             }
                             return null;
                           },

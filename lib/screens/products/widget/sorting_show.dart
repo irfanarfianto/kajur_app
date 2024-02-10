@@ -7,29 +7,39 @@ class SortingOverlay extends StatelessWidget {
   final bool isSelectedTerbaru;
   final bool isSelectedAZ;
   final bool isSelectedZA;
+  final bool isSelectedStokSedikit;
+  final bool isSelectedStokBanyak;
   final Function(bool?) onTerbaruChanged;
   final Function(bool?) onAZChanged;
   final Function(bool?) onZAChanged;
+  final Function(bool?) onStokSedikitChanged;
+  final Function(bool?) onStokBanyakChanged;
+
   final VoidCallback onReset;
   final VoidCallback onTerapkan;
 
-  const SortingOverlay({super.key, 
+  const SortingOverlay({
+    super.key,
     required this.isSelectedTerbaru,
     required this.isSelectedAZ,
     required this.isSelectedZA,
+    required this.isSelectedStokSedikit,
+    required this.isSelectedStokBanyak,
     required this.onTerbaruChanged,
     required this.onAZChanged,
     required this.onZAChanged,
     required this.onReset,
     required this.onTerapkan,
+    required this.onStokSedikitChanged,
+    required this.onStokBanyakChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
       expand: false,
-      initialChildSize: 0.4,
-      maxChildSize: 0.4,
+      initialChildSize: 0.6,
+      maxChildSize: 0.8,
       minChildSize: 0.1,
       builder: (BuildContext context, ScrollController scrollController) {
         return Container(
@@ -66,6 +76,13 @@ class SortingOverlay extends StatelessWidget {
                       'Terbaru', isSelectedTerbaru, onTerbaruChanged),
                   _buildSortingCheckbox('A-Z', isSelectedAZ, onAZChanged),
                   _buildSortingCheckbox('Z-A', isSelectedZA, onZAChanged),
+                  _buildSortingCheckbox('Stok sedikit', isSelectedStokSedikit,
+                      onStokSedikitChanged),
+                  _buildSortingCheckbox(
+                    'Stok banyak',
+                    isSelectedStokBanyak,
+                    onStokBanyakChanged,
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,4 +136,5 @@ class SortingOverlay extends StatelessWidget {
       child: Text(label),
     );
   }
+  
 }

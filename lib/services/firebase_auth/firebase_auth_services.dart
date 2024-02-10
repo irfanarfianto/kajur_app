@@ -126,6 +126,14 @@ class FirebaseAuthService {
   Future<void> saveUserDataToFirestore(
       String userId, String username, String email, String displayName) async {
     try {
+      await FirebaseFirestore.instance.collection('messages').add({
+        'userId': userId,
+        'username': username,
+        'title': 'Selamat Bergabung $displayName!',
+        'subtitle' : 'Menyala selalu abangkuhh 🔥🙌',
+        'timestamp': Timestamp.now(),
+      });
+
       await FirebaseFirestore.instance.collection('users').doc(userId).set({
         'username': username,
         'email': email,
@@ -144,21 +152,24 @@ class FirebaseAuthService {
       String email, String password) async {
     try {
       UserCredential credential = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
+        email: email,
+        password: password,
+      );
       User? user = credential.user;
 
       if (user != null) {
+        // Periksa apakah email pengguna telah diverifikasi
+        if (!user.emailVerified) {
+          return null;
+        }
+
         // Update timestamp login terakhir
         await updateLastLogin(user.uid);
       }
 
       return user;
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found' || e.code == 'wrong-password') {
-        showToast(message: 'Email atau password nggak valid.');
-      } else {
-        showToast(message: 'Ada kesalahan nih: ${e.code}');
-      }
+    } on FirebaseAuthException {
+      showToast(message: 'Akun tidak ditemukan');
     }
 
     return null;

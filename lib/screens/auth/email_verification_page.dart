@@ -6,6 +6,8 @@ import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/auth/login.dart';
 
 class EmailVerifPage extends StatefulWidget {
+  const EmailVerifPage({super.key});
+
   @override
   _EmailVerifPageState createState() => _EmailVerifPageState();
 }
@@ -19,7 +21,8 @@ class _EmailVerifPageState extends State<EmailVerifPage> {
   void initState() {
     super.initState();
     _startTimer();
-    _checkEmailVerification();
+    _timer = Timer.periodic(
+        const Duration(seconds: 3), (_) => _checkEmailVerification());
   }
 
   @override
@@ -31,13 +34,15 @@ class _EmailVerifPageState extends State<EmailVerifPage> {
   void _startTimer() {
     const oneSecond = Duration(seconds: 1);
     _timer = Timer.periodic(oneSecond, (timer) {
-      setState(() {
-        if (_seconds == 0) {
-          timer.cancel();
-        } else {
-          _seconds--;
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (_seconds == 0) {
+            timer.cancel();
+          } else {
+            _seconds--;
+          }
+        });
+      }
     });
   }
 
@@ -54,17 +59,14 @@ class _EmailVerifPageState extends State<EmailVerifPage> {
       if (user != null && user.emailVerified) {
         // Email telah diverifikasi, panggil reload() untuk memperbarui status autentikasi
         await user.reload();
-        // Cek apakah email sekarang sudah diverifikasi setelah reload()
+        // Tunggu proses reload selesai
         user = FirebaseAuth.instance.currentUser;
-        if (user != null && user.emailVerified) {
-          // Email sudah diverifikasi, alihkan ke halaman login
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginPage()),
-          );
-        } else {
-          // Jika email masih belum diverifikasi, lakukan penanganan sesuai kebutuhan
-        }
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginPage()),
+        );
+      } else {
+        // Jika email masih belum diverifikasi, lakukan penanganan sesuai kebutuhan
       }
     });
   }

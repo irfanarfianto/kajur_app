@@ -1,9 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/global/common/toast.dart';
-import 'package:kajur_app/screens/auth/email_verification_page.dart';
 import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
 import 'package:kajur_app/screens/auth/register.dart';
 
@@ -19,7 +16,6 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
-  late final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -49,14 +45,45 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       if (user.emailVerified) {
-        // Email telah diverifikasi, arahkan pengguna ke halaman utama
-        showToast(message: "Selamat datang");
+        print('sudah verifikasi email');
         Navigator.pushNamed(context, "/home");
       } else {
-        // Email belum diverifikasi, arahkan pengguna ke halaman verifikasi email
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => EmailVerifPage()),
+        // Email belum diverifikasi, tampilkan dialog peringatan
+        print('belum verifikasi email');
+
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: const Text(
+                "Email Belum Diverifikasi",
+                style: TextStyle(
+                  color: Col.blackColor,
+                  fontSize: 18,
+                  fontWeight: Fw.bold,
+                ),
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Silakan cek email dan verifikasi terlebih dahulu.",
+                  ),
+                  Text(email),
+                ],
+              ),
+              backgroundColor: Col.secondaryColor,
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text("OK"),
+                ),
+              ],
+            );
+          },
         );
       }
     } else {
@@ -64,32 +91,32 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  _signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
+  // _signInWithGoogle() async {
+  //   final GoogleSignIn googleSignIn = GoogleSignIn();
 
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
+  //   try {
+  //     final GoogleSignInAccount? googleSignInAccount =
+  //         await googleSignIn.signIn();
 
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
+  //     if (googleSignInAccount != null) {
+  //       final GoogleSignInAuthentication googleSignInAuthentication =
+  //           await googleSignInAccount.authentication;
 
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
+  //       final AuthCredential credential = GoogleAuthProvider.credential(
+  //         idToken: googleSignInAuthentication.idToken,
+  //         accessToken: googleSignInAuthentication.accessToken,
+  //       );
 
-        await _firebaseAuth.signInWithCredential(credential);
-        showToast(message: "Login dengan Google berhasil");
-        Navigator.pushNamed(context, "/home");
-      } else {
-        showToast(message: "Login dengan Google dibatalkan.");
-      }
-    } catch (e) {
-      showToast(message: "Gagal login dengan Google, terjadi kesalahan: $e");
-    }
-  }
+  //       await _firebaseAuth.signInWithCredential(credential);
+  //       showToast(message: "Login dengan Google berhasil");
+  //       Navigator.pushNamed(context, "/home");
+  //     } else {
+  //       showToast(message: "Login dengan Google dibatalkan.");
+  //     }
+  //   } catch (e) {
+  //     showToast(message: "Gagal login dengan Google, terjadi kesalahan: $e");
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

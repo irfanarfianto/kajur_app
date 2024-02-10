@@ -22,10 +22,19 @@ class _SplashScreenState extends State<SplashScreen> {
       User? user = FirebaseAuth.instance.currentUser;
 
       if (user != null) {
+        // Periksa apakah email sudah diverifikasi
+        await user.reload();
+        user = FirebaseAuth.instance.currentUser;
 
-        Navigator.pushReplacementNamed(context, '/home');
+        if (user != null && user.emailVerified) {
+          // Email sudah diverifikasi, arahkan ke halaman beranda
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          // Email belum diverifikasi, arahkan ke halaman verifikasi email
+          Navigator.pushReplacementNamed(context, '/login');
+        }
       } else {
-      
+        // User belum login, arahkan ke halaman login
         Navigator.pushReplacementNamed(context, '/login');
       }
     });

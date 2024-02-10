@@ -19,7 +19,7 @@ Widget buildTotalProductsWidget(BuildContext context) {
 
             switch (snapshot.connectionState) {
               case ConnectionState.waiting:
-                return Skeleton.shade(
+                return Skeleton.keep(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     scrollDirection: Axis.horizontal,
@@ -52,7 +52,7 @@ Widget buildTotalProductsWidget(BuildContext context) {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       // Widget pertama
-                      Skeleton.shade(
+                      Skeleton.keep(
                         child: Stack(
                           children: [
                             Container(
@@ -159,7 +159,7 @@ Widget buildTotalProductsWidget(BuildContext context) {
                       ),
 
                       const SizedBox(width: 8),
-                      Skeleton.shade(
+                      Skeleton.keep(
                         child: Stack(
                           children: [
                             Container(
@@ -264,7 +264,7 @@ Widget buildTotalProductsWidget(BuildContext context) {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      Skeleton.shade(
+                      Skeleton.keep(
                         child: Stack(
                           children: [
                             Container(
