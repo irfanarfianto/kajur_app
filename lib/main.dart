@@ -10,8 +10,8 @@ import 'design/system.dart';
 import 'screens/auth/login.dart';
 import 'screens/auth/register.dart';
 import 'screens/home/home.dart';
-import 'screens/products/add_products.dart';
-import 'screens/products/list_products.dart';
+import 'screens/products/tambah produk/add_products.dart';
+import 'screens/products/list/list_products.dart';
 import 'comingsoon/comingsoon.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 
@@ -31,7 +31,7 @@ void main() async {
 
   initializeDateFormatting('id', null).then((_) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
-    runApp(MyApp());
+    runApp(const MyApp());
   });
 }
 
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
   static const String addProdukRoute = '/add_produk';
   static const String comingSoonRoute = '/comingsoon';
 
-  MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {

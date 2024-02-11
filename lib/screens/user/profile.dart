@@ -6,7 +6,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/user/edit_profile.dart';
-import 'package:kajur_app/screens/user/user_role.dart';
+import 'package:kajur_app/admin/user_role.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
 
 class UserProfilePage extends StatefulWidget {

@@ -82,6 +82,63 @@ Widget buildRecentActivityWidget(context) {
               return Text('Error: ${snapshot.error}');
             }
 
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Column(
+                children: List.generate(
+                  4,
+                  (index) => Skeletonizer(
+                    enabled: true,
+                    child: Column(
+                      children: [
+                        ListTile(
+                          leading: Skeleton.leaf(
+                            child: Container(
+                              padding: const EdgeInsets.all(8),
+                              width: 56,
+                              height: 56,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(28),
+                                color: Colors.grey[300],
+                              ),
+                            ),
+                          ),
+                          title: Container(
+                            width: 200,
+                            height: 20,
+                            color: Colors.grey[300],
+                          ),
+                          subtitle: Container(
+                            width: 100,
+                            height: 16,
+                            color: Colors.grey[300],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.history,
+                                color: Colors.grey[300],
+                                size: 15,
+                              ),
+                              Container(
+                                width: 60,
+                                height: 16,
+                                color: Colors.grey[300],
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (index < 2) // Don't add Divider after the last item
+                          Divider(
+                            thickness: 1,
+                            color: Colors.grey[300],
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            }
             if (snapshot.data == null || snapshot.data!.docs.isEmpty) {
               return const Center(
                 child: Text('Tidak ada aktivitas terbaru'),
@@ -126,22 +183,15 @@ Widget buildRecentActivityWidget(context) {
                               style: Typo.emphasizedBodyTextStyle,
                             ),
                           ),
-                          Row(
-                            children: [
-                              const Icon(Icons.history,
-                                  color: Col.greyColor, size: 15),
-                              Text(
-                                (data['timestamp'] != null
-                                    ? DateFormat(' HH:mm ', 'id').format(
-                                        (data['timestamp'] as Timestamp)
-                                            .toDate())
-                                    : 'Timestamp tidak tersedia'),
-                                style: const TextStyle(
-                                  fontSize: 12,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ],
+                          Text(
+                            (data['timestamp'] != null
+                                ? DateFormat(' HH:mm ', 'id').format(
+                                    (data['timestamp'] as Timestamp).toDate())
+                                : 'Timestamp tidak tersedia'),
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
                           ),
                         ],
                       ),

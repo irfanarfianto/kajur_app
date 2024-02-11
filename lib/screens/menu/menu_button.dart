@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/products/add_products.dart';
-import 'package:kajur_app/screens/products/list_products.dart';
+import 'package:kajur_app/screens/products/tambah%20produk/add_products.dart';
+import 'package:kajur_app/screens/products/list/list_products.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk.dart';
 
 class MenuButton extends StatelessWidget {

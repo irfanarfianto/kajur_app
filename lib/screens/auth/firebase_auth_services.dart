@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import '../../global/common/toast.dart';
 import 'package:uuid/uuid.dart';
 
@@ -8,38 +7,6 @@ class FirebaseAuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   String? _verificationToken;
   DateTime? _verificationRequestTime;
-
-  // Future<User?> signUpWithGoogle(AuthCredential credential) async {
-  //   try {
-  //     UserCredential authResult = await _auth.signInWithCredential(credential);
-  //     User? user = authResult.user;
-
-  //     if (user != null) {
-  //       // Update timestamp login terakhir
-  //       await updateLastLogin(user.uid);
-
-  //       // Cek apakah user sudah terdaftar di Firestore
-  //       if (!(await isUserRegistered(user.uid))) {
-  //         // Jika belum terdaftar, simpan data user ke Firestore
-  //         await saveUserDataToFirestore(
-  //           user.uid,
-  //           user.displayName ?? '',
-  //           user.email ?? '',
-  //           user.displayName ?? '',
-  //         );
-  //       }
-
-  //       // Menampilkan pesan toast selamat datang
-  //       showToast(message: "Selamat datang, ${user.displayName}!");
-
-  //       return user;
-  //     }
-  //   } catch (e) {
-  //     showToast(message: "Terjadi kesalahan: $e");
-  //   }
-
-  //   return null;
-  // }
 
   Future<User?> signUpWithEmailAndPassword(
       String email, String password, String username) async {
@@ -130,7 +97,7 @@ class FirebaseAuthService {
         'userId': userId,
         'username': username,
         'title': 'Selamat Bergabung $displayName!',
-        'subtitle' : 'Menyala selalu abangkuhh 🔥🙌',
+        'subtitle': 'Menyala selalu abangkuhh 🔥🙌',
         'timestamp': Timestamp.now(),
       });
 
@@ -158,12 +125,10 @@ class FirebaseAuthService {
       User? user = credential.user;
 
       if (user != null) {
-        // Periksa apakah email pengguna telah diverifikasi
         if (!user.emailVerified) {
           return null;
         }
 
-        // Update timestamp login terakhir
         await updateLastLogin(user.uid);
       }
 
@@ -185,11 +150,6 @@ class FirebaseAuthService {
   }
 
   Future<bool> isUsernameAlreadyTaken(String username) async {
-    // Lakukan pemeriksaan ke Firestore atau database lainnya
-    // untuk mengecek apakah username sudah ada atau belum
-    // Anda dapat menggunakan Firestore atau database lain sesuai kebutuhan
-
-    // Contoh penggunaan Firestore
     QuerySnapshot<Map<String, dynamic>> result = await FirebaseFirestore
         .instance
         .collection('users')
@@ -197,54 +157,6 @@ class FirebaseAuthService {
         .get();
 
     return result.docs.isNotEmpty;
-  }
-
-  Future<User?> signInWithGoogle() async {
-    final GoogleSignIn googleSignIn = GoogleSignIn();
-
-    try {
-      // Clear the previous GoogleSignInAccount
-      await googleSignIn.signOut();
-
-      // Jika pengguna belum masuk, minta untuk memilih akun Google
-      final GoogleSignInAccount? googleSignInAccount =
-          await googleSignIn.signIn();
-
-      if (googleSignInAccount != null) {
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount.authentication;
-
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken,
-        );
-
-        UserCredential authResult =
-            await _auth.signInWithCredential(credential);
-        User? user = authResult.user;
-
-        if (user != null) {
-          // Update timestamp login terakhir
-          await updateLastLogin(user.uid);
-
-          // Cek apakah user sudah terdaftar di Firestore
-          if (!(await isUserRegistered(user.uid))) {
-            // Jika belum terdaftar, simpan data user ke Firestore
-            await saveUserDataToFirestore(user.uid, user.displayName ?? '',
-                user.email ?? '', user.displayName ?? '');
-          }
-
-          // Menampilkan pesan toast selamat datang
-          showToast(message: "Selamat datang, ${user.displayName}!");
-
-          return user;
-        }
-      }
-    } catch (e) {
-      showToast(message: "Terjadi kesalahan: $e");
-    }
-
-    return null;
   }
 
   Future<bool> isUserRegistered(String userId) async {

@@ -3,18 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/aktivitas/components/buildEditProduk.dart';
-import 'package:kajur_app/screens/aktivitas/components/buildHapusProduk.dart';
+import 'package:kajur_app/screens/aktivitas/components/edit_produk.dart';
+import 'package:kajur_app/screens/aktivitas/components/hapus_produk.dart';
 import 'package:kajur_app/screens/aktivitas/components/buildTambahProduk.dart';
-import 'package:kajur_app/screens/aktivitas/components/buildUpdateStok.dart';
+import 'package:kajur_app/screens/aktivitas/components/udpate_stok.dart';
 import 'package:kajur_app/screens/home/component/menu.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
 
 class ActivityDetailPage extends StatefulWidget {
   final Map<String, dynamic> activityData;
 
-  const ActivityDetailPage({Key? key, required this.activityData})
-      : super(key: key);
+  const ActivityDetailPage({super.key, required this.activityData});
 
   @override
   State<ActivityDetailPage> createState() => _ActivityDetailPageState();
@@ -25,12 +24,15 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
   Widget build(BuildContext context) {
     String action = widget.activityData['action'] ?? '';
     String activityId = widget.activityData['id'] ?? '';
+    String userRole = '';
 
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: true),
       child: Scaffold(
         appBar: AppBar(
-          systemOverlayStyle: SystemUiOverlayStyle.dark,
+          systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+            statusBarColor: Col.backgroundColor,
+          ),
           surfaceTintColor: Colors.transparent,
           backgroundColor: Colors.transparent,
           leading: IconButton(
@@ -52,7 +54,8 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(15),
                     color: Col.secondaryColor,
-                    border: Border.all(color: Col.greyColor.withOpacity(.10)),
+                    border:
+                        Border.all(color: const Color(0x309E9E9E), width: 1),
                     boxShadow: [
                       BoxShadow(
                         color: Col.greyColor.withOpacity(.10),
@@ -102,9 +105,10 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 25),
-                if (action == 'Tambah Produk') buildMenuWidget(context),
-                if (action == 'Update Stok') buildMenuWidget(context),
-                if (action == 'Edit Produk') buildMenuWidget(context),
+                if (action == 'Tambah Produk')
+                  buildMenuWidget(context, userRole),
+                if (action == 'Update Stok') buildMenuWidget(context, userRole),
+                if (action == 'Edit Produk') buildMenuWidget(context, userRole),
               ],
             ),
           ),

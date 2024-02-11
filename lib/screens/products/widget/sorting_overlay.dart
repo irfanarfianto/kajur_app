@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 
-void showSortingOverlay(
-    BuildContext context, Function(String) setSortingCriteria) {
+void showSortingOverlay(BuildContext context, String activeSortingCriteria,
+    Function(String) setSortingCriteria) {
   showModalBottomSheet(
     enableDrag: true,
     isScrollControlled: true,
@@ -48,14 +48,44 @@ void showSortingOverlay(
           Wrap(
             children: [
               ListTile(
-                title: const Text('🆕 Baru ditambahkan'),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '🆕 Baru ditambahkan',
+                      style: TextStyle(
+                        fontWeight: activeSortingCriteria == 'terbaru'
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (activeSortingCriteria == 'terbaru')
+                      const Icon(Icons.check, color: Col.primaryColor),
+                  ],
+                ),
                 onTap: () {
                   setSortingCriteria('terbaru');
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: const Text('🙌 Sudah lama'),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      '🙌 Sudah lama',
+                      style: TextStyle(
+                        fontWeight: activeSortingCriteria == 'terlama'
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (activeSortingCriteria == 'terlama')
+                      const Icon(Icons.check, color: Col.primaryColor),
+                  ],
+                ),
                 onTap: () {
                   setSortingCriteria('terlama');
                   Navigator.pop(context);
@@ -66,14 +96,44 @@ void showSortingOverlay(
                 color: Col.greyColor.withOpacity(0.1),
               ),
               ListTile(
-                title: const Text('Urutan A-Z'),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Urutan A-Z',
+                      style: TextStyle(
+                        fontWeight: activeSortingCriteria == 'A-Z'
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (activeSortingCriteria == 'A-Z')
+                      const Icon(Icons.check, color: Col.primaryColor),
+                  ],
+                ),
                 onTap: () {
                   setSortingCriteria('A-Z');
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: const Text('Urutan Z-A'),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Urutan Z-A',
+                      style: TextStyle(
+                        fontWeight: activeSortingCriteria == 'Z-A'
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (activeSortingCriteria == 'Z-A')
+                      const Icon(Icons.check, color: Col.primaryColor),
+                  ],
+                ),
                 onTap: () {
                   setSortingCriteria('Z-A');
                   Navigator.pop(context);
@@ -84,14 +144,44 @@ void showSortingOverlay(
                 color: Col.greyColor.withOpacity(0.1),
               ),
               ListTile(
-                title: const Text('Stok Terendah'),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Stok Terendah',
+                      style: TextStyle(
+                        fontWeight: activeSortingCriteria == 'stok terendah'
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (activeSortingCriteria == 'stok terendah')
+                      const Icon(Icons.check, color: Col.primaryColor),
+                  ],
+                ),
                 onTap: () {
                   setSortingCriteria('stok terendah');
                   Navigator.pop(context);
                 },
               ),
               ListTile(
-                title: const Text('Stok Terbanyak'),
+                title: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Stok Terbanyak',
+                      style: TextStyle(
+                        fontWeight: activeSortingCriteria == 'stok terbanyak'
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                    ),
+                    if (activeSortingCriteria == 'stok terbanyak')
+                      const Icon(Icons.check, color: Col.primaryColor),
+                  ],
+                ),
                 onTap: () {
                   setSortingCriteria('stok terbanyak');
                   Navigator.pop(context);

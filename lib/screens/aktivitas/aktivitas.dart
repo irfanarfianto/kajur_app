@@ -1,3 +1,4 @@
+import 'package:easy_date_timeline/easy_date_timeline.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -11,8 +12,6 @@ import 'package:collection/collection.dart';
 
 enum SortOrder { Terbaru, Terlama }
 
-// enum FilterOrder { Hapus, Tambah, Edit }
-
 class AllActivitiesPage extends StatefulWidget {
   const AllActivitiesPage({super.key});
 
@@ -21,9 +20,8 @@ class AllActivitiesPage extends StatefulWidget {
 }
 
 class _AllActivitiesPageState extends State<AllActivitiesPage> {
-  bool _enabled = true;
-  SortOrder _currentSortOrder = SortOrder.Terbaru;
-  // FilterOrder _currentFilterOrder = FilterOrder.Edit;
+  final SortOrder _currentSortOrder = SortOrder.Terbaru;
+  DateTime _selectedDate = DateTime.now();
 
   @override
   void initState() {
@@ -32,134 +30,13 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
   }
 
   Future<void> _refreshData() async {
-    if (!mounted) {
-      return;
-    }
-    setState(() {
-      _enabled = true;
-    });
-
     try {
       while (await checkInternetConnection() == false) {
         // Tunggu 2 detik sebelum memeriksa koneksi lagi
         await Future.delayed(const Duration(seconds: 2));
       }
       await Future.delayed(const Duration(seconds: 2));
-    } finally {
-      if (mounted) {
-        setState(() {
-          _enabled = false;
-        });
-      }
-    }
-  }
-
-  void _showSortOptions(BuildContext context) {
-    bool isSelectedTerbaru = _currentSortOrder == SortOrder.Terbaru;
-    bool isSelectedTerlama = _currentSortOrder == SortOrder.Terlama;
-
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Container(
-              decoration: const BoxDecoration(
-                color: Col.backgroundColor,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-              ),
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    height: 5,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(100),
-                      color: Col.greyColor.withOpacity(.50),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Urutkan', style: Typo.titleTextStyle),
-                      const SizedBox(height: 16),
-                      CheckboxListTile(
-                        activeColor: Col.primaryColor,
-                        title: const Text(
-                          'Terbaru',
-                          style: Typo.subtitleTextStyle,
-                        ),
-                        value: isSelectedTerbaru,
-                        onChanged: (value) {
-                          setState(() {
-                            isSelectedTerbaru = value!;
-                            isSelectedTerlama = !value;
-                          });
-                        },
-                      ),
-                      CheckboxListTile(
-                        activeColor: Col.primaryColor,
-                        title: const Text(
-                          'Terlama',
-                          style: Typo.subtitleTextStyle,
-                        ),
-                        value: isSelectedTerlama,
-                        onChanged: (value) {
-                          setState(() {
-                            isSelectedTerlama = value!;
-                            isSelectedTerbaru = !value;
-                          });
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      TextButton(
-                        style: ElevatedButton.styleFrom(
-                          foregroundColor: Col.greyColor,
-                          backgroundColor: Colors.transparent,
-                        ),
-                        onPressed: () {
-                          // Reset Filters
-                          setState(() {
-                            isSelectedTerbaru = false;
-                            isSelectedTerlama = false;
-                          });
-                        },
-                        child: const Text('Reset'),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            // Apply Filters
-                            if (isSelectedTerbaru) {
-                              _currentSortOrder = SortOrder.Terbaru;
-                            } else if (isSelectedTerlama) {
-                              _currentSortOrder = SortOrder.Terlama;
-                            }
-                            _refreshData();
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Pilih filter'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+    } finally {}
   }
 
   @override
@@ -190,199 +67,338 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
             color: Col.primaryColor,
             backgroundColor: Col.secondaryColor,
             onRefresh: _refreshData,
-            child: Skeletonizer(
-              enabled: _enabled,
-              child: StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('activity_log')
-                    .orderBy('timestamp',
-                        descending: _currentSortOrder == SortOrder.Terbaru)
-                    .snapshots(),
-                builder: (BuildContext context,
-                    AsyncSnapshot<QuerySnapshot> snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Container();
-                  }
-
-                  if (snapshot.hasError) {
-                    return Center(
-                      child: Text('Error: ${snapshot.error}'),
-                    );
-                  }
-
-                  List<Map<String, dynamic>> activitiesData =
-                      snapshot.data!.docs.map((DocumentSnapshot doc) {
-                    Map<String, dynamic> data =
-                        doc.data() as Map<String, dynamic>;
-                    data['id'] = doc
-                        .id; // Menyertakan ID dokumen ke dalam data aktivitas
-                    return data;
-                  }).toList();
-
-                  Map<String, List<Map<String, dynamic>>> groupedActivities =
-                      groupBy(
-                          activitiesData,
-                          (Map<String, dynamic> activity) =>
-                              DateFormat('dd MMMM y', 'id').format(
-                                  (activity['timestamp'] as Timestamp)
-                                      .toDate()));
-
-                  return ListView.builder(
-                    itemCount: groupedActivities.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      String date = groupedActivities.keys.toList()[index];
-                      List<Map<String, dynamic>> activities =
-                          groupedActivities[date]!;
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const SizedBox(height: 16),
-                            Text(date, style: Typo.titleTextStyle),
-                            const SizedBox(height: 16),
-                            Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(15),
-                                color: Col.secondaryColor,
-                                border: Border.all(
-                                    color: const Color(0x309E9E9E), width: 1),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Col.greyColor.withOpacity(.10),
-                                    offset: const Offset(0, 5),
-                                    blurRadius: 10,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Skeleton.keep(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: EasyDateTimeLine(
+                      locale: "id",
+                      initialDate: DateTime.now(),
+                      onDateChange: (selectedDate) {
+                        setState(() {
+                          _selectedDate = selectedDate;
+                        });
+                      },
+                      activeColor: Col.primaryColor,
+                      dayProps: const EasyDayProps(
+                        height: 70,
+                        activeBorderRadius: 15,
+                        inactiveBorderRadius: 15,
+                        dayStructure: DayStructure.dayStrDayNum,
+                        todayHighlightStyle: TodayHighlightStyle.withBorder,
+                        todayHighlightColor: Col.primaryColor,
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance
+                        .collection('activity_log')
+                        .where('timestamp',
+                            isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime(
+                                _selectedDate.year,
+                                _selectedDate.month,
+                                _selectedDate.day)),
+                            isLessThan: Timestamp.fromDate(DateTime(
+                                _selectedDate.year,
+                                _selectedDate.month,
+                                _selectedDate.day + 1)))
+                        .orderBy('timestamp',
+                            descending: _currentSortOrder == SortOrder.Terbaru)
+                        .snapshots(),
+                    builder: (BuildContext context,
+                        AsyncSnapshot<QuerySnapshot> snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Column(
+                          children: List.generate(
+                            3,
+                            (index) => Skeletonizer(
+                              enabled: true,
+                              child: Column(
+                                children: [
+                                  const SizedBox(height: 20),
+                                  ListTile(
+                                    leading: Skeleton.leaf(
+                                      child: Container(
+                                        padding: const EdgeInsets.all(8),
+                                        width: 56,
+                                        height: 56,
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(28),
+                                          color: Colors.grey[300],
+                                        ),
+                                      ),
+                                    ),
+                                    title: Container(
+                                      width: 200,
+                                      height: 20,
+                                      color: Colors.grey[300],
+                                    ),
+                                    subtitle: Container(
+                                      width: 100,
+                                      height: 16,
+                                      color: Colors.grey[300],
+                                    ),
+                                    trailing: Row(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Icon(
+                                          Icons.history,
+                                          color: Colors.grey[300],
+                                          size: 15,
+                                        ),
+                                        Container(
+                                          width: 60,
+                                          height: 16,
+                                          color: Colors.grey[300],
+                                        ),
+                                      ],
+                                    ),
                                   ),
+                                  if (index <
+                                      2) // Don't add Divider after the last item
+                                    Divider(
+                                      thickness: 1,
+                                      color: Colors.grey[300],
+                                    ),
                                 ],
                               ),
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                physics: const ClampingScrollPhysics(),
-                                itemCount: activities.length,
-                                itemBuilder:
-                                    (BuildContext context, int activityIndex) {
-                                  Map<String, dynamic> data =
-                                      activities[activityIndex];
+                            ),
+                          ),
+                        );
+                      }
 
-                                  return Column(
-                                    children: [
-                                      ListTile(
-                                        onTap: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  ActivityDetailPage(
-                                                      activityData: data),
-                                            ),
-                                          );
-                                        },
-                                        leading: Skeleton.leaf(
-                                          child: ActivityIcon(
-                                              action: data['action']),
-                                        ),
-                                        title: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            SizedBox(
-                                              width: 200,
-                                              child: Text(
-                                                (data['action'] ?? '') +
-                                                    (data['productName'] != null
-                                                        ? ' - ${data['productName']}'
-                                                        : ''),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: Typo
-                                                    .emphasizedBodyTextStyle,
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                const Icon(Icons.history,
-                                                    color: Col.greyColor,
-                                                    size: 15),
-                                                Text(
-                                                  (data['timestamp'] != null
-                                                      ? DateFormat(
-                                                              ' HH:mm ', 'id')
-                                                          .format((data[
-                                                                      'timestamp']
-                                                                  as Timestamp)
-                                                              .toDate())
-                                                      : 'Timestamp tidak tersedia'),
+                      if (snapshot.data == null ||
+                          snapshot.data!.docs.isEmpty) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Image.asset(
+                                'images/NotEmpty.png',
+                                width: 200,
+                                height: 200,
+                              ),
+                              const Text(
+                                'Oops, nggak ada update\nditanggal segitu',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (snapshot.hasError) {
+                        return Center(
+                          child: Text('Error: ${snapshot.error}'),
+                        );
+                      }
+
+                      List<Map<String, dynamic>> activitiesData =
+                          snapshot.data!.docs.map((DocumentSnapshot doc) {
+                        Map<String, dynamic> data =
+                            doc.data() as Map<String, dynamic>;
+                        data['id'] = doc
+                            .id; // Menyertakan ID dokumen ke dalam data aktivitas
+                        return data;
+                      }).toList();
+
+                      Map<String, List<Map<String, dynamic>>>
+                          groupedActivities = groupBy(
+                              activitiesData,
+                              (Map<String, dynamic> activity) =>
+                                  DateFormat('dd MMMM y', 'id').format(
+                                      (activity['timestamp'] as Timestamp)
+                                          .toDate()));
+
+                      return Stack(
+                        children: [
+                          ListView.builder(
+                            itemCount: groupedActivities.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              String date =
+                                  groupedActivities.keys.toList()[index];
+                              List<Map<String, dynamic>> activities =
+                                  groupedActivities[date]!;
+
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 16.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8.0),
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(15),
+                                        color: Col.secondaryColor,
+                                        border: Border.all(
+                                            color: const Color(0x309E9E9E),
+                                            width: 1),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color:
+                                                Col.greyColor.withOpacity(.10),
+                                            offset: const Offset(0, 5),
+                                            blurRadius: 10,
+                                          ),
+                                        ],
+                                      ),
+                                      child: ListView.builder(
+                                        shrinkWrap: true,
+                                        physics: const ClampingScrollPhysics(),
+                                        itemCount: activities.length,
+                                        itemBuilder: (BuildContext context,
+                                            int activityIndex) {
+                                          Map<String, dynamic> data =
+                                              activities[activityIndex];
+
+                                          return Column(
+                                            children: [
+                                              ListTile(
+                                                onTap: () {
+                                                  Navigator.of(context).push(
+                                                    PageRouteBuilder(
+                                                      pageBuilder: (context,
+                                                              animation,
+                                                              secondaryAnimation) =>
+                                                          ActivityDetailPage(
+                                                              activityData:
+                                                                  data),
+                                                      transitionsBuilder:
+                                                          (context,
+                                                              animation,
+                                                              secondaryAnimation,
+                                                              child) {
+                                                        const begin =
+                                                            Offset(0.0, 0.3);
+                                                        const end = Offset.zero;
+                                                        const curve =
+                                                            Curves.easeOutCubic;
+
+                                                        var tween = Tween(
+                                                                begin: begin,
+                                                                end: end)
+                                                            .chain(
+                                                          CurveTween(
+                                                              curve: curve),
+                                                        );
+
+                                                        var offsetAnimation =
+                                                            animation
+                                                                .drive(tween);
+
+                                                        return SlideTransition(
+                                                          position:
+                                                              offsetAnimation,
+                                                          child: child,
+                                                        );
+                                                      },
+                                                    ),
+                                                  );
+                                                },
+                                                leading: Skeleton.leaf(
+                                                  child: ActivityIcon(
+                                                      action: data['action']),
+                                                ),
+                                                title: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceBetween,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 200,
+                                                      child: Text(
+                                                        (data['action'] ?? '') +
+                                                            (data['productName'] !=
+                                                                    null
+                                                                ? ' - ${data['productName']}'
+                                                                : ''),
+                                                        maxLines: 1,
+                                                        overflow: TextOverflow
+                                                            .ellipsis,
+                                                        style: Typo
+                                                            .emphasizedBodyTextStyle,
+                                                      ),
+                                                    ),
+                                                    Text(
+                                                      (data['timestamp'] != null
+                                                          ? DateFormat(
+                                                                  ' HH:mm ',
+                                                                  'id')
+                                                              .format((data[
+                                                                          'timestamp']
+                                                                      as Timestamp)
+                                                                  .toDate())
+                                                          : 'Timestamp tidak tersedia'),
+                                                      style: const TextStyle(
+                                                        fontSize: 12,
+                                                        color: Colors.grey,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                subtitle: Text(
+                                                  (data['userName'] ?? ''),
                                                   style: const TextStyle(
                                                     fontSize: 12,
                                                     color: Colors.grey,
                                                   ),
+                                                  maxLines: 1,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
                                                 ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                        subtitle: Text(
-                                          (data['userName'] ?? ''),
-                                          style: const TextStyle(
-                                            fontSize: 12,
-                                            color: Colors.grey,
-                                          ),
-                                          maxLines: 1,
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                              ),
+                                              if (activityIndex <
+                                                  activities.length - 1)
+                                                Divider(
+                                                  thickness: 1,
+                                                  color: Col.greyColor
+                                                      .withOpacity(0.2),
+                                                ),
+                                            ],
+                                          );
+                                        },
                                       ),
-                                      if (activityIndex < activities.length - 1)
-                                        Divider(
-                                          thickness: 1,
-                                          color: Col.greyColor.withOpacity(0.2),
-                                        ),
-                                    ],
-                                  );
-                                },
-                              ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          ),
+                          Positioned(
+                            bottom: 0,
+                            left: 0,
+                            right: 0,
+                            child: Container(
+                              // gradien
+                              decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                      begin: Alignment.topCenter,
+                                      end: Alignment.bottomCenter,
+                                      stops: const [
+                                    0.0,
+                                    1.0
+                                  ],
+                                      colors: [
+                                    Col.secondaryColor.withOpacity(0.1),
+                                    Col.secondaryColor,
+                                  ])),
+                              height: 50,
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       );
                     },
-                  );
-                },
-              ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: SizedBox(
-          height: 60, // Set the desired height here
-          child: BottomAppBar(
-            color: Col.whiteColor,
-            shape: const CircularNotchedRectangle(),
-            notchMargin: 8,
-            elevation: 1,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                TextButton.icon(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Col.primaryColor,
                   ),
-                  label: Text(
-                      'Urutkan "${_currentSortOrder == SortOrder.Terbaru ? 'Terbaru' : 'Terlama'}"'),
-                  icon: const Icon(Icons.sort_outlined),
-                  onPressed: () {
-                    _showSortOptions(context);
-                  },
-                ),
-                TextButton.icon(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Col.primaryColor,
-                  ),
-                  label: const Text('Filter'),
-                  icon: const Icon(Icons.filter_list),
-                  onPressed: () {
-                    // _showFilterOptions(context);
-                  },
                 ),
               ],
             ),

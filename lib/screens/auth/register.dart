@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/auth/email_verification_page.dart';
-import 'package:kajur_app/services/firebase_auth/firebase_auth_services.dart';
+import 'package:kajur_app/screens/auth/firebase_auth_services.dart';
 
 class SignUpPage extends StatefulWidget {
-  const SignUpPage({super.key});
+  const SignUpPage({Key? key}) : super(key: key);
 
   @override
-  State<SignUpPage> createState() => _SignUpPageState();
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
 class _SignUpPageState extends State<SignUpPage> {
@@ -31,49 +31,9 @@ class _SignUpPageState extends State<SignUpPage> {
     _usernameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
-
-  // void _signUpWithGoogle() async {
-  //   final GoogleSignIn googleSignIn = GoogleSignIn();
-
-  //   try {
-  //     final GoogleSignInAccount? googleSignInAccount =
-  //         await googleSignIn.signIn();
-
-  //     if (googleSignInAccount != null) {
-  //       final GoogleSignInAuthentication googleSignInAuthentication =
-  //           await googleSignInAccount.authentication;
-
-  //       final AuthCredential credential = GoogleAuthProvider.credential(
-  //         idToken: googleSignInAuthentication.idToken,
-  //         accessToken: googleSignInAuthentication.accessToken,
-  //       );
-
-  //       User? user = await _auth.signUpWithGoogle(credential);
-
-  //       if (user != null) {
-  //         try {
-  //           // ignore: deprecated_member_use
-  //           await user.updateProfile(displayName: user.displayName);
-  //           showToast(message: "Berhasil daftar akun dengan Google");
-  //           // ignore: use_build_context_synchronously
-  //           Navigator.pushReplacement(
-  //             context,
-  //             MaterialPageRoute(builder: (context) => const HomePage()),
-  //           );
-  //         } catch (e) {
-  //           showToast(message: "Error setting username: $e");
-  //         }
-  //       } else {}
-  //     } else {
-  //       showToast(message: "Pendaftaran dengan Google dibatalkan.");
-  //     }
-  //   } catch (e) {
-  //     showToast(
-  //         message: "Gagal mendaftar dengan Google, terjadi kesalahan: $e");
-  //   }
-  // }
 
   void _signUp() async {
     setState(() {
@@ -90,13 +50,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (user != null) {
       try {
-        // ignore: deprecated_member_use
         await user.updateProfile(displayName: username);
-
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const EmailVerifPage()),
-        ); // Menampilkan CountdownPage setelah berhasil mendaftar
+        );
       } catch (e) {
         showToast(message: "Error setting username: $e");
       }
@@ -107,30 +65,20 @@ class _SignUpPageState extends State<SignUpPage> {
     }
   }
 
-  bool _isPasswordValid(String password) {
-    // Pemeriksaan persyaratan password (minimal 8 karakter, termasuk huruf dan angka)
-    if (password.length < 8 ||
-        !password.contains(RegExp(r'[a-zA-Z]')) ||
-        !password.contains(RegExp(r'[0-9]'))) {
-      return false;
-    }
-    return true;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: UniqueKey(),
       appBar: AppBar(
-          backgroundColor: Col.backgroundColor,
-          surfaceTintColor: Colors.transparent,
-          leading: IconButton(
-              icon: const Icon(
-                Icons.arrow_back,
-              ),
-              onPressed: () {
-                Navigator.pop(context);
-              })),
+        backgroundColor: Col.backgroundColor,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Center(
         child: Scrollbar(
           child: Padding(
@@ -164,10 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _usernameController,
-                          textCapitalization: TextCapitalization.words,
                           keyboardType: TextInputType.name,
-                          textInputAction: TextInputAction.next,
-                          style: const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Username',
                             hintStyle: TextStyle(
@@ -175,8 +120,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               fontWeight: FontWeight.normal,
                             ),
                           ),
-                          onFieldSubmitted: (_) =>
-                              FocusScope.of(context).nextFocus(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Username harus diisi';
@@ -202,7 +145,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           textCapitalization: TextCapitalization.words,
                           keyboardType: TextInputType.emailAddress,
                           textInputAction: TextInputAction.next,
-                          style: const TextStyle(color: Col.blackColor),
                           decoration: const InputDecoration(
                             hintText: 'Email',
                             hintStyle: TextStyle(
@@ -236,7 +178,6 @@ class _SignUpPageState extends State<SignUpPage> {
                         const SizedBox(height: 8.0),
                         TextFormField(
                           controller: _passwordController,
-                          style: const TextStyle(color: Col.blackColor),
                           decoration: InputDecoration(
                             hintText: 'Password',
                             hintStyle: const TextStyle(
@@ -249,23 +190,17 @@ class _SignUpPageState extends State<SignUpPage> {
                               color: Col.greyColor,
                               fontStyle: FontStyle.italic,
                             ),
-                            suffixIcon: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(100),
-                                splashColor: Colors.transparent,
-                                onTap: () {
-                                  setState(() {
-                                    // Mengubah visibilitas teks password
-                                    _passwordVisible = !_passwordVisible;
-                                  });
-                                },
-                                child: Icon(
-                                  _passwordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Col.greyColor.withOpacity(.50),
-                                ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _passwordVisible = !_passwordVisible;
+                                });
+                              },
+                              icon: Icon(
+                                _passwordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Col.greyColor.withOpacity(.50),
                               ),
                             ),
                           ),
@@ -280,9 +215,9 @@ class _SignUpPageState extends State<SignUpPage> {
                             }
                             return null;
                           },
+                          textInputAction: TextInputAction.done,
                           keyboardType: TextInputType.visiblePassword,
                           obscureText: !_passwordVisible,
-                          textInputAction: TextInputAction.next,
                         ),
                       ],
                     ),
@@ -312,24 +247,18 @@ class _SignUpPageState extends State<SignUpPage> {
                                             _passwordController.text
                                     ? 'Password tidak cocok'
                                     : null,
-                            suffixIcon: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(100),
-                                splashColor: Colors.transparent,
-                                onTap: () {
-                                  setState(() {
-                                    // Mengubah visibilitas teks password
-                                    _confirmPasswordVisible =
-                                        !_confirmPasswordVisible;
-                                  });
-                                },
-                                child: Icon(
-                                  _confirmPasswordVisible
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
-                                  color: Col.greyColor.withOpacity(.50),
-                                ),
+                            suffixIcon: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _confirmPasswordVisible =
+                                      !_confirmPasswordVisible;
+                                });
+                              },
+                              icon: Icon(
+                                _confirmPasswordVisible
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Col.greyColor.withOpacity(.50),
                               ),
                             ),
                           ),
@@ -373,66 +302,6 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                       ),
                     ),
-                    // const SizedBox(
-                    //   height: 20,
-                    // ),
-                    // Padding(
-                    //   padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    //   child: Row(
-                    //     mainAxisAlignment: MainAxisAlignment.center,
-                    //     children: [
-                    //       Expanded(
-                    //         child: Divider(
-                    //           color: Col.greyColor.withOpacity(.30),
-                    //           height: 0.5,
-                    //         ),
-                    //       ),
-                    //       const Padding(
-                    //         padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    //         child: Text("Atau"),
-                    //       ),
-                    //       Expanded(
-                    //         child: Divider(
-                    //           color: Col.greyColor.withOpacity(.30),
-                    //           height: 0.5,
-                    //         ),
-                    //       ),
-                    //     ],
-                    //   ),
-                    // ),
-                    // const SizedBox(
-                    //   height: 20,
-                    // ),
-                    // ElevatedButton(
-                    //   onPressed: () {
-                    //     _signUpWithGoogle();
-                    //   },
-                    //   style: ElevatedButton.styleFrom(
-                    //     backgroundColor: Col.whiteColor,
-                    //   ),
-                    //   child: const Center(
-                    //     child: Row(
-                    //       mainAxisAlignment: MainAxisAlignment.center,
-                    //       children: [
-                    //         Icon(
-                    //           FontAwesomeIcons.google,
-                    //           color: Col.blackColor,
-                    //           size: 20,
-                    //         ),
-                    //         SizedBox(
-                    //           width: 5,
-                    //         ),
-                    //         Text(
-                    //           "Daftar dengan Google",
-                    //           style: TextStyle(
-                    //             color: Col.blackColor,
-                    //             fontWeight: FontWeight.bold,
-                    //           ),
-                    //         ),
-                    //       ],
-                    //     ),
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

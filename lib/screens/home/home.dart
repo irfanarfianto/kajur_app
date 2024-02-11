@@ -15,7 +15,7 @@ import 'package:kajur_app/utils/internet_utils.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
 
   @override
   _HomePageState createState() => _HomePageState();
@@ -24,7 +24,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late User? _currentUser;
   int totalProducts = 0;
-  bool _enabled = false;
+  String _userRole = '';
 
   @override
   void initState() {
@@ -53,22 +53,13 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _refreshData() async {
     try {
-      setState(() {
-        _enabled = true;
-      });
-
       while (await checkInternetConnection() == false) {
         await Future.delayed(const Duration(seconds: 2));
       }
 
       // Simulasi pengambilan data baru dari sumber data Anda
       await Future.delayed(const Duration(seconds: 3));
-    } catch (error) {
-    } finally {
-      setState(() {
-        _enabled = false;
-      });
-    }
+    } catch (error) {}
   }
 
   Future<void> _getCurrentUser() async {
@@ -191,138 +182,164 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  
+
   @override
   Widget build(BuildContext context) {
-    return Skeletonizer(
-      enabled: _enabled,
-      child: Scaffold(
-        body: ScrollConfiguration(
-          behavior: const ScrollBehavior().copyWith(overscroll: true),
-          child: CustomScrollView(
-            physics: const ClampingScrollPhysics(),
-            slivers: [
-              SliverAppBar(
-                surfaceTintColor: Col.backgroundColor,
-                systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
-                  statusBarColor: Col.backgroundColor,
-                ),
-                elevation: 2,
-                backgroundColor: Col.backgroundColor,
-                automaticallyImplyLeading: false,
-                leadingWidth: double.infinity,
-                title: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            UserProfilePage(currentUser: _currentUser),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(0.5, 0.0);
-                          const end = Offset.zero;
-                          const curve = Curves.linearToEaseOut;
+    return Scaffold(
+      body: StreamBuilder<DocumentSnapshot>(
+        stream: FirebaseFirestore.instance
+            .collection('users')
+            .doc(_currentUser?.uid)
+            .snapshots(),
+        builder:
+            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const CircularProgressIndicator(
+              color: Col.whiteColor,
+            );
+          }
+          if (snapshot.hasError) {
+            return Text('Error: ${snapshot.error}');
+          }
+          if (!snapshot.hasData || snapshot.data!.data() == null) {
+            return const Text('No Data');
+          }
 
-                          var tween = Tween(begin: begin, end: end).chain(
-                            CurveTween(curve: curve),
-                          );
+          var userData = snapshot.data!.data() as Map<String, dynamic>;
+          _userRole = userData['role'] ?? 'biasa';
 
-                          return SlideTransition(
-                            position: animation.drive(tween),
-                            child: child,
+          return ScrollConfiguration(
+            behavior: const ScrollBehavior().copyWith(overscroll: true),
+            child: CustomScrollView(
+              physics: const ClampingScrollPhysics(),
+              slivers: [
+                SliverAppBar(
+                  surfaceTintColor: Col.backgroundColor,
+                  systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+                    statusBarColor: Col.backgroundColor,
+                  ),
+                  elevation: 2,
+                  backgroundColor: Col.backgroundColor,
+                  automaticallyImplyLeading: false,
+                  leadingWidth: double.infinity,
+                  title: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder:
+                              (context, animation, secondaryAnimation) =>
+                                  UserProfilePage(currentUser: _currentUser),
+                          transitionsBuilder:
+                              (context, animation, secondaryAnimation, child) {
+                            const begin = Offset(0.5, 0.0);
+                            const end = Offset.zero;
+                            const curve = Curves.linearToEaseOut;
+
+                            var tween = Tween(begin: begin, end: end).chain(
+                              CurveTween(curve: curve),
+                            );
+
+                            return SlideTransition(
+                              position: animation.drive(tween),
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: _buildUserWidget(_currentUser),
+                  ),
+                  actions: [
+                    // notification icon
+                    Skeleton.keep(
+                      child: IconButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                          overlayColor:
+                              MaterialStateProperty.all(Colors.transparent),
+                        ),
+                        color: Col.greyColor,
+                        iconSize: 24,
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            PageRouteBuilder(
+                              pageBuilder:
+                                  (context, animation, secondaryAnimation) =>
+                                      const NotificationPage(),
+                              transitionsBuilder: (context, animation,
+                                  secondaryAnimation, child) {
+                                const begin = Offset(0.5, 0.0);
+                                const end = Offset.zero;
+                                const curve = Curves.linearToEaseOut;
+
+                                var tween = Tween(begin: begin, end: end).chain(
+                                  CurveTween(curve: curve),
+                                );
+
+                                return SlideTransition(
+                                  position: animation.drive(tween),
+                                  child: child,
+                                );
+                              },
+                            ),
                           );
                         },
-                      ),
-                    );
-                  },
-                  child: _buildUserWidget(_currentUser),
-                ),
-                actions: [
-                  // notification icon
-                  Skeleton.keep(
-                    child: IconButton(
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.transparent),
-                        overlayColor:
-                            MaterialStateProperty.all(Colors.transparent),
-                      ),
-                      color: Col.greyColor,
-                      iconSize: 24,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          PageRouteBuilder(
-                            pageBuilder:
-                                (context, animation, secondaryAnimation) =>
-                                    const NotificationPage(),
-                            transitionsBuilder: (context, animation,
-                                secondaryAnimation, child) {
-                              const begin = Offset(0.5, 0.0);
-                              const end = Offset.zero;
-                              const curve = Curves.linearToEaseOut;
-
-                              var tween = Tween(begin: begin, end: end).chain(
-                                CurveTween(curve: curve),
-                              );
-
-                              return SlideTransition(
-                                position: animation.drive(tween),
-                                child: child,
-                              );
-                            },
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.notifications_none_outlined),
-                    ),
-                  ),
-                ],
-                floating: true,
-                snap: true,
-              ),
-              SliverList(
-                delegate: SliverChildListDelegate(
-                  [
-                    const SizedBox(height: 10),
-                    Column(
-                      children: [
-                        buildTotalProductsWidget(context),
-                        const SizedBox(height: 20),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                          child: Column(
-                            children: [
-                              buildMenuWidget(context),
-                              const SizedBox(height: 20),
-                              buildRecentActivityWidget(context),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    Skeleton.keep(
-                      child: Center(
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 20),
-                            const Text('~ Segini dulu yaa ~',
-                                style: Typo.subtitleTextStyle),
-                            Image.asset(
-                              'images/gambar.png',
-                              fit: BoxFit.contain,
-                            ),
-                          ],
-                        ),
+                        icon: const Icon(Icons.notifications_none_outlined),
                       ),
                     ),
                   ],
+                  floating: true,
+                  snap: true,
                 ),
-              ),
-            ],
-          ),
-        ),
+                SliverList(
+                  delegate: SliverChildListDelegate(
+                    [
+                      const SizedBox(height: 10),
+                      Column(
+                        children: [
+                          buildTotalProductsWidget(context),
+                          const SizedBox(height: 20),
+                          Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            child: Column(
+                              children: [
+                                 buildMenuWidget(context, _userRole),
+                                const SizedBox(height: 20),
+                                buildRecentActivityWidget(context),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      Skeleton.keep(
+                        child: Center(
+                          child: Column(
+                            children: [
+                              const SizedBox(height: 20),
+                              const Text('~ Segini dulu yaa ~',
+                                  style: Typo.subtitleTextStyle),
+                              Image.asset(
+                                'images/gambar.png',
+                                fit: BoxFit.contain,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
+
 }

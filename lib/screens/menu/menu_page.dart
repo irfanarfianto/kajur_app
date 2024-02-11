@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/home/component/circular_button.dart';
-import 'package:kajur_app/screens/home/component/kirim_data_produk.dart';
-import 'package:kajur_app/screens/home/web_view.dart';
-import 'package:kajur_app/screens/products/add_products.dart';
-import 'package:kajur_app/screens/products/list_products.dart';
+import 'package:kajur_app/screens/widget/circular_button.dart';
+import 'package:kajur_app/screens/products/widget/kirim_data_produk.dart';
+import 'package:kajur_app/screens/menu/web_view.dart';
+import 'package:kajur_app/screens/products/tambah%20produk/add_products.dart';
+import 'package:kajur_app/screens/products/list/list_products.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});

@@ -203,7 +203,7 @@ class _AddDataPageState extends State<AddDataPage> {
             ),
             body: Scrollbar(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: SingleChildScrollView(
                   padding: const EdgeInsets.only(top: 10),
                   physics: const BouncingScrollPhysics(),

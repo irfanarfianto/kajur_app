@@ -17,6 +17,7 @@ class ShareProdukState extends State<ShareProduk> {
   String subject = '';
   String userId = FirebaseAuth.instance.currentUser!.uid;
   double _sliderValue = 5; // Nilai default slider
+  int totalProdukDitemukan = 0;
 
   Future<void> _getDataFromFirestore() async {
     try {
@@ -32,6 +33,8 @@ class ShareProdukState extends State<ShareProduk> {
 
         String textData = '';
 
+        totalProdukDitemukan = querySnapshot.docs.length;
+
         // Mendapatkan informasi pengguna yang sedang login sekali
         User? user = FirebaseAuth.instance.currentUser;
         String senderName = user != null
@@ -44,7 +47,8 @@ class ShareProdukState extends State<ShareProduk> {
 
         // Menambahkan informasi pengguna dan waktu sekali
         textData += 'Pengirim: $senderName\n'
-            '$formattedDate\n\n';
+            '$formattedDate\n'
+            '==============================\n';
 
         for (var document in querySnapshot.docs) {
           String menu = document['menu'];
@@ -52,7 +56,7 @@ class ShareProdukState extends State<ShareProduk> {
           int qty = document['stok'] ?? 0;
 
           // Menambahkan garis pembatas setelah setiap produk
-          textData += '---------------------------\n'
+          textData += '------------------------------------------\n'
               'Nama produk: $menu\n'
               'Harga pokok: ${_formatCurrency(hargaPokok)}\n' // Format uang ke Rupiah
               'Sisa stok: ${qty > 0 ? qty : "Stok Habis"}\n';
@@ -63,7 +67,7 @@ class ShareProdukState extends State<ShareProduk> {
 
         // Menambahkan keterangan total harga pokok
         textData +=
-            '---------------------------\nPerkiraan uang yang harus\ndibayar: ${_formatCurrency(totalHargaPokok)}\n\n\n'
+            '==============================\nPerkiraan uang yang harus\ndibayar: ${_formatCurrency(totalHargaPokok)}\n\n\n'
             'Pengurus Kantin Kejujuran 2024 🙌';
 
         setState(() {
@@ -71,7 +75,8 @@ class ShareProdukState extends State<ShareProduk> {
         });
       } else {
         setState(() {
-          text = 'Tidak ada produk dengan stok di bawah $_sliderValue';
+          text =
+              'Tidak ada produk dengan stok di bawah ${_sliderValue.toInt().toString()}';
         });
       }
     } catch (e) {
@@ -125,20 +130,28 @@ class ShareProdukState extends State<ShareProduk> {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
+                      Text(
+                        'Ditemukan $totalProdukDitemukan produk',
+                        style: const TextStyle(fontSize: 12),
+                      ),
                       const SizedBox(height: 8),
-                      Slider(
-                        activeColor: Col.primaryColor,
-                        inactiveColor: Col.primaryColor.withOpacity(0.1),
-                        value: _sliderValue.toDouble(),
-                        min: 0,
-                        max: 15,
-                        divisions: 15,
-                        label: _sliderValue.toInt().toString(),
-                        onChanged: (newValue) {
-                          setState(() {
-                            _sliderValue = newValue;
-                          });
-                        },
+                      Column(
+                        children: [
+                          Slider(
+                            activeColor: Col.primaryColor,
+                            inactiveColor: Col.primaryColor.withOpacity(0.1),
+                            value: _sliderValue.toDouble(),
+                            min: 0,
+                            max: 15,
+                            divisions: 15,
+                            label: _sliderValue.toInt().toString(),
+                            onChanged: (newValue) {
+                              setState(() {
+                                _sliderValue = newValue;
+                              });
+                            },
+                          ),
+                        ],
                       ),
                     ],
                   ),

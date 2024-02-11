@@ -1,12 +1,11 @@
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/screens/products/edit/details_products.dart';
 
-Widget buildTambahProdukWidget(
+Widget buildHapusProdukWidget(
     BuildContext context, Map<String, dynamic> activityData) {
   return Column(
-    crossAxisAlignment: CrossAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -50,51 +49,7 @@ Widget buildTambahProdukWidget(
           ),
         ],
       ),
-      const SizedBox(
-        height: 25,
-      ),
-      // Tombol Detail Produk
-      TextButton(
-        onPressed: () {
-          if (activityData['productId'] != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => DetailProdukPage(
-                  documentId: activityData['productId'],
-                ),
-              ),
-            );
-          } else {
-            // Tampilkan showBottomSheet setengah layar jika ID produk tidak tersedia
-            _showHalfScreenBottomSheet(context);
-          }
-        },
-        child: const Text(
-          'Detail Produk',
-          style: TextStyle(
-            fontSize: 12,
-          ),
-        ),
-      ),
+      // Menampilkan informasi lain yang diperlukan
     ],
-  );
-}
-
-void _showHalfScreenBottomSheet(BuildContext context) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    builder: (BuildContext context) {
-      return SizedBox(
-        height: MediaQuery.of(context).size.height * 0.5,
-        child: const Center(
-          child: Text(
-            'Informasi Produk tidak tersedia.',
-            style: TextStyle(fontSize: 18),
-          ),
-        ),
-      );
-    },
   );
 }
