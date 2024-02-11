@@ -10,7 +10,7 @@ Widget buildImagesWidget(BuildContext context) {
         onTap: () {
           // Implementasikan logika untuk menampilkan gambar secara penuh (jika diperlukan)
         },
-        child: SizedBox(
+        child: const SizedBox(
           width: 200,
           height: 200,
           // child: Image.asset(

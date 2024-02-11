@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/design/system.dart';
 
 class ManageUserRolePage extends StatefulWidget {
-  const ManageUserRolePage({Key? key}) : super(key: key);
+  const ManageUserRolePage({super.key});
 
   @override
   _ManageUserRolePageState createState() => _ManageUserRolePageState();

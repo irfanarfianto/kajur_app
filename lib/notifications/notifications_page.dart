@@ -5,7 +5,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class NotificationPage extends StatefulWidget {
-  const NotificationPage({Key? key});
+  const NotificationPage({super.key});
 
   @override
   State<NotificationPage> createState() => _NotificationPageState();
@@ -45,7 +45,7 @@ class _NotificationPageState extends State<NotificationPage> {
                     .snapshots(),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
 
                   if (snapshot.hasError) {
@@ -53,7 +53,7 @@ class _NotificationPageState extends State<NotificationPage> {
                   }
 
                   if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                    return Center(child: Text('Tidak ada pesan'));
+                    return const Center(child: Text('Tidak ada pesan'));
                   }
 
                   return ListView.builder(

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kajur_app/design/system.dart';
 
 class ComingSoonPage extends StatefulWidget {
-  const ComingSoonPage({Key? key}) : super(key: key);
+  const ComingSoonPage({super.key});
 
   @override
   _ComingSoonPageState createState() => _ComingSoonPageState();

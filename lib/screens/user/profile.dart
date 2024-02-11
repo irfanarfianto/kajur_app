@@ -12,8 +12,7 @@ import 'package:kajur_app/screens/widget/action_icons.dart';
 class UserProfilePage extends StatefulWidget {
   final User? currentUser;
 
-  const UserProfilePage({Key? key, required this.currentUser})
-      : super(key: key);
+  const UserProfilePage({super.key, required this.currentUser});
 
   @override
   State<UserProfilePage> createState() => _UserProfilePageState();

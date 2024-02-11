@@ -5,10 +5,10 @@ class CustomNumPad extends StatelessWidget {
   final VoidCallback? onClearPressed;
 
   const CustomNumPad({
-    Key? key,
+    super.key,
     required this.controller,
     this.onClearPressed,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +65,12 @@ class CustomNumPad extends StatelessWidget {
           controller.text += text;
         }
       },
-      child: hasIcon ? Icon(Icons.backspace) : Text(text),
       style: ElevatedButton.styleFrom(
         padding: hasIcon
-            ? EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0)
-            : EdgeInsets.all(16.0),
-        primary: hasIcon ? Colors.red : Colors.grey[300],
+            ? const EdgeInsets.symmetric(vertical: 16.0, horizontal: 10.0)
+            : const EdgeInsets.all(16.0), backgroundColor: hasIcon ? Colors.red : Colors.grey[300],
       ),
+      child: hasIcon ? const Icon(Icons.backspace) : Text(text),
     );
   }
 }

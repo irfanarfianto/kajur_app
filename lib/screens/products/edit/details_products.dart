@@ -11,8 +11,7 @@ import 'package:kajur_app/screens/products/edit/edit_products.dart';
 class DetailProdukPage extends StatefulWidget {
   final String documentId;
 
-  const DetailProdukPage({Key? key, required this.documentId})
-      : super(key: key);
+  const DetailProdukPage({super.key, required this.documentId});
 
   @override
   State<DetailProdukPage> createState() => _DetailProdukPageState();
@@ -21,7 +20,6 @@ class DetailProdukPage extends StatefulWidget {
 class _DetailProdukPageState extends State<DetailProdukPage> {
   late CollectionReference _produkCollection;
   String? _userRole;
-  bool _isUpdating = false;
 
   @override
   void initState() {
@@ -50,7 +48,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
 
   void _deleteProduct(String documentId) async {
     setState(() {
-      _isUpdating = true;
     });
 
     try {
@@ -67,14 +64,12 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
       );
 
       setState(() {
-        _isUpdating = false;
       });
 
       await _produkCollection.doc(documentId).delete();
       showToast(message: 'Produk berhasil dihapus');
     } catch (e) {
       setState(() {
-        _isUpdating = false;
       });
       showToast(message: 'Terjadi kesalahan saat menghapus produk');
     }
@@ -568,8 +563,7 @@ class StatusBadge extends StatelessWidget {
   final String label;
   final Color color;
 
-  const StatusBadge({Key? key, required this.label, required this.color})
-      : super(key: key);
+  const StatusBadge({super.key, required this.label, required this.color});
 
   @override
   Widget build(BuildContext context) {
