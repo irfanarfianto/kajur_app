@@ -167,7 +167,10 @@ Widget buildEditProdukWidget(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text('Nama:', style: Typo.emphasizedBodyTextStyle),
-              Text('${activityData['oldProductData']['menu'] ?? ''}',
+              Text(
+                  (activityData['oldProductData']['menu'] ?? '').length > 20
+                      ? '${activityData['oldProductData']['menu']?.substring(0, 20) ?? ''}...'
+                      : activityData['oldProductData']['menu'] ?? '',
                   style: const TextStyle(fontSize: 14, fontWeight: Fw.bold)),
             ],
           ),

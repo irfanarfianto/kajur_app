@@ -44,7 +44,9 @@ Widget buildUpdateStokWidget(
         children: [
           const Text('Nama:', style: Typo.emphasizedBodyTextStyle),
           Text(
-            '${activityData['productName'] ?? '-'}',
+            (activityData['productName'] ?? '').length > 20
+                ? '${activityData['productName']?.substring(0, 20) ?? ''}...'
+                : activityData['productName'] ?? '',
             style: const TextStyle(fontSize: 14, fontWeight: Fw.bold),
           ),
         ],
@@ -101,7 +103,9 @@ Widget buildUpdateStokWidget(
             children: [
               const Text('Nama:', style: Typo.emphasizedBodyTextStyle),
               Text(
-                '${activityData['oldProductData']['menu'] ?? '-'}',
+                (activityData['productName'] ?? '').length > 20
+                    ? '${activityData['productName']?.substring(0, 20) ?? ''}...'
+                    : activityData['productName'] ?? '',
                 style: const TextStyle(fontSize: 14, fontWeight: Fw.bold),
               ),
             ],

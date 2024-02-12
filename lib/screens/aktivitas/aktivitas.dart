@@ -369,6 +369,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                         },
                                       ),
                                     ),
+                                    const SizedBox(height: 80)
                                   ],
                                 ),
                               );

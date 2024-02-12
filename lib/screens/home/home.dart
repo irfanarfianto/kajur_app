@@ -6,7 +6,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/notifications/notifications_page.dart';
+import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/screens/notifications/notifications_page.dart';
 import 'package:kajur_app/screens/aktivitas/components/activity_widget.dart';
 import 'package:kajur_app/screens/home/component/menu.dart';
 import 'package:kajur_app/screens/home/component/total_produk_widget.dart';
@@ -18,6 +19,7 @@ class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomePageState createState() => _HomePageState();
 }
 
@@ -25,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   late User? _currentUser;
   int totalProducts = 0;
   String _userRole = '';
+  DateTime? currentBackPressTime;
 
   @override
   void initState() {
@@ -182,164 +185,179 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: StreamBuilder<DocumentSnapshot>(
-        stream: FirebaseFirestore.instance
-            .collection('users')
-            .doc(_currentUser?.uid)
-            .snapshots(),
-        builder:
-            (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator(
-              color: Col.whiteColor,
-            );
-          }
-          if (snapshot.hasError) {
-            return Text('Error: ${snapshot.error}');
-          }
-          if (!snapshot.hasData || snapshot.data!.data() == null) {
-            return const Text('No Data');
-          }
+    // ignore: deprecated_member_use
+    return WillPopScope(
+      onWillPop: () async {
+        if (currentBackPressTime == null ||
+            DateTime.now().difference(currentBackPressTime!) >
+                const Duration(seconds: 2)) {
+          // Jika pengguna menekan tombol kembali untuk pertama kalinya
+          currentBackPressTime = DateTime.now();
+          showToast(message: "Tekan kembali sekali lagi untuk keluar");
+          return false;
+        } else {
+          // Jika pengguna menekan tombol kembali dalam waktu kurang dari 2 detik lagi
+          // Aplikasi akan keluar
+          return true;
+        }
+      },
+      child: Scaffold(
+        body: StreamBuilder<DocumentSnapshot>(
+          stream: FirebaseFirestore.instance
+              .collection('users')
+              .doc(_currentUser?.uid)
+              .snapshots(),
+          builder:
+              (BuildContext context, AsyncSnapshot<DocumentSnapshot> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const CircularProgressIndicator(
+                color: Col.whiteColor,
+              );
+            }
+            if (snapshot.hasError) {
+              return Text('Error: ${snapshot.error}');
+            }
+            if (!snapshot.hasData || snapshot.data!.data() == null) {
+              return const Text('No Data');
+            }
 
-          var userData = snapshot.data!.data() as Map<String, dynamic>;
-          _userRole = userData['role'] ?? 'biasa';
+            var userData = snapshot.data!.data() as Map<String, dynamic>;
+            _userRole = userData['role'] ?? 'biasa';
 
-          return ScrollConfiguration(
-            behavior: const ScrollBehavior().copyWith(overscroll: true),
-            child: CustomScrollView(
-              physics: const ClampingScrollPhysics(),
-              slivers: [
-                SliverAppBar(
-                  surfaceTintColor: Col.backgroundColor,
-                  systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
-                    statusBarColor: Col.backgroundColor,
-                  ),
-                  elevation: 2,
-                  backgroundColor: Col.backgroundColor,
-                  automaticallyImplyLeading: false,
-                  leadingWidth: double.infinity,
-                  title: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        PageRouteBuilder(
-                          pageBuilder:
-                              (context, animation, secondaryAnimation) =>
-                                  UserProfilePage(currentUser: _currentUser),
-                          transitionsBuilder:
-                              (context, animation, secondaryAnimation, child) {
-                            const begin = Offset(0.5, 0.0);
-                            const end = Offset.zero;
-                            const curve = Curves.linearToEaseOut;
+            return ScrollConfiguration(
+              behavior: const ScrollBehavior().copyWith(overscroll: true),
+              child: CustomScrollView(
+                physics: const ClampingScrollPhysics(),
+                slivers: [
+                  SliverAppBar(
+                    surfaceTintColor: Col.backgroundColor,
+                    systemOverlayStyle: SystemUiOverlayStyle.dark.copyWith(
+                      statusBarColor: Col.backgroundColor,
+                    ),
+                    elevation: 2,
+                    backgroundColor: Col.backgroundColor,
+                    automaticallyImplyLeading: false,
+                    leadingWidth: double.infinity,
+                    title: GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder:
+                                (context, animation, secondaryAnimation) =>
+                                    UserProfilePage(currentUser: _currentUser),
+                            transitionsBuilder: (context, animation,
+                                secondaryAnimation, child) {
+                              const begin = Offset(0.5, 0.0);
+                              const end = Offset.zero;
+                              const curve = Curves.linearToEaseOut;
 
-                            var tween = Tween(begin: begin, end: end).chain(
-                              CurveTween(curve: curve),
-                            );
+                              var tween = Tween(begin: begin, end: end).chain(
+                                CurveTween(curve: curve),
+                              );
 
-                            return SlideTransition(
-                              position: animation.drive(tween),
-                              child: child,
+                              return SlideTransition(
+                                position: animation.drive(tween),
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      },
+                      child: _buildUserWidget(_currentUser),
+                    ),
+                    actions: [
+                      // notification icon
+                      Skeleton.keep(
+                        child: IconButton(
+                          style: ButtonStyle(
+                            backgroundColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                            overlayColor:
+                                MaterialStateProperty.all(Colors.transparent),
+                          ),
+                          color: Col.greyColor,
+                          iconSize: 24,
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              PageRouteBuilder(
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        const NotificationPage(),
+                                transitionsBuilder: (context, animation,
+                                    secondaryAnimation, child) {
+                                  const begin = Offset(0.5, 0.0);
+                                  const end = Offset.zero;
+                                  const curve = Curves.linearToEaseOut;
+
+                                  var tween =
+                                      Tween(begin: begin, end: end).chain(
+                                    CurveTween(curve: curve),
+                                  );
+
+                                  return SlideTransition(
+                                    position: animation.drive(tween),
+                                    child: child,
+                                  );
+                                },
+                              ),
                             );
                           },
-                        ),
-                      );
-                    },
-                    child: _buildUserWidget(_currentUser),
-                  ),
-                  actions: [
-                    // notification icon
-                    Skeleton.keep(
-                      child: IconButton(
-                        style: ButtonStyle(
-                          backgroundColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                          overlayColor:
-                              MaterialStateProperty.all(Colors.transparent),
-                        ),
-                        color: Col.greyColor,
-                        iconSize: 24,
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            PageRouteBuilder(
-                              pageBuilder:
-                                  (context, animation, secondaryAnimation) =>
-                                      const NotificationPage(),
-                              transitionsBuilder: (context, animation,
-                                  secondaryAnimation, child) {
-                                const begin = Offset(0.5, 0.0);
-                                const end = Offset.zero;
-                                const curve = Curves.linearToEaseOut;
-
-                                var tween = Tween(begin: begin, end: end).chain(
-                                  CurveTween(curve: curve),
-                                );
-
-                                return SlideTransition(
-                                  position: animation.drive(tween),
-                                  child: child,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        icon: const Icon(Icons.notifications_none_outlined),
-                      ),
-                    ),
-                  ],
-                  floating: true,
-                  snap: true,
-                ),
-                SliverList(
-                  delegate: SliverChildListDelegate(
-                    [
-                      const SizedBox(height: 10),
-                      Column(
-                        children: [
-                          buildTotalProductsWidget(context),
-                          const SizedBox(height: 20),
-                          Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 16.0),
-                            child: Column(
-                              children: [
-                                 buildMenuWidget(context, _userRole),
-                                const SizedBox(height: 20),
-                                buildRecentActivityWidget(context),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      Skeleton.keep(
-                        child: Center(
-                          child: Column(
-                            children: [
-                              const SizedBox(height: 20),
-                              const Text('~ Segini dulu yaa ~',
-                                  style: Typo.subtitleTextStyle),
-                              Image.asset(
-                                'images/gambar.png',
-                                fit: BoxFit.contain,
-                              ),
-                            ],
-                          ),
+                          icon: const Icon(Icons.notifications_none_outlined),
                         ),
                       ),
                     ],
+                    floating: true,
+                    snap: true,
                   ),
-                ),
-              ],
-            ),
-          );
-        },
+                  SliverList(
+                    delegate: SliverChildListDelegate(
+                      [
+                        const SizedBox(height: 10),
+                        Column(
+                          children: [
+                            buildTotalProductsWidget(context),
+                            const SizedBox(height: 20),
+                            Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16.0),
+                              child: Column(
+                                children: [
+                                  buildMenuWidget(context, _userRole),
+                                  const SizedBox(height: 20),
+                                  buildRecentActivityWidget(context),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        Skeleton.keep(
+                          child: Center(
+                            child: Column(
+                              children: [
+                                const SizedBox(height: 20),
+                                const Text('~ Segini dulu yaa ~',
+                                    style: Typo.subtitleTextStyle),
+                                Image.asset(
+                                  'images/gambar.png',
+                                  fit: BoxFit.contain,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
-
 }

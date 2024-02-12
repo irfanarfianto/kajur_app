@@ -47,8 +47,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
   }
 
   void _deleteProduct(String documentId) async {
-    setState(() {
-    });
+    setState(() {});
 
     try {
       DocumentSnapshot productSnapshot =
@@ -63,14 +62,12 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
         productData: productData,
       );
 
-      setState(() {
-      });
+      setState(() {});
 
       await _produkCollection.doc(documentId).delete();
       showToast(message: 'Produk berhasil dihapus');
     } catch (e) {
-      setState(() {
-      });
+      setState(() {});
       showToast(message: 'Terjadi kesalahan saat menghapus produk');
     }
   }
@@ -426,7 +423,7 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
                               ),
                             ),
                             title: Text(
-                              'Diupdate oleh ${data['lastEditedByName'] != null && data['addedByName'].length > 20 ? data['addedByName'].substring(0, 20) + '...' : data['addedByName'] ?? ''}',
+                              'Diupdate oleh ${data['lastEditedByName'] != null && data['lastEditedByName'].length > 20 ? data['lastEditedByName'].substring(0, 20) + '...' : data['lastEditedByName'] ?? ''}',
                               style: Typo.emphasizedBodyTextStyle,
                             ),
                             subtitle: Text(
