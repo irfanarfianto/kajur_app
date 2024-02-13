@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/animation/route/slide_left.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/products/list/list_products.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -93,33 +94,9 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                         tooltip: 'Lihat semua produk',
                                         onPressed: () {
                                           Navigator.of(context).push(
-                                            PageRouteBuilder(
-                                              pageBuilder: (context, animation,
-                                                      secondaryAnimation) =>
-                                                  const ListProdukPage(),
-                                              transitionsBuilder: (context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                  child) {
-                                                const begin = Offset(1.0, 0.0);
-                                                const end = Offset.zero;
-                                                const curve = Curves.easeInOut;
-
-                                                var tween = Tween(
-                                                        begin: begin, end: end)
-                                                    .chain(CurveTween(
-                                                        curve: curve));
-
-                                                var offsetAnimation =
-                                                    animation.drive(tween);
-
-                                                return SlideTransition(
-                                                  position: offsetAnimation,
-                                                  child: child,
-                                                );
-                                              },
-                                            ),
-                                          );
+                                              SlideLeftRoute(
+                                                  page:
+                                                      const ListProdukPage()));
                                         },
                                         icon: const Icon(
                                           Icons.east,
@@ -199,33 +176,9 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                         tooltip: 'Lihat semua produk',
                                         onPressed: () {
                                           Navigator.of(context).push(
-                                            PageRouteBuilder(
-                                              pageBuilder: (context, animation,
-                                                      secondaryAnimation) =>
-                                                  const ListProdukPage(),
-                                              transitionsBuilder: (context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                  child) {
-                                                const begin = Offset(1.0, 0.0);
-                                                const end = Offset.zero;
-                                                const curve = Curves.easeInOut;
-
-                                                var tween = Tween(
-                                                        begin: begin, end: end)
-                                                    .chain(CurveTween(
-                                                        curve: curve));
-
-                                                var offsetAnimation =
-                                                    animation.drive(tween);
-
-                                                return SlideTransition(
-                                                  position: offsetAnimation,
-                                                  child: child,
-                                                );
-                                              },
-                                            ),
-                                          );
+                                              SlideLeftRoute(
+                                                  page:
+                                                      const ListProdukPage()));
                                         },
                                         icon: const Icon(
                                           Icons.east,
@@ -304,33 +257,9 @@ Widget buildTotalProductsWidget(BuildContext context) {
                                         tooltip: 'Lihat semua produk',
                                         onPressed: () {
                                           Navigator.of(context).push(
-                                            PageRouteBuilder(
-                                              pageBuilder: (context, animation,
-                                                      secondaryAnimation) =>
-                                                  const ListProdukPage(),
-                                              transitionsBuilder: (context,
-                                                  animation,
-                                                  secondaryAnimation,
-                                                  child) {
-                                                const begin = Offset(1.0, 0.0);
-                                                const end = Offset.zero;
-                                                const curve = Curves.easeInOut;
-
-                                                var tween = Tween(
-                                                        begin: begin, end: end)
-                                                    .chain(CurveTween(
-                                                        curve: curve));
-
-                                                var offsetAnimation =
-                                                    animation.drive(tween);
-
-                                                return SlideTransition(
-                                                  position: offsetAnimation,
-                                                  child: child,
-                                                );
-                                              },
-                                            ),
-                                          );
+                                              SlideLeftRoute(
+                                                  page:
+                                                      const ListProdukPage()));
                                         },
                                         icon: const Icon(
                                           Icons.east,

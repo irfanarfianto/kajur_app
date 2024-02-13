@@ -136,6 +136,7 @@ class _WebViewPageState extends State<WebViewPage> {
         ),
         body: Stack(children: [
           WebViewWidget(
+            layoutDirection: Directionality.of(context),
             controller: controller,
           ),
           if (loadingPercentage < 100)

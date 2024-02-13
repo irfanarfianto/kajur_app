@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kajur_app/comingsoon/comingsoon.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/screens/menu/menu_page.dart';
+import 'package:kajur_app/screens/menu/web_view.dart';
 import 'package:kajur_app/screens/products/list/list_products.dart';
 import 'package:kajur_app/screens/products/tambah%20produk/add_products.dart';
 import 'package:kajur_app/screens/widget/circular_button.dart';
@@ -52,10 +52,13 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
                 Expanded(
                   child: buildCircularButton(
                     context,
-                    "Keuangan",
-                    Icons.account_balance_wallet,
-                    const ComingSoonPage(),
-                    true, // Display for all users
+                    "Siakad",
+                    Icons.school,
+                    const WebViewPage(
+                      url:
+                          'https://siakad.uhb.ac.id/a/www/auth?retselectedUrl=/',
+                    ),
+                    isStaffOrAdmin,
                   ),
                 ),
                 Expanded(

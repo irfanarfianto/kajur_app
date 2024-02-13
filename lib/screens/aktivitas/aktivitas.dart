@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/animation/route/slide_up.dart';
 import 'package:kajur_app/screens/aktivitas/detail_activity.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
 import 'package:kajur_app/utils/internet_utils.dart';
@@ -265,45 +266,11 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                             children: [
                                               ListTile(
                                                 onTap: () {
-                                                  Navigator.of(context).push(
-                                                    PageRouteBuilder(
-                                                      pageBuilder: (context,
-                                                              animation,
-                                                              secondaryAnimation) =>
-                                                          ActivityDetailPage(
-                                                              activityData:
-                                                                  data),
-                                                      transitionsBuilder:
-                                                          (context,
-                                                              animation,
-                                                              secondaryAnimation,
-                                                              child) {
-                                                        const begin =
-                                                            Offset(0.0, 0.3);
-                                                        const end = Offset.zero;
-                                                        const curve =
-                                                            Curves.easeOutCubic;
-
-                                                        var tween = Tween(
-                                                                begin: begin,
-                                                                end: end)
-                                                            .chain(
-                                                          CurveTween(
-                                                              curve: curve),
-                                                        );
-
-                                                        var offsetAnimation =
-                                                            animation
-                                                                .drive(tween);
-
-                                                        return SlideTransition(
-                                                          position:
-                                                              offsetAnimation,
-                                                          child: child,
-                                                        );
-                                                      },
-                                                    ),
-                                                  );
+                                                  Navigator.of(context)
+                                                      .push(SlideUpRoute(
+                                                    page: ActivityDetailPage(
+                                                        activityData: data),
+                                                  ));
                                                 },
                                                 leading: Skeleton.leaf(
                                                   child: ActivityIcon(

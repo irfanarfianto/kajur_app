@@ -7,7 +7,7 @@ import 'package:kajur_app/screens/aktivitas/components/edit_produk.dart';
 import 'package:kajur_app/screens/aktivitas/components/hapus_produk.dart';
 import 'package:kajur_app/screens/aktivitas/components/buildTambahProduk.dart';
 import 'package:kajur_app/screens/aktivitas/components/udpate_stok.dart';
-import 'package:kajur_app/screens/home/component/menu.dart';
+import 'package:kajur_app/screens/home/components/menu.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
 
 class ActivityDetailPage extends StatefulWidget {

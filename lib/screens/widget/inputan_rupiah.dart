@@ -9,7 +9,7 @@ class CurrencyInputFormatter extends TextInputFormatter {
       return newValue;
     }
 
-    double value = double.parse(newValue.text);
+    double value = double.parse(newValue.text.replaceAll(RegExp('[^0-9]'), ''));
 
     final money =
         NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
