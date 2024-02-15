@@ -513,7 +513,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   void _signOut(BuildContext context) async {
     try {
-      await _googleSignIn.signOut();
       await FirebaseAuth.instance.signOut();
       Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
       showToast(message: "Berhasil keluar");
