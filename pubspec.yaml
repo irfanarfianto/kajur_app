@@ -37,7 +37,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   dotted_dashed_line: ^0.0.3
   dropdown_button2: ^2.3.9
-  easy_date_timeline: ^1.0.4
+  easy_date_timeline: ^1.0.3
   firebase_app_check: ^0.2.1+13
   firebase_auth: ^4.15.3
   firebase_core: ^2.24.2
@@ -47,13 +47,16 @@ dependencies:
     sdk: flutter
   flutter_image_compress: ^2.1.0
   flutter_local_notifications: ^16.3.2
+  flutter_localization: ^0.2.0
+  flutter_localizations:
+    sdk: flutter
   flutter_speed_dial: ^7.0.0
   fluttertoast: ^8.2.2
   font_awesome_flutter: ^10.6.0
   google_fonts: ^6.1.0
   google_sign_in: ^6.2.1
   image_picker: ^1.0.6
-  intl: 0.19.0
+  intl: 0.18.1
   loading_animation_widget: ^1.2.0+4
   readmore: ^2.2.0
   share_plus: ^7.2.2

@@ -11,6 +11,10 @@ import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class IncomeForm extends StatefulWidget {
+  final void Function() updateChartDataCallback;
+
+  const IncomeForm({Key? key, required this.updateChartDataCallback})
+      : super(key: key);
   @override
   _IncomeFormState createState() => _IncomeFormState();
 }
@@ -47,6 +51,7 @@ class _IncomeFormState extends State<IncomeForm> {
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      locale: const Locale('id', 'ID'),
     );
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
@@ -62,6 +67,7 @@ class _IncomeFormState extends State<IncomeForm> {
           setState(() {
             _categoryNotSelected = true;
           });
+          return;
         } else {
           setState(() {
             _categoryNotSelected = false;
@@ -74,7 +80,7 @@ class _IncomeFormState extends State<IncomeForm> {
               0.0;
 
           if (amount <= 0.0) {
-            throw FormatException("Invalid amount");
+            throw const FormatException("Invalid amount");
           }
 
           // Save income data
@@ -86,7 +92,7 @@ class _IncomeFormState extends State<IncomeForm> {
             'date': _selectedDate,
             'recordedBy': user?.displayName,
             'recordedById': user?.uid,
-            'timestamp': DateTime.now(),
+            'timestamp': FieldValue.serverTimestamp(),
           });
 
           // Update total saldo
@@ -101,7 +107,7 @@ class _IncomeFormState extends State<IncomeForm> {
             'date': _selectedDate,
             'recordedBy': user?.displayName,
             'recordedById': user?.uid,
-            'timestamp': DateTime.now(),
+            'timestamp': FieldValue.serverTimestamp(),
           });
 
           _amountController.clear();
@@ -114,6 +120,7 @@ class _IncomeFormState extends State<IncomeForm> {
           showToast(message: 'Pemasukan berhasil dicatat');
 
           Navigator.pop(context);
+          widget.updateChartDataCallback();
         }
       }
     } catch (error) {
@@ -328,8 +335,8 @@ class _IncomeFormState extends State<IncomeForm> {
                           CategorySelector(
                             category: 'Penjualan',
                             selectedCategory: _selectedCategory,
-                            icon: Icons.shopping_bag,
-                            iconColor: Col.greenAccent,
+                            icon: const Icon(Icons.shopping_bag,
+                                color: Col.greenAccent),
                             onTap: () {
                               setState(() {
                                 _selectedCategory = 'Penjualan';
@@ -338,10 +345,27 @@ class _IncomeFormState extends State<IncomeForm> {
                             },
                           ),
                           CategorySelector(
+                            category: 'Dana',
+                            selectedCategory: _selectedCategory,
+                            icon: Image.asset(
+                              'images/dana.png',
+                              width: 25,
+                              height: 25,
+                            ),
+                            onTap: () {
+                              setState(() {
+                                _selectedCategory = 'Dana';
+                                _categoryNotSelected = false;
+                              });
+                            },
+                          ),
+                          CategorySelector(
                             category: 'Hutang',
                             selectedCategory: _selectedCategory,
-                            icon: Icons.money_off,
-                            iconColor: Col.orangeAccent,
+                            icon: const Icon(
+                              Icons.money_off,
+                              color: Col.orangeAccent,
+                            ),
                             onTap: () {
                               setState(() {
                                 _selectedCategory = 'Hutang';

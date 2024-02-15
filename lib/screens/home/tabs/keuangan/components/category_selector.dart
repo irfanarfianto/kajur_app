@@ -4,8 +4,8 @@ import 'package:kajur_app/design/system.dart';
 class CategorySelector extends StatelessWidget {
   final String category;
   final String selectedCategory;
-  final IconData icon;
-  final Color iconColor;
+  final Widget icon; // Ubah tipe data menjadi Widget
+
   final VoidCallback onTap;
 
   const CategorySelector({
@@ -13,7 +13,6 @@ class CategorySelector extends StatelessWidget {
     required this.category,
     required this.selectedCategory,
     required this.icon,
-    required this.iconColor,
     required this.onTap,
   });
 
@@ -37,11 +36,7 @@ class CategorySelector extends StatelessWidget {
                   ),
                   borderRadius: BorderRadius.circular(100),
                 ),
-                child: Icon(
-                  icon,
-                  color: iconColor,
-                  size: 30,
-                ),
+                child: icon, // Gunakan icon di sini
               ),
               if (selectedCategory == category)
                 Container(

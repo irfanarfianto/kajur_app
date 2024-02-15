@@ -12,6 +12,10 @@ import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
 class ExpenseForm extends StatefulWidget {
+  final void Function() updateChartDataCallback;
+
+  const ExpenseForm({super.key, required this.updateChartDataCallback});
+
   @override
   _ExpenseFormState createState() => _ExpenseFormState();
 }
@@ -48,6 +52,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
       initialDate: _selectedDate,
       firstDate: DateTime(2000),
       lastDate: DateTime(2101),
+      locale: const Locale('id', 'ID'),
     );
     if (pickedDate != null && pickedDate != _selectedDate) {
       setState(() {
@@ -75,7 +80,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
               0.0;
 
           if (amount <= 0.0) {
-            throw FormatException("Invalid amount");
+            throw const FormatException("Invalid amount");
           }
 
           DocumentReference totalSaldoRef =
@@ -111,7 +116,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
             'date': _selectedDate,
             'recordedBy': user?.displayName,
             'recordedById': user?.uid,
-            'timestamp': DateTime.now(),
+            'timestamp': FieldValue.serverTimestamp(),
           });
 
           await updateTotalSaldo(amount, 'Pengeluaran');
@@ -127,7 +132,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
             'date': _selectedDate,
             'recordedBy': user?.displayName,
             'recordedById': user?.uid,
-            'timestamp': DateTime.now(),
+            'timestamp': FieldValue.serverTimestamp(),
           });
 
           // Clear values after saving
@@ -140,6 +145,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
           showToast(message: 'Pengeluaran berhasil dicatat');
 
           Navigator.pop(context);
+          widget.updateChartDataCallback();
         }
       }
     } catch (error) {
@@ -379,8 +385,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
                           CategorySelector(
                             category: 'Belanja Pokok',
                             selectedCategory: _selectedCategory,
-                            icon: Icons.restaurant,
-                            iconColor: Col.primaryColor,
+                            icon: const Icon(
+                              Icons.restaurant,
+                              color: Col.primaryColor,
+                            ),
                             onTap: () {
                               setState(() {
                                 _selectedCategory = 'Belanja Pokok';
@@ -391,8 +399,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
                           CategorySelector(
                             category: 'Bagi Hasil',
                             selectedCategory: _selectedCategory,
-                            icon: Icons.monetization_on_outlined,
-                            iconColor: Col.greenAccent,
+                            icon: const Icon(
+                              Icons.monetization_on_outlined,
+                              color: Col.greenAccent,
+                            ),
                             onTap: () {
                               setState(() {
                                 _selectedCategory = 'Bagi Hasil';
@@ -403,8 +413,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
                           CategorySelector(
                             category: 'Perkap',
                             selectedCategory: _selectedCategory,
-                            icon: Icons.rocket_launch_outlined,
-                            iconColor: Col.purpleAccent,
+                            icon: const Icon(
+                              Icons.rocket_launch_outlined,
+                              color: Col.purpleAccent,
+                            ),
                             onTap: () {
                               setState(() {
                                 _selectedCategory = 'Perkap';
@@ -415,8 +427,10 @@ class _ExpenseFormState extends State<ExpenseForm> {
                           CategorySelector(
                             category: 'Transportasi',
                             selectedCategory: _selectedCategory,
-                            icon: Icons.directions_car,
-                            iconColor: Col.orangeAccent,
+                            icon: const Icon(
+                              Icons.directions_car,
+                              color: Col.orangeAccent,
+                            ),
                             onTap: () {
                               setState(() {
                                 _selectedCategory = 'Transportasi';

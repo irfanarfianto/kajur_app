@@ -14,6 +14,7 @@ import 'screens/products/tambah produk/add_products.dart';
 import 'screens/products/list/list_products.dart';
 import 'comingsoon/comingsoon.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 
 void main() async {
   timeago.setLocaleMessages('id', timeago.IdMessages());
@@ -49,6 +50,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: [
+        Locale('en'), // English
+        Locale('id'), // Spanish
+      ],
       debugShowCheckedModeBanner: false,
       theme: buildTheme(context),
       initialRoute: initialRoute,
