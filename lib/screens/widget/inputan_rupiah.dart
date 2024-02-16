@@ -9,11 +9,15 @@ class CurrencyInputFormatter extends TextInputFormatter {
       return newValue;
     }
 
-    double value = double.parse(newValue.text.replaceAll(RegExp('[^0-9]'), ''));
+    // Remove non-numeric characters from the input string
+    final numericString = newValue.text.replaceAll(RegExp(r'[^0-9]'), '');
 
+    // Parse the numeric string to a double
+    double value = double.tryParse(numericString) ?? 0.0;
+
+    // Format the double value as currency
     final money =
         NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
-
     String formattedValue = money.format(value);
 
     return TextEditingValue(

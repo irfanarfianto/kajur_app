@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/aktivitas/components/edit_produk.dart';
 import 'package:kajur_app/screens/aktivitas/components/hapus_produk.dart';
 import 'package:kajur_app/screens/aktivitas/components/buildTambahProduk.dart';
 import 'package:kajur_app/screens/aktivitas/components/udpate_stok.dart';
 import 'package:kajur_app/screens/home/components/menu.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ActivityDetailPage extends StatefulWidget {
   final Map<String, dynamic> activityData;
@@ -20,6 +22,23 @@ class ActivityDetailPage extends StatefulWidget {
 }
 
 class _ActivityDetailPageState extends State<ActivityDetailPage> {
+  void openWhatsApp(BuildContext context) async {
+    String whatsappNumber = "+6282322546452";
+    String messageText = "Hello min";
+
+    String whatsappURL = "https://wa.me/$whatsappNumber?text=$messageText";
+
+    if (await canLaunchUrl(
+      Uri.parse(whatsappURL),
+    )) {
+      await launchUrl(
+        Uri.parse(whatsappURL),
+      );
+    } else {
+      showToast(message: "WhatsApp is not installed");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     String action = widget.activityData['action'] ?? '';
@@ -109,6 +128,18 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                   buildMenuWidget(context, userRole),
                 if (action == 'Update Stok') buildMenuWidget(context, userRole),
                 if (action == 'Edit Produk') buildMenuWidget(context, userRole),
+                const SizedBox(height: 25),
+                InkWell(
+                    onTap: () {
+                      openWhatsApp(context);
+                    },
+                    child: const Text('Butuh bantuan?',
+                        style: TextStyle(
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                          color: Col.primaryColor,
+                        ))),
+                const SizedBox(height: 25),
               ],
             ),
           ),

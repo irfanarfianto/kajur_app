@@ -6,7 +6,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/category_selector.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/dialog_deskripsi.dart';
-import 'package:kajur_app/screens/home/tabs/keuangan/numpad.dart';
+import 'package:kajur_app/screens/widget/numpad.dart';
 import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 

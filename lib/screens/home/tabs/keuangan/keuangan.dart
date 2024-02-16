@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/animation/route/slide_up.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/screens/home/components/riwayat_transaksi.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/chart.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/form_pemasukan.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/form_pengeluaran.dart';
@@ -206,7 +207,7 @@ class _KeuanganContentState extends State<KeuanganContent> {
         double totalExpenseForWeek = 0;
 
         for (var document in querySnapshot.docs) {
-          double expenseAmount = double.parse(document['amount'] ?? '0');
+          double expenseAmount = document['amount'] ?? 0;
           totalExpenseForWeek += expenseAmount;
         }
 
@@ -256,6 +257,7 @@ class _KeuanganContentState extends State<KeuanganContent> {
         NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 
     return SingleChildScrollView(
+      physics: const BouncingScrollPhysics(),
       child: Column(
         children: [
           const SizedBox(height: 20),
@@ -538,66 +540,12 @@ class _KeuanganContentState extends State<KeuanganContent> {
                     ),
                   ),
                   const SizedBox(height: 8),
-                  Column(
-                    children: List.generate(
-                      4,
-                      (index) => Skeletonizer(
-                        enabled: true,
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: Skeleton.leaf(
-                                child: Container(
-                                  padding: const EdgeInsets.all(8),
-                                  width: 56,
-                                  height: 56,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(28),
-                                    color: Colors.grey[300],
-                                  ),
-                                ),
-                              ),
-                              title: Container(
-                                width: 200,
-                                height: 20,
-                                color: Colors.grey[300],
-                              ),
-                              subtitle: Container(
-                                width: 100,
-                                height: 16,
-                                color: Colors.grey[300],
-                              ),
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Icon(
-                                    Icons.history,
-                                    color: Colors.grey[300],
-                                    size: 15,
-                                  ),
-                                  Container(
-                                    width: 60,
-                                    height: 16,
-                                    color: Colors.grey[300],
-                                  ),
-                                ],
-                              ),
-                            ),
-                            if (index <
-                                2) // Don't add Divider after the last item
-                              Divider(
-                                thickness: 1,
-                                color: Colors.grey[300],
-                              ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                  TransactionHistory()
                 ],
               ),
             ),
-          )
+          ),
+          const SizedBox(height: 50),
         ],
       ),
     );

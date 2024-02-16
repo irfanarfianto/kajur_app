@@ -4,7 +4,7 @@ import 'package:kajur_app/design/system.dart';
 class CategorySelector extends StatelessWidget {
   final String category;
   final String selectedCategory;
-  final Widget icon; // Ubah tipe data menjadi Widget
+  final Widget icon; 
 
   final VoidCallback onTap;
 

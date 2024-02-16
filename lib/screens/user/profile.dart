@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/user/edit_profile.dart';
@@ -19,7 +18,6 @@ class UserProfilePage extends StatefulWidget {
 }
 
 class _UserProfilePageState extends State<UserProfilePage> {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
   late User? user;
   bool isAdmin = false;
   bool isStaf = false;
@@ -514,8 +512,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
   void _signOut(BuildContext context) async {
     try {
       await FirebaseAuth.instance.signOut();
+      // ignore: use_build_context_synchronously
       Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
-      showToast(message: "Berhasil keluar");
+      // showToast(message: "Berhasil keluar");
     } catch (e) {
       showToast(message: "Error signing out: $e");
     }

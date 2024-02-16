@@ -7,7 +7,7 @@ import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/category_selector.dart';
 import 'package:kajur_app/screens/home/tabs/keuangan/components/dialog_deskripsi.dart';
-import 'package:kajur_app/screens/home/tabs/keuangan/numpad.dart';
+import 'package:kajur_app/screens/widget/numpad.dart';
 import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
@@ -109,8 +109,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
 
           DocumentReference expenseRef =
               await _firestore.collection('expenses').add({
-            'amount':
-                _amountController.text.replaceAll('Rp', '').replaceAll('.', ''),
+            'amount': amount,
             'description': _descriptionController.text,
             'category': _selectedCategory,
             'date': _selectedDate,
@@ -125,8 +124,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
           await _firestore.collection('transaction_history').add({
             'transactionType': 'Pengeluaran',
             'transactionId': expenseRef.id,
-            'amount':
-                _amountController.text.replaceAll('Rp', '').replaceAll('.', ''),
+            'amount': amount,
             'description': _descriptionController.text,
             'category': _selectedCategory,
             'date': _selectedDate,
