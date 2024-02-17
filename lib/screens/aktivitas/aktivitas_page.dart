@@ -86,6 +86,13 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                           _selectedDate = selectedDate;
                         });
                       },
+                      headerProps: const EasyHeaderProps(
+                        monthStyle: TextStyle(
+                          color: Col.blackColor,
+                          fontSize: 16,
+                        ),
+                        monthPickerType: MonthPickerType.dropDown,
+                      ),
                       activeColor: Col.primaryColor,
                       dayProps: const EasyDayProps(
                         height: 70,
@@ -192,7 +199,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                 'Oops, nggak ada aktivitas\nditanggal segitu',
                                 style: TextStyle(
                                   fontSize: 16,
-                                  fontWeight: FontWeight.bold,
+                                  fontWeight: Fw.medium,
                                 ),
                                 textAlign: TextAlign.center,
                               ),
@@ -332,7 +339,7 @@ class _AllActivitiesPageState extends State<AllActivitiesPage> {
                                                                             amount)
                                                                     : ''),
                                                             style: TextStyle(
-                                                              fontSize: 14,
+                                                              fontSize: 12,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,

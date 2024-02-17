@@ -59,6 +59,9 @@ class _TimerPickerState extends State<TimerPicker> {
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
                       ),
+                      const SizedBox(
+                        height: 50,
+                      ),
                       SizedBox(
                         height: 100,
                         child: CupertinoPicker(
@@ -92,6 +95,9 @@ class _TimerPickerState extends State<TimerPicker> {
                         'Tahun',
                         style: TextStyle(
                             fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(
+                        height: 50,
                       ),
                       SizedBox(
                         height: 100,

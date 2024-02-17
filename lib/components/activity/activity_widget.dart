@@ -223,7 +223,7 @@ Widget buildRecentActivityWidget(context) {
                                       ? currencyFormat.format(amount)
                                       : ''),
                               style: TextStyle(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.bold,
                                 color: data['action'] == 'Pengeluaran'
                                     ? Col.redAccent

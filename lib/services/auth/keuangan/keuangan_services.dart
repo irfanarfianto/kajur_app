@@ -3,9 +3,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/components/keuangan/chart.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:collection/collection.dart';
 
 class KeuanganService {
+  void Function()? onDataLoaded;
   late double totalSaldo = 0;
+  List<double> pendapatanPerBulan = [];
   late String timestampString = '';
   late StreamSubscription<DocumentSnapshot> _totalSaldoSubscription;
   late DateTime saldoTimestamp;
@@ -17,7 +20,9 @@ class KeuanganService {
   late String selectedYear;
   double totalIncomeMonthly = 0;
   double totalExpenseMonthly = 0;
-  bool showBalance = false;
+  bool showBalance = true;
+  final currencyFormat =
+      NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 
   Future<void> listenToTotalSaldo() async {
     try {
@@ -38,6 +43,9 @@ class KeuanganService {
 
           totalSaldo = saldo;
           saldoTimestamp = dateTime;
+          if (onDataLoaded != null) {
+            onDataLoaded!(); // Panggil callback
+          }
         } else {
           print('Total saldo document does not exist.');
         }
@@ -51,25 +59,12 @@ class KeuanganService {
     _totalSaldoSubscription.cancel();
   }
 
-  void fetchIncomeData(String selectedMonth, String selectedYear) async {
+  Future<void> fetchIncomeData(
+      String selectedMonth, String selectedYear) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       int selectedMonthIndex = DateFormat('MMMM').parse(selectedMonth).month;
       int selectedYearInt = int.parse(selectedYear);
-
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // // Cek apakah data tersedia di cache lokal
-      // if (prefs.containsKey('incomeData_$selectedMonth$selectedYear')) {
-      //   // Jika ada, gunakan data dari cache lokal
-      //   setState(() {
-      //     incomeData = ChartData.decodeList(
-      //         prefs.getStringList('incomeData_$selectedMonth$selectedYear')!);
-      //     totalIncomeMonthly = prefs.getDouble(
-      //             'totalIncomeMonthly_$selectedMonth$selectedYear') ??
-      //         0;
-      //   });
-      //   return;
-      // }
 
       CollectionReference incomeRef =
           FirebaseFirestore.instance.collection('income');
@@ -108,35 +103,26 @@ class KeuanganService {
       totalIncomeMonthly =
           incomeData.fold(0, (previous, current) => previous + current.income);
 
-      // // Simpan data ke cache lokal
-      // prefs.setStringList('incomeData_$selectedMonth$selectedYear',
-      //     ChartData.encodeList(incomeData));
-      // prefs.setDouble('totalIncomeMonthly_$selectedMonth$selectedYear',
-      //     totalIncomeMonthly);
+      // Perbarui cache lokal setelah mendapatkan data baru dari Firestore
+      await prefs.setStringList('incomeData_$selectedMonth$selectedYear',
+          ChartData.encodeList(incomeData));
+      await prefs.setDouble(
+          'totalIncomeMonthly_$selectedMonth$selectedYear', totalIncomeMonthly);
+
+      if (onDataLoaded != null) {
+        onDataLoaded!(); // Panggil callback
+      }
     } catch (error) {
       print('Error fetching income data: $error');
     }
   }
 
-  void fetchExpenseData(String selectedMonth, String selectedYear) async {
+  Future<void> fetchExpenseData(
+      String selectedMonth, String selectedYear) async {
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
       int selectedMonthIndex = DateFormat('MMMM').parse(selectedMonth).month;
       int selectedYearInt = int.parse(selectedYear);
-
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-
-      // // Cek apakah data pengeluaran bulanan sudah ada di cache
-      // if (prefs.containsKey('expenseData_$selectedMonth$selectedYear')) {
-      //   // Gunakan data dari cache lokal jika sudah ada
-      //   setState(() {
-      //     expenseData = ChartData.decodeList(
-      //         prefs.getStringList('expenseData_$selectedMonth$selectedYear')!);
-      //     totalExpenseMonthly = prefs.getDouble(
-      //             'totalExpenseMonthly_$selectedMonth$selectedYear') ??
-      //         0;
-      //   });
-      //   return;
-      // }
 
       CollectionReference expenseRef =
           FirebaseFirestore.instance.collection('expenses');
@@ -176,11 +162,15 @@ class KeuanganService {
       totalExpenseMonthly = expenseData.fold(
           0, (previous, current) => previous + current.expense);
 
-      // // Simpan data pengeluaran bulanan ke dalam cache lokal
-      // await prefs.setStringList('expenseData_$selectedMonth$selectedYear',
-      //     ChartData.encodeList(weeklyExpenseData));
-      // await prefs.setDouble('totalExpenseMonthly_$selectedMonth$selectedYear',
-      //     totalExpenseMonthly);
+      // Perbarui cache lokal setelah mendapatkan data baru dari Firestore
+      await prefs.setStringList('expenseData_$selectedMonth$selectedYear',
+          ChartData.encodeList(weeklyExpenseData));
+      await prefs.setDouble('totalExpenseMonthly_$selectedMonth$selectedYear',
+          totalExpenseMonthly);
+
+      if (onDataLoaded != null) {
+        onDataLoaded!(); // Panggil callback
+      }
     } catch (error) {
       print('Error fetching expense data: $error');
     }
@@ -188,6 +178,9 @@ class KeuanganService {
 
   void toggleShowBalance() {
     showBalance = !showBalance;
+    if (onDataLoaded != null) {
+      onDataLoaded!(); // Panggil callback
+    }
   }
 
   void updateChartDataAfterSubmission() {
@@ -196,5 +189,9 @@ class KeuanganService {
 
     // Memperbarui data pengeluaran
     fetchExpenseData(selectedMonth, selectedYear);
+
+    if (onDataLoaded != null) {
+      onDataLoaded!(); // Panggil callback
+    }
   }
 }

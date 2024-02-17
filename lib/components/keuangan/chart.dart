@@ -14,76 +14,85 @@ class SfCartesianChartWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SfCartesianChart(
-      borderColor: Colors.white,
-      primaryXAxis: const CategoryAxis(
-        borderWidth: 0,
-        majorGridLines: MajorGridLines(width: 0),
-        majorTickLines: MajorTickLines(size: 0),
-      ),
-      primaryYAxis: NumericAxis(
-        axisLine: AxisLine(
-          color: Colors.white.withOpacity(.5),
-        ),
-        numberFormat: NumberFormat.compactCurrency(
-            locale: 'id', symbol: '', decimalDigits: 0),
-        labelFormat: '{value}',
-        majorGridLines: const MajorGridLines(
-          width: 1,
-          dashArray: <double>[3, 3],
-        ),
-        majorTickLines: const MajorTickLines(size: 0),
-      ),
-      series: <ColumnSeries<ChartData, String>>[
-        ColumnSeries<ChartData, String>(
-          dataSource: incomeData,
-          xValueMapper: (ChartData sales, _) => sales.weekDateString,
-          yValueMapper: (ChartData sales, _) => sales.income,
-          name: 'Pemasukan',
-          spacing: 0.1,
-          width: 0.8,
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.1, 0.9],
-            tileMode: TileMode.clamp,
-            colors: [
-              Colors.blueAccent,
-              Colors.blueAccent.withOpacity(.2),
-            ],
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        SfCartesianChart(
+          borderColor: Colors.white,
+          primaryXAxis: const CategoryAxis(
+            borderWidth: 0,
+            majorGridLines: MajorGridLines(width: 0),
+            majorTickLines: MajorTickLines(size: 0),
           ),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.elliptical(6, 6),
-            topRight: Radius.elliptical(6, 6),
+          primaryYAxis: NumericAxis(
+            axisLine: AxisLine(
+              color: Colors.white.withOpacity(.5),
+            ),
+            numberFormat:
+                NumberFormat.compactCurrency(locale: 'id', symbol: ''),
+            labelFormat: '{value}',
+            majorGridLines: const MajorGridLines(
+              width: 1,
+              dashArray: <double>[3, 3],
+            ),
+            majorTickLines: const MajorTickLines(size: 0),
+          ),
+          series: <ColumnSeries<ChartData, String>>[
+            ColumnSeries<ChartData, String>(
+              dataSource: incomeData,
+              xValueMapper: (ChartData sales, _) => sales.weekDateString,
+              yValueMapper: (ChartData sales, _) => sales.income,
+              name: 'Pemasukan',
+              spacing: 0.1,
+              width: 0.8,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.1, 0.9],
+                tileMode: TileMode.clamp,
+                colors: [
+                  Colors.blueAccent,
+                  Colors.blueAccent.withOpacity(.2),
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.elliptical(6, 6),
+                topRight: Radius.elliptical(6, 6),
+              ),
+            ),
+            ColumnSeries<ChartData, String>(
+              dataSource: expenseData,
+              xValueMapper: (ChartData sales, _) => sales.weekDateString,
+              yValueMapper: (ChartData sales, _) => sales.expense,
+              name: 'Pengeluaran',
+              spacing: 0.1,
+              width: 0.8,
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                stops: const [0.1, 0.9],
+                tileMode: TileMode.clamp,
+                colors: [
+                  Colors.orangeAccent,
+                  Colors.orangeAccent.withOpacity(.2),
+                ],
+              ),
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.elliptical(6, 6),
+                topRight: Radius.elliptical(6, 6),
+              ),
+            ),
+          ],
+          tooltipBehavior: TooltipBehavior(
+            enable: true,
+            format: 'point.x: point.y',
           ),
         ),
-        ColumnSeries<ChartData, String>(
-          dataSource: expenseData,
-          xValueMapper: (ChartData sales, _) => sales.weekDateString,
-          yValueMapper: (ChartData sales, _) => sales.expense,
-          name: 'Pengeluaran',
-          spacing: 0.1,
-          width: 0.8,
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            stops: const [0.1, 0.9],
-            tileMode: TileMode.clamp,
-            colors: [
-              Colors.orangeAccent,
-              Colors.orangeAccent.withOpacity(.2),
-            ],
+        if (incomeData.isEmpty && expenseData.isEmpty)
+          const Center(
+            child: CircularProgressIndicator(), // Indikator loading
           ),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.elliptical(6, 6),
-            topRight: Radius.elliptical(6, 6),
-          ),
-        ),
       ],
-      tooltipBehavior: TooltipBehavior(
-        enable: true,
-        format: 'point.x: point.y',
-      ),
     );
   }
 }

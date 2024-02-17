@@ -170,29 +170,11 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       floating: true,
                       snap: true,
                       pinned: true,
-                      bottom: TabBar(
-                        indicatorSize: TabBarIndicatorSize.tab,
-                        controller: _tabController,
-                        tabs: const <Widget>[
-                          Tab(
-                            text: 'Keuangan',
-                          ),
-                          Tab(
-                            text: 'Manajemen Produk',
-                          ),
-                        ],
-                      ),
                     ),
                   ];
                 },
-                body: TabBarView(
-                  controller: _tabController,
-                  children: <Widget>[
-                    const KeuanganContent(),
-                    ManajemenProdukContent(
-                      userRole: _userRole,
-                    )
-                  ],
+                body: KeuanganContent(
+                  userRole: _userRole,
                 ),
               );
             },

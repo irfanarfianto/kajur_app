@@ -6,7 +6,7 @@ import 'package:kajur_app/screens/products/list/list_products_page.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk_page.dart';
 
 class MenuButton extends StatelessWidget {
-  const MenuButton({super.key});
+  const MenuButton({super.key, required String userRole});
 
   @override
   Widget build(BuildContext context) {
