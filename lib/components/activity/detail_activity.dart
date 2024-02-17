@@ -136,16 +136,20 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
                 if (action == 'Update Stok') buildMenuWidget(context, userRole),
                 if (action == 'Edit Produk') buildMenuWidget(context, userRole),
                 const SizedBox(height: 25),
+                const Text(
+                  'Butuh bantuan?',
+                ),
                 InkWell(
-                    onTap: () {
-                      openWhatsApp(context);
-                    },
-                    child: const Text('Butuh bantuan?',
-                        style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: Col.primaryColor,
-                        ))),
+                  onTap: () {
+                    openWhatsApp(context);
+                  },
+                  child: const Text('Hubungi Pengurus Kajur',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Col.primaryColor,
+                      )),
+                ),
                 const SizedBox(height: 25),
               ],
             ),
