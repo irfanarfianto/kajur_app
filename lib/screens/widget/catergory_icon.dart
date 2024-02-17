@@ -26,15 +26,15 @@ class CategoryIcon extends StatelessWidget {
     }
 
     return Container(
-      margin: const EdgeInsets.only(left: 8),
+      margin: const EdgeInsets.only(left: 5),
       decoration: const BoxDecoration(
         shape: BoxShape.circle,
       ),
       child: Image.asset(
         imagePath,
         color: iconColor,
-        width: 18,
-        height: 18,
+        width: 12,
+        height: 10,
       ),
     );
   }

@@ -33,6 +33,16 @@ class ActivityIcon extends StatelessWidget {
         iconColor = Col.redAccent;
         backgroundColor = Col.redAccent.withOpacity(0.1);
         break;
+      case 'Pengeluaran':
+        iconData = Icons.north_east;
+        iconColor = Col.redAccent;
+        backgroundColor = Col.redAccent.withOpacity(0.1);
+        break;
+      case 'Pemasukan':
+        iconData = Icons.south_west;
+        iconColor = Col.greenAccent;
+        backgroundColor = Col.greenAccent.withOpacity(0.1);
+        break;
       default:
         iconData = Icons.campaign;
         iconColor = Col.greyColor;

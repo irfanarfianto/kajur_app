@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:kajur_app/global/common/toast.dart';
-import 'package:kajur_app/screens/auth/login.dart';
+import 'package:kajur_app/screens/auth/login_page.dart';
 
 class EmailVerifPage extends StatefulWidget {
   const EmailVerifPage({super.key});
