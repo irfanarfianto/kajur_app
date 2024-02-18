@@ -36,12 +36,6 @@ class NumPad extends StatelessWidget {
                 color: buttonColor,
                 controller: controller,
               ),
-            NumberButton(
-              number: 0,
-              size: buttonSize,
-              color: buttonColor,
-              controller: controller,
-            ),
           ],
         ),
         const SizedBox(height: 20),
@@ -55,15 +49,38 @@ class NumPad extends StatelessWidget {
                 color: buttonColor,
                 controller: controller,
               ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            for (int i = 7; i <= 9; i++)
+              NumberButton(
+                number: i,
+                size: buttonSize,
+                color: buttonColor,
+                controller: controller,
+              ),
+          ],
+        ),
+        const SizedBox(height: 20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
             SizedBox(
               width: buttonSize,
               height: buttonSize,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: buttonColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(buttonSize / 2),
+                  elevation: 0,
+                  backgroundColor: Col.backgroundColor,
+                  surfaceTintColor: Col.backgroundColor,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(50)),
                   ),
+                  onPrimary: Col.primaryColor.withOpacity(0.8),
+                  onSurface: Col.primaryColor.withOpacity(0.8),
                 ),
                 onPressed: () {
                   final newText = '${controller.text}000';
@@ -90,24 +107,18 @@ class NumPad extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            for (int i = 7; i <= 9; i++)
-              NumberButton(
-                number: i,
-                size: buttonSize,
-                color: buttonColor,
-                controller: controller,
-              ),
+            NumberButton(
+              number: 0,
+              size: buttonSize,
+              color: buttonColor,
+              controller: controller,
+            ),
             GestureDetector(
               onLongPress: () {
                 controller.clear();
               },
               child: IconButton(
+                padding: const EdgeInsets.all(16.0),
                 onPressed: () {
                   delete();
                   // Format the amount after deleting a digit
@@ -128,12 +139,12 @@ class NumPad extends StatelessWidget {
                   Icons.backspace,
                 ),
                 color: iconColor,
-                iconSize: 50,
+                iconSize: 30,
               ),
             ),
           ],
         ),
-        const SizedBox(height: 50),
+        const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () => onSubmit(),
           child: const Text('Catat'),
@@ -150,12 +161,12 @@ class NumberButton extends StatelessWidget {
   final TextEditingController controller;
 
   const NumberButton({
-    Key? key,
+    super.key,
     required this.number,
     required this.size,
     required this.color,
     required this.controller,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -164,10 +175,14 @@ class NumberButton extends StatelessWidget {
       height: size,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          backgroundColor: color,
+          elevation: 0,
+          backgroundColor: Col.backgroundColor,
+          surfaceTintColor: Col.backgroundColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(50)),
           ),
+          onPrimary: Col.primaryColor.withOpacity(0.8),
+          onSurface: Col.primaryColor.withOpacity(0.8),
         ),
         onPressed: () {
           final newText = controller.text + number.toString();

@@ -2,11 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:kajur_app/animation/route/slide_left.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/user/edit_profile_page.dart';
 import 'package:kajur_app/admin/manage_user_role.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class UserProfilePage extends StatefulWidget {
   final User? currentUser;
@@ -95,12 +97,35 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   // _uploadFotoProfil(context),
                   const SizedBox(height: 16),
                   _buildLogoutButton(context),
+                  const SizedBox(height: 16),
+                  _buildAppVersion(context),
                 ],
               ),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildAppVersion(BuildContext context) {
+    return FutureBuilder<PackageInfo>(
+      future: PackageInfo.fromPlatform(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const CircularProgressIndicator(color: Colors.white);
+        } else if (snapshot.hasData) {
+          return Text(
+            'Versi ${snapshot.data!.version}',
+            style: const TextStyle(
+              color: Col.blackColor,
+              fontWeight: FontWeight.bold,
+            ),
+          );
+        } else {
+          return const SizedBox();
+        }
+      },
     );
   }
 
@@ -189,12 +214,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 InkWell(
                   onTap: () {
                     Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => EditProfilePage(
-                                documentId: currentUser.uid,
-                              )),
-                    );
+                        context,
+                        SlideLeftRoute(
+                            page: EditProfilePage(
+                          documentId: currentUser.uid,
+                        )));
                   },
                   child: const Text('Edit profil',
                       style: Typo.emphasizedBodyTextStyle),
@@ -268,11 +292,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 GridView.builder(
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    childAspectRatio: 1.5,
+                    childAspectRatio: 1.2,
                     crossAxisCount:
                         2, // Sesuaikan jumlah kolom sesuai kebutuhan
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 8.0,
                   ),
                   itemCount: allActionTypes.length,
                   itemBuilder: (BuildContext context, int index) {

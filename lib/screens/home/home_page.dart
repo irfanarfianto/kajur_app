@@ -7,7 +7,6 @@ import 'package:kajur_app/animation/route/slide_left.dart';
 import 'package:kajur_app/design/system.dart';
 import 'package:kajur_app/global/common/toast.dart';
 import 'package:kajur_app/screens/keuangan/keuangan.dart';
-import 'package:kajur_app/screens/home/manajemen_produk_page.dart';
 import 'package:kajur_app/components/user/user_name.dart';
 import 'package:kajur_app/screens/notifications/notifications_page.dart';
 import 'package:kajur_app/screens/user/profile_page.dart';
@@ -24,37 +23,18 @@ class HomePage extends StatefulWidget {
   }
 }
 
-class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
+class _HomePageState extends State<HomePage> {
   late User? _currentUser;
   int totalProducts = 0;
   String _userRole = '';
   DateTime? currentBackPressTime;
-  late final TabController _tabController;
 
   @override
   void initState() {
     super.initState();
     _getCurrentUser();
-    _fetchTotalProducts();
+
     _refreshData();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  Future<void> _fetchTotalProducts() async {
-    int total = await getTotalProducts();
-    setState(() {
-      totalProducts = total;
-    });
-  }
-
-  Future<int> getTotalProducts() async {
-    try {
-      QuerySnapshot querySnapshot =
-          await FirebaseFirestore.instance.collection('kantin').get();
-      return querySnapshot.size;
-    } catch (e) {
-      return 0;
-    }
   }
 
   Future<void> _refreshData() async {
@@ -65,18 +45,16 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
 
       // Simulasi pengambilan data baru dari sumber data Anda
       await Future.delayed(const Duration(seconds: 3));
-    } catch (error) {}
+    } catch (error) {
+      showToast(
+        message: 'Terjadi kesalahan: $error',
+      );
+    }
   }
 
   Future<void> _getCurrentUser() async {
     _currentUser = FirebaseAuth.instance.currentUser;
     setState(() {});
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -92,8 +70,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
           showToast(message: "Tekan kembali sekali lagi untuk keluar");
           return false;
         } else {
-          // Jika pengguna menekan tombol kembali dalam waktu kurang dari 2 detik lagi
-          // Aplikasi akan keluar
           return true;
         }
       },
@@ -169,7 +145,6 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                       ],
                       floating: true,
                       snap: true,
-                      pinned: true,
                     ),
                   ];
                 },

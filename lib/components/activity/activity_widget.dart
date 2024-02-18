@@ -31,47 +31,45 @@ Widget buildRecentActivityWidget(context) {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Skeleton.keep(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Aktivitas Terbaru',
-                  style: Typo.titleTextStyle,
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Aktivitas Terbaru',
+                style: Typo.titleTextStyle,
+              ),
+              TextButton(
+                child: const Text(
+                  'Lihat semua',
                 ),
-                TextButton(
-                  child: const Text(
-                    'Lihat semua',
-                  ),
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      PageRouteBuilder(
-                        pageBuilder: (context, animation, secondaryAnimation) =>
-                            const AllActivitiesPage(),
-                        transitionsBuilder:
-                            (context, animation, secondaryAnimation, child) {
-                          const begin = Offset(0.0, 0.5);
-                          const end = Offset.zero;
-                          const curve = Curves.linearToEaseOut;
+                onPressed: () {
+                  Navigator.of(context).push(
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) =>
+                          const AllActivitiesPage(),
+                      transitionsBuilder:
+                          (context, animation, secondaryAnimation, child) {
+                        const begin = Offset(0.0, 0.5);
+                        const end = Offset.zero;
+                        const curve = Curves.linearToEaseOut;
 
-                          var tween = Tween(begin: begin, end: end)
-                              .chain(CurveTween(curve: curve));
+                        var tween = Tween(begin: begin, end: end)
+                            .chain(CurveTween(curve: curve));
 
-                          var offsetAnimation = animation.drive(tween);
+                        var offsetAnimation = animation.drive(tween);
 
-                          return SlideTransition(
-                            position: offsetAnimation,
-                            child: child,
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-              ],
-            ),
+                        return SlideTransition(
+                          position: offsetAnimation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            ],
           ),
         ),
         const SizedBox(height: 8),

@@ -54,6 +54,19 @@ class _WebViewPageState extends State<WebViewPage> {
       behavior: const ScrollBehavior().copyWith(overscroll: true),
       child: Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+            tooltip: 'Kembali',
+            onPressed: () async {
+              if (await controller.canGoBack()) {
+                await controller.goBack();
+              } else {
+                // Tidak ada yang kembali, tombol dinonaktifkan
+                Navigator.pop(context);
+                return;
+              }
+            },
+            icon: const Icon(Icons.arrow_back),
+          ),
           backgroundColor: Col.primaryColor,
           foregroundColor: Col.whiteColor,
           actions: [

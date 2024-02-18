@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kajur_app/components/produk/kirim_data_produk.dart';
 import 'package:kajur_app/screens/menu/menu_page.dart';
 import 'package:kajur_app/screens/webviews/web_view_page.dart';
@@ -15,8 +16,8 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
     children: [
       buildCircularButton(
         context,
-        "List Produk",
-        Icons.ballot,
+        "Produk",
+        FontAwesomeIcons.burger,
         const ListProdukPage(),
         true, // Display for all users
       ),
@@ -24,14 +25,14 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
       buildCircularButton(
         context,
         "Tambah",
-        Icons.add_shopping_cart_rounded,
+        FontAwesomeIcons.cartArrowDown,
         const AddDataPage(),
         true, // Display for all users
       ),
       buildCircularButton(
         context,
-        "Grafik",
-        Icons.school,
+        "Siakad",
+        FontAwesomeIcons.graduationCap,
         const WebViewPage(
           url: 'https://siakad.uhb.ac.id/a/www/auth?retselectedUrl=/',
         ),
@@ -40,7 +41,7 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
       buildCircularButton(
         context,
         "Scalsa",
-        Icons.school,
+        FontAwesomeIcons.chalkboardUser,
         const WebViewPage(
           url: 'https://fst.scalsa.uhb.ac.id/',
         ),
@@ -49,7 +50,7 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
       buildCircularButton(
         context,
         "Chat GPT",
-        Icons.chat_bubble_outline_outlined,
+        FontAwesomeIcons.message,
         const WebViewPage(
           url: 'https://chat.openai.com/',
         ),
@@ -58,14 +59,14 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
       buildCircularButton(
         context,
         "Kirim Data",
-        Icons.share,
+        FontAwesomeIcons.shareNodes,
         const ShareProduk(),
         isStaffOrAdmin,
       ),
       buildCircularButton(
         context,
         "Google",
-        Icons.public,
+        FontAwesomeIcons.google,
         const WebViewPage(
           url: 'https://www.google.com/',
         ),
@@ -74,7 +75,7 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
       buildCircularButton(
         context,
         "Lainnya",
-        Icons.apps,
+        FontAwesomeIcons.rectangleList,
         const MenuPage(), // You can replace this with the actual page
         true, // Display for all users
       ),

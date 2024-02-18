@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kajur_app/design/system.dart';
 
 Widget buildCircularButton(BuildContext context, String label, IconData icon,
@@ -53,13 +54,14 @@ Widget buildCircularButton(BuildContext context, String label, IconData icon,
             );
           }
         },
-        icon: Icon(icon),
-        iconSize: 28,
+        icon: FaIcon(icon),
+        iconSize: 25,
         color: Col.primaryColor,
       ),
       const SizedBox(height: 8),
       Text(
         label,
+        textAlign: TextAlign.center,
         style: const TextStyle(fontSize: 12, color: Col.greyColor),
       ),
     ],

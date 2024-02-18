@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:kajur_app/components/produk/update_stock_dialog.dart';
 import 'package:kajur_app/design/system.dart';
 
 class HighStockProductsCard extends StatelessWidget {
@@ -9,7 +10,8 @@ class HighStockProductsCard extends StatelessWidget {
   final bool isHighStock;
   final VoidCallback onTap;
 
-  const HighStockProductsCard({super.key, 
+  const HighStockProductsCard({
+    super.key,
     required this.document,
     required this.isHighStock,
     required this.onTap,
@@ -97,7 +99,15 @@ class HighStockProductsCard extends StatelessWidget {
                       width: 60,
                       height: 100,
                       child: InkWell(
-                        onTap: onTap,
+                        onTap: () {
+                          showUpdateStokDialog(
+                            context,
+                            documentId,
+                            data['menu'],
+                            data['stok'],
+                            document['image'],
+                          );
+                        },
                         child: Container(
                           alignment: Alignment.topCenter,
                           width: 60,

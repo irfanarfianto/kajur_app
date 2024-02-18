@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:kajur_app/design/system.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashScreen extends StatefulWidget {
   final Widget? child;
 
-  const SplashScreen({super.key, this.child});
+  const SplashScreen({Key? key, this.child});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -43,15 +45,36 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        constraints: const BoxConstraints.expand(),
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('images/splash.png'),
-            fit: BoxFit.cover,
+      body: Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          Container(
+            constraints: const BoxConstraints.expand(),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage('images/splash.png'),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: const Center(),
           ),
-        ),
-        child: const Center(),
+          FutureBuilder<PackageInfo>(
+            future: PackageInfo.fromPlatform(),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Text(
+                  'Versi ${snapshot.data!.version}',
+                  style: const TextStyle(
+                    color: Col.blackColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              } else {
+                return const SizedBox();
+              }
+            },
+          ),
+        ],
       ),
     );
   }

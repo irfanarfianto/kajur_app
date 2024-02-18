@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
+import 'package:kajur_app/animation/route/slide_left.dart';
 import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/screens/chart/chart_page.dart';
 import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';
 
 class TotalSaldo extends StatelessWidget {
@@ -16,7 +19,6 @@ class TotalSaldo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 375,
       padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
@@ -32,14 +34,28 @@ class TotalSaldo extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Row(
+          Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 'Total Saldo',
                 style: TextStyle(fontSize: 18.0, color: Col.whiteColor),
               ),
-              Icon(Icons.copy_outlined, color: Col.whiteColor)
+              IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  visualDensity: VisualDensity.compact,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      SlideLeftRoute(page: const ChartPage()),
+                    );
+                  },
+                  icon: const FaIcon(
+                    FontAwesomeIcons.expand,
+                    color: Col.whiteColor,
+                    size: 20,
+                  ))
             ],
           ),
           const SizedBox(height: 15),
@@ -66,13 +82,35 @@ class TotalSaldo extends StatelessWidget {
               color: Col.whiteColor,
             ),
           ),
-          Text(
-            currencyFormat.format(
-                service.totalIncomeMonthly - service.totalExpenseMonthly),
-            style: const TextStyle(
-              color: Col.whiteColor,
-              fontSize: 16,
-              fontWeight: Fw.bold,
+          Text.rich(
+            TextSpan(
+              children: [
+                TextSpan(
+                  text: (service.totalIncomeMonthly == 0 &&
+                          service.totalExpenseMonthly == 0)
+                      ? 'Rp '
+                      : currencyFormat.format(service.totalIncomeMonthly -
+                          service.totalExpenseMonthly),
+                  style: const TextStyle(
+                    color: Col.whiteColor,
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (service.totalIncomeMonthly == 0 &&
+                    service.totalExpenseMonthly == 0)
+                  const WidgetSpan(
+                    child: SizedBox(
+                      width: 15,
+                      height: 15,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 1,
+                        valueColor:
+                            AlwaysStoppedAnimation<Color>(Col.whiteColor),
+                      ),
+                    ),
+                  ),
+              ],
             ),
           ),
           Text(

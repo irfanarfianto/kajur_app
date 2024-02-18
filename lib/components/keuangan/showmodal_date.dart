@@ -134,7 +134,7 @@ class _TimerPickerState extends State<TimerPicker> {
                 widget.onConfirm();
               }
             },
-            child: const Text('Lihat'),
+            child: const Text('Pilih'),
           ),
         ],
       ),
