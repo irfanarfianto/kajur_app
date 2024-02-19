@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class StockPage extends StatefulWidget {

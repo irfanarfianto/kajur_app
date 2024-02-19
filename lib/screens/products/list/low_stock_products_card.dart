@@ -2,7 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/components/produk/update_stock_dialog.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 
 class LowStockProductsCard extends StatelessWidget {
   final DocumentSnapshot document;

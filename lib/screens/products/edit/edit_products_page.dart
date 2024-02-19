@@ -8,8 +8,8 @@ import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/utils/design/system.dart';
+import 'package:kajur_app/utils/global/common/toast.dart';
 import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 

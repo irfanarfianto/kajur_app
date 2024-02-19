@@ -1,6 +1,6 @@
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:flutter/material.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/products/details/details_products_page.dart';
 
 Widget buildTambahProdukWidget(

@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk_page.dart';
 import 'package:kajur_app/screens/widget/icon_text_button.dart';
 import 'package:skeletonizer/skeletonizer.dart';

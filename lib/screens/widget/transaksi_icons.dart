@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 
 class TransaksiIcon extends StatelessWidget {
   final String? transactionType;

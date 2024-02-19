@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 
 Widget buildCircularButton(BuildContext context, String label, IconData icon,
     Widget screen, bool isStaffOrAdmin) {

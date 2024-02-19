@@ -4,8 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:kajur_app/services/auth/produk/produk_services.dart';
 import 'package:readmore/readmore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/utils/design/system.dart';
+import 'package:kajur_app/utils/global/common/toast.dart';
 import 'package:kajur_app/screens/products/edit/edit_products_page.dart';
 
 class DetailProdukPage extends StatefulWidget {

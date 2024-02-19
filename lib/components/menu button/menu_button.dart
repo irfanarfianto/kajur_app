@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kajur_app/components/comingsoon/comingsoon.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/products/tambah%20produk/add_products_page.dart';
 import 'package:kajur_app/screens/products/list/list_products_page.dart';
 import 'package:kajur_app/screens/products/stok/stok_produk_page.dart';

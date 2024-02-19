@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/data/riwayat%20transaksi/transaksi_services.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/components/keuangan/detail_transaksi.dart';
 import 'package:kajur_app/screens/widget/catergory_icon.dart';
 import 'package:kajur_app/screens/widget/transaksi_icons.dart';

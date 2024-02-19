@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
-import 'package:kajur_app/animation/route/slide_left.dart';
-import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/screens/admin/manage_user_role.dart';
+import 'package:kajur_app/utils/animation/route/slide_left.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/user/edit_profile_page.dart';
-import 'package:kajur_app/admin/manage_user_role.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';
+import 'package:kajur_app/utils/global/common/toast.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class UserProfilePage extends StatefulWidget {
@@ -119,7 +119,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
             'Versi ${snapshot.data!.version}',
             style: const TextStyle(
               color: Col.blackColor,
-              fontWeight: FontWeight.bold,
+              fontWeight: Fw.medium,
             ),
           );
         } else {

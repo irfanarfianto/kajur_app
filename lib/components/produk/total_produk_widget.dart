@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kajur_app/animation/route/slide_left.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/animation/route/slide_left.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/products/list/list_products_page.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

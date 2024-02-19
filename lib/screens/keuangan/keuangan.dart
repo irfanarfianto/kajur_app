@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/animation/route/slide_up.dart';
+import 'package:kajur_app/utils/animation/route/slide_up.dart';
 import 'package:kajur_app/components/activity/activity_widget.dart';
 import 'package:kajur_app/components/keuangan/card_saldo.dart';
 import 'package:kajur_app/components/menu%20button/menu.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/keuangan/form_pemasukan_page.dart';
 import 'package:kajur_app/screens/keuangan/form_pengeluaran_page.dart';
 import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';

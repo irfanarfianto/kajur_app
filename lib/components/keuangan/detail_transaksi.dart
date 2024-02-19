@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/utils/global/common/toast.dart';
 import 'package:kajur_app/screens/widget/catergory_icon.dart';
 import 'package:kajur_app/screens/widget/transaksi_icons.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../design/system.dart';
+import '../../utils/design/system.dart';
 
 class TransactionDetailScreen extends StatelessWidget {
   final Map<String, dynamic> transactionData;

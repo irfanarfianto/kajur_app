@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/widget/inputan_rupiah.dart';
 
 class NumPad extends StatelessWidget {
@@ -73,14 +73,17 @@ class NumPad extends StatelessWidget {
               height: buttonSize,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
+                  foregroundColor: Col.primaryColor.withOpacity(0.8),
                   elevation: 0,
+                  disabledForegroundColor:
+                      Col.primaryColor.withOpacity(0.8).withOpacity(0.38),
+                  disabledBackgroundColor:
+                      Col.primaryColor.withOpacity(0.8).withOpacity(0.12),
                   backgroundColor: Col.backgroundColor,
                   surfaceTintColor: Col.backgroundColor,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(50)),
                   ),
-                  onPrimary: Col.primaryColor.withOpacity(0.8),
-                  onSurface: Col.primaryColor.withOpacity(0.8),
                 ),
                 onPressed: () {
                   final newText = '${controller.text}000';
@@ -175,14 +178,17 @@ class NumberButton extends StatelessWidget {
       height: size,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
+          foregroundColor: Col.primaryColor.withOpacity(0.8),
           elevation: 0,
+          disabledForegroundColor:
+              Col.primaryColor.withOpacity(0.8).withOpacity(0.38),
+          disabledBackgroundColor:
+              Col.primaryColor.withOpacity(0.8).withOpacity(0.12),
           backgroundColor: Col.backgroundColor,
           surfaceTintColor: Col.backgroundColor,
           shape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(50)),
           ),
-          onPrimary: Col.primaryColor.withOpacity(0.8),
-          onSurface: Col.primaryColor.withOpacity(0.8),
         ),
         onPressed: () {
           final newText = controller.text + number.toString();

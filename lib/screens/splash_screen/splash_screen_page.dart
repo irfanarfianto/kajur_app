@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -46,7 +46,6 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
-        alignment: Alignment.bottomCenter,
         children: [
           Container(
             constraints: const BoxConstraints.expand(),
@@ -58,21 +57,24 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
             child: const Center(),
           ),
-          FutureBuilder<PackageInfo>(
-            future: PackageInfo.fromPlatform(),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                return Text(
-                  'Versi ${snapshot.data!.version}',
-                  style: const TextStyle(
-                    color: Col.blackColor,
-                    fontWeight: FontWeight.bold,
-                  ),
-                );
-              } else {
-                return const SizedBox();
-              }
-            },
+          Positioned(
+            bottom: 20,
+            child: FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return Text(
+                    'Versi ${snapshot.data!.version}',
+                    style: const TextStyle(
+                      color: Col.blackColor,
+                      fontWeight: Fw.medium,
+                    ),
+                  );
+                } else {
+                  return const SizedBox();
+                }
+              },
+            ),
           ),
         ],
       ),

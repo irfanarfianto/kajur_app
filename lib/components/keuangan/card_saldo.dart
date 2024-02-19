@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/animation/route/slide_left.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/animation/route/slide_left.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/chart/chart_page.dart';
 import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';
 

@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:kajur_app/design/system.dart';
-import 'package:kajur_app/global/common/toast.dart';
+import 'package:kajur_app/utils/design/system.dart';
+import 'package:kajur_app/utils/global/common/toast.dart';
 import 'package:kajur_app/screens/auth/email_verification_page.dart';
 import 'package:kajur_app/services/auth/firebase_auth_services.dart';
 

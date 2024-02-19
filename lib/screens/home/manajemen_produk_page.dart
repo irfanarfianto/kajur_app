@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/components/activity/activity_widget.dart';
 import 'package:kajur_app/components/menu%20button/menu.dart';
 import 'package:kajur_app/components/produk/total_produk_widget.dart';

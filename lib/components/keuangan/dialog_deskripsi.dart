@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 
 class DescriptionForm extends StatelessWidget {
   final TextEditingController descriptionController;

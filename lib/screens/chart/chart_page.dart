@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/components/keuangan/chart.dart';
 import 'package:kajur_app/components/keuangan/showmodal_date.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 

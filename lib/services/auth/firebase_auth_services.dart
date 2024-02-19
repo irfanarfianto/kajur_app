@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../global/common/toast.dart';
+import 'package:kajur_app/utils/global/common/toast.dart';
 import 'package:uuid/uuid.dart';
 
 class FirebaseAuthService {

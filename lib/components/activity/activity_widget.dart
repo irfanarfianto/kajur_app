@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/data/activity/activity_components_service.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/aktivitas/aktivitas_page.dart';
 import 'package:kajur_app/components/activity/detail_activity.dart';
 import 'package:kajur_app/screens/widget/action_icons.dart';

@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:kajur_app/components/comingsoon/comingsoon.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/widget/circular_button.dart';
 import 'package:kajur_app/components/produk/kirim_data_produk.dart';
 import 'package:kajur_app/screens/webviews/web_view_page.dart';

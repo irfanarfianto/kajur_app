@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/design/system.dart';
+import 'package:kajur_app/utils/design/system.dart';
 import 'package:readmore/readmore.dart';
 
 Widget buildEditProdukWidget(
