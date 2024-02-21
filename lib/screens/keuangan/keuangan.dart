@@ -30,18 +30,18 @@ class _KeuanganContentState extends State<KeuanganContent> {
     _userRole = widget.userRole;
     _service.saldoTimestamp = DateTime.now();
 
-    // Initialize the lists
-    _service.incomeData = [];
-    _service.expenseData = [];
+    // // Initialize the lists
+    // _service.incomeData = [];
+    // _service.expenseData = [];
 
-    _service.selectedMonth = DateFormat('MMMM').format(DateTime.now());
-    _service.selectedYear = DateFormat('yyyy').format(DateTime.now());
+    // _service.selectedMonth = DateFormat('MMMM').format(DateTime.now());
+    // _service.selectedYear = DateFormat('yyyy').format(DateTime.now());
 
-    // Fetch data for income table
-    _service.fetchIncomeData(_service.selectedMonth, _service.selectedYear);
+    // // Fetch data for income table
+    // _service.fetchIncomeData(_service.selectedMonth, _service.selectedYear);
 
-    // Fetch data for expense table
-    _service.fetchExpenseData(_service.selectedMonth, _service.selectedYear);
+    // // Fetch data for expense table
+    // _service.fetchExpenseData(_service.selectedMonth, _service.selectedYear);
 
     _service.onDataLoaded = () {
       if (mounted) {

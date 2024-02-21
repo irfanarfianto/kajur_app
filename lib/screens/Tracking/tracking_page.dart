@@ -3,6 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/components/keuangan/chart.dart';
 import 'package:kajur_app/components/keuangan/showmodal_date.dart';
+import 'package:kajur_app/services/auth/produk/produk_services.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';
 import 'package:skeletonizer/skeletonizer.dart';
@@ -15,14 +16,19 @@ class ChartPage extends StatefulWidget {
 }
 
 class _ChartPageState extends State<ChartPage> {
+  final ProdukService _produkService = ProdukService();
   final KeuanganService _service = KeuanganService();
   final currencyFormat = NumberFormat.compactCurrency(
       locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 
+  String totalProdukText = '';
+  String makananProdukText = '';
+  String minumanProdukText = '';
+
   @override
   void initState() {
     super.initState();
-
+    _service.listenToTotalSaldo();
     _service.saldoTimestamp = DateTime.now();
 
     // Initialize the lists
@@ -43,6 +49,21 @@ class _ChartPageState extends State<ChartPage> {
         setState(() {});
       }
     };
+
+    _produkService.getProductCountByCategory(
+        (int totalProduk, int makananCount, int minumanCount) {
+      setState(() {
+        totalProdukText = totalProduk.toString();
+        makananProdukText = makananCount.toString();
+        minumanProdukText = minumanCount.toString();
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _service.unsubscribeTotalSaldo();
+    super.dispose();
   }
 
   @override
@@ -76,7 +97,7 @@ class _ChartPageState extends State<ChartPage> {
             GridView.count(
               crossAxisCount: 2,
               shrinkWrap: true,
-              childAspectRatio: 1.5,
+              childAspectRatio: 1.3,
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
               padding: const EdgeInsets.all(10),
@@ -115,11 +136,95 @@ class _ChartPageState extends State<ChartPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Text(currencyFormat.format(150000000),
+                      Text(currencyFormat.format(_service.totalSaldo),
                           style: Typo.headingTextStyle),
-                      const Text('19/02/2024',
+                      Text(
+                          DateFormat('dd MMM yyyy HH:mm', 'id')
+                              .format(_service.saldoTimestamp),
                           style: Typo.emphasizedBodyTextStyle),
                     ],
+                  ),
+                ),
+                Skeletonizer(
+                  enabled: _service.incomeData.isEmpty &&
+                      _service.expenseData.isEmpty,
+                  child: Skeleton.leaf(
+                    child: Container(
+                      padding: const EdgeInsets.all(16.0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(15),
+                        color: Col.secondaryColor,
+                        border: Border.all(
+                            color: const Color(0x309E9E9E), width: 1),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Col.greyColor.withOpacity(.10),
+                            offset: const Offset(0, 5),
+                            blurRadius: 10,
+                          ),
+                        ],
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Pendapatan Bulan ini'),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Text(
+                            (_service.totalIncomeMonthly == 0 &&
+                                    _service.totalExpenseMonthly == 0)
+                                ? 'Rp '
+                                : currencyFormat.format(
+                                    _service.totalIncomeMonthly -
+                                        _service.totalExpenseMonthly),
+                            style: TextStyle(
+                              fontSize: 20.0,
+                              color: (_service.totalIncomeMonthly -
+                                          _service.totalExpenseMonthly >=
+                                      0)
+                                  ? Col.greenAccent
+                                  : Col.redAccent,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          if (_service.totalIncomeMonthly != 0 ||
+                              _service.totalExpenseMonthly != 0)
+                            Row(
+                              children: [
+                                Icon(
+                                  (_service.totalIncomeMonthly -
+                                              _service.totalExpenseMonthly >=
+                                          0)
+                                      ? FontAwesomeIcons.arrowUp
+                                      : FontAwesomeIcons.arrowDown,
+                                  size: 16,
+                                  color: (_service.totalIncomeMonthly -
+                                              _service.totalExpenseMonthly >=
+                                          0)
+                                      ? Col.greenAccent
+                                      : Col.redAccent,
+                                ),
+                                Text(
+                                  (_service.totalIncomeMonthly == 0 &&
+                                          _service.totalExpenseMonthly == 0)
+                                      ? ''
+                                      : '(${((_service.totalIncomeMonthly - _service.totalExpenseMonthly) / _service.totalIncomeMonthly * 100).toStringAsFixed(0)}%)',
+                                  style: TextStyle(
+                                    color: (_service.totalIncomeMonthly -
+                                                _service.totalExpenseMonthly >=
+                                            0)
+                                        ? Col.greenAccent
+                                        : Col.redAccent,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 Container(
@@ -140,38 +245,13 @@ class _ChartPageState extends State<ChartPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('Pendapatan Bulan ini'),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(currencyFormat.format(150000000),
-                          style: Typo.headingTextStyle),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Col.secondaryColor,
-                    border:
-                        Border.all(color: const Color(0x309E9E9E), width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Col.greyColor.withOpacity(.10),
-                        offset: const Offset(0, 5),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: const Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Total Produk'),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Text('20', style: Typo.headingTextStyle),
+                      const Text('Total Produk'),
+                      const SizedBox(height: 10),
+                      Text(totalProdukText, style: Typo.headingTextStyle),
+                      Text('Makanan $makananProdukText',
+                          style: Typo.emphasizedBodyTextStyle),
+                      Text('Minuman $minumanProdukText',
+                          style: Typo.emphasizedBodyTextStyle),
                     ],
                   ),
                 )

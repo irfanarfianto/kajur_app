@@ -3,7 +3,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/utils/animation/route/slide_left.dart';
 import 'package:kajur_app/utils/design/system.dart';
-import 'package:kajur_app/screens/chart/chart_page.dart';
+import 'package:kajur_app/screens/Tracking/tracking_page.dart';
 import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';
 
 class TotalSaldo extends StatelessWidget {
@@ -75,44 +75,8 @@ class TotalSaldo extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          const Text(
-            'Pendapatan bulan ini',
-            style: TextStyle(
-              fontSize: 14.0,
-              color: Col.whiteColor,
-            ),
-          ),
-          Text.rich(
-            TextSpan(
-              children: [
-                TextSpan(
-                  text: (service.totalIncomeMonthly == 0 &&
-                          service.totalExpenseMonthly == 0)
-                      ? 'Rp '
-                      : currencyFormat.format(service.totalIncomeMonthly -
-                          service.totalExpenseMonthly),
-                  style: const TextStyle(
-                    color: Col.whiteColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                if (service.totalIncomeMonthly == 0 &&
-                    service.totalExpenseMonthly == 0)
-                  const WidgetSpan(
-                    child: SizedBox(
-                      width: 15,
-                      height: 15,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 1,
-                        valueColor:
-                            AlwaysStoppedAnimation<Color>(Col.whiteColor),
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-          ),
+
+          // 
           Text(
             '*Update ${DateFormat('dd MMMM yyyy HH:mm', 'id').format(service.saldoTimestamp)}',
             style: const TextStyle(

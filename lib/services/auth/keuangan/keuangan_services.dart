@@ -19,7 +19,7 @@ class KeuanganService {
   late String selectedYear;
   double totalIncomeMonthly = 0;
   double totalExpenseMonthly = 0;
-  bool showBalance = true;
+  bool showBalance = false;
   final currencyFormat =
       NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 

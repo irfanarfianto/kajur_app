@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class ProdukService {
   final CollectionReference _produkCollection =
       FirebaseFirestore.instance.collection('kantin');
+      
 
   Stream<QuerySnapshot> get produkStream => _produkCollection.snapshots();
 
@@ -71,7 +72,36 @@ class ProdukService {
     }
   }
 
+// Fungsi untuk menghitung jumlah produk per kategori
+  Future<void> getProductCountByCategory(
+      void Function(int totalProduk, int makananCount, int minumanCount)
+          callback) async {
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot =
+          await _produkCollection.get() as QuerySnapshot<Map<String, dynamic>>;
+
+      int totalProduk = 0;
+      int makananCount = 0;
+      int minumanCount = 0;
+
+      snapshot.docs.forEach((DocumentSnapshot<Map<String, dynamic>> document) {
+        String? category = document.data()?['kategori'];
+        if (category != null) {
+          totalProduk++;
+          if (category == 'Makanan') {
+            makananCount++;
+          } else if (category == 'Minuman') {
+            minumanCount++;
+          }
+        }
+      });
+
+      callback(totalProduk, makananCount, minumanCount);
+    } catch (error) {
+      print("Error getting product count by category: $error");
+      throw error;
+    }
+  }
 
   // EDIT PRODUK
-  
 }
