@@ -21,14 +21,14 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
         const ListProdukPage(),
         true, // Display for all users
       ),
-      // if (isStaffOrAdmin)
-      buildCircularButton(
-        context,
-        "Tambah",
-        FontAwesomeIcons.cartArrowDown,
-        const AddDataPage(),
-        true, // Display for all users
-      ),
+      if (isStaffOrAdmin)
+        buildCircularButton(
+          context,
+          "Tambah",
+          FontAwesomeIcons.cartArrowDown,
+          const AddDataPage(),
+          true, // Display for all users
+        ),
       buildCircularButton(
         context,
         "Siakad",
@@ -36,7 +36,7 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
         const WebViewPage(
           url: 'https://siakad.uhb.ac.id/a/www/auth?retselectedUrl=/',
         ),
-        isStaffOrAdmin,
+        true,
       ),
       buildCircularButton(
         context,
@@ -45,7 +45,7 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
         const WebViewPage(
           url: 'https://fst.scalsa.uhb.ac.id/',
         ),
-        isStaffOrAdmin,
+        true,
       ),
       buildCircularButton(
         context,
@@ -54,14 +54,14 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
         const WebViewPage(
           url: 'https://chat.openai.com/',
         ),
-        isStaffOrAdmin,
+        true,
       ),
       buildCircularButton(
         context,
         "Kirim Data",
         FontAwesomeIcons.shareNodes,
         const ShareProduk(),
-        isStaffOrAdmin,
+        true,
       ),
       buildCircularButton(
         context,
@@ -70,7 +70,7 @@ Widget buildMenuWidget(BuildContext context, String userRole) {
         const WebViewPage(
           url: 'https://www.google.com/',
         ),
-        isStaffOrAdmin,
+        true,
       ),
       buildCircularButton(
         context,

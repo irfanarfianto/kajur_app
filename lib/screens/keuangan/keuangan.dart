@@ -21,13 +21,13 @@ class KeuanganContent extends StatefulWidget {
 
 class _KeuanganContentState extends State<KeuanganContent> {
   final KeuanganService _service = KeuanganService();
-  final String _userRole = '';
+  late String _userRole = '';
 
   @override
   void initState() {
     super.initState();
     _service.listenToTotalSaldo();
-
+    _userRole = widget.userRole;
     _service.saldoTimestamp = DateTime.now();
 
     // Initialize the lists
@@ -90,36 +90,38 @@ class _KeuanganContentState extends State<KeuanganContent> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      TextButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                SlideUpRoute(
-                                    page: IncomeForm(
-                                  updateChartDataCallback:
-                                      _service.updateChartDataAfterSubmission,
-                                )));
-                          },
-                          icon: const FaIcon(
-                            FontAwesomeIcons.circleArrowDown,
-                            size: 20,
-                          ),
-                          label: const Text('Catat pemasukan')),
-                      TextButton.icon(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                SlideUpRoute(
-                                    page: ExpenseForm(
-                                  updateChartDataCallback:
-                                      _service.updateChartDataAfterSubmission,
-                                )));
-                          },
-                          icon: const FaIcon(
-                            FontAwesomeIcons.circleArrowUp,
-                            size: 20,
-                          ),
-                          label: const Text('Catat pengeluaran')),
+                      if (_userRole == 'admin' || _userRole == 'staf')
+                        TextButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  SlideUpRoute(
+                                      page: IncomeForm(
+                                    updateChartDataCallback:
+                                        _service.updateChartDataAfterSubmission,
+                                  )));
+                            },
+                            icon: const FaIcon(
+                              FontAwesomeIcons.circleArrowDown,
+                              size: 20,
+                            ),
+                            label: const Text('Catat pemasukan')),
+                      if (_userRole == 'admin' || _userRole == 'staf')
+                        TextButton.icon(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  SlideUpRoute(
+                                      page: ExpenseForm(
+                                    updateChartDataCallback:
+                                        _service.updateChartDataAfterSubmission,
+                                  )));
+                            },
+                            icon: const FaIcon(
+                              FontAwesomeIcons.circleArrowUp,
+                              size: 20,
+                            ),
+                            label: const Text('Catat pengeluaran')),
                     ],
                   )
                 ],

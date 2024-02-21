@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:kajur_app/screens/admin/manage_user_role.dart';
 import 'package:kajur_app/utils/animation/route/slide_left.dart';
 import 'package:kajur_app/utils/design/system.dart';
@@ -30,7 +31,12 @@ class _UserProfilePageState extends State<UserProfilePage> {
   void initState() {
     super.initState();
     user = FirebaseAuth.instance.currentUser;
-    _checkUserRole();
+    if (user == null) {
+      // Redirect to login screen if user is not logged in
+      Navigator.pushNamedAndRemoveUntil(context, "/login", (route) => false);
+    } else {
+      _checkUserRole();
+    }
   }
 
   void _checkUserRole() {
@@ -51,11 +57,13 @@ class _UserProfilePageState extends State<UserProfilePage> {
             isAdmin = userRole == 'admin';
             isStaf = userRole == 'staf';
             isBiasa = userRole == 'biasa';
-            _photoUrl = photoUrl!; // Atur nilai _photoUrl
+            _photoUrl = photoUrl ?? '';
           });
         }
       }).catchError((error) {
         print("Error getting user role: $error");
+        // Display error message to the user
+        showToast(message: "Error: $error");
       });
     }
   }
@@ -153,20 +161,50 @@ class _UserProfilePageState extends State<UserProfilePage> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Hero(
-              tag: currentUser.uid,
-              child: CircleAvatar(
-                radius: 40,
-                backgroundImage:
-                    photoUrl != null ? NetworkImage(photoUrl) : null,
-                child: photoUrl == null
-                    ? const Icon(
-                        Icons.account_circle,
-                        size: 40,
-                        color: Colors.grey,
-                      )
-                    : null,
-              ),
+            Stack(
+              children: [
+                Hero(
+                  tag: currentUser.uid,
+                  child: CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Col.whiteColor,
+                    backgroundImage:
+                        _photoUrl.isNotEmpty ? NetworkImage(_photoUrl) : null,
+                    child: _photoUrl.isEmpty
+                        ? const Icon(
+                            Icons.account_circle,
+                            size: 80,
+                            color: Colors.grey,
+                          )
+                        : null,
+                  ),
+                ),
+                Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            SlideLeftRoute(
+                                page: EditProfilePage(
+                              documentId: currentUser.uid,
+                            )));
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        height: 24,
+                        width: 24,
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: Col.secondaryColor,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const FaIcon(FontAwesomeIcons.penToSquare,
+                            size: 12),
+                      ),
+                    ))
+              ],
             ),
             const SizedBox(width: 16),
             Column(
@@ -211,18 +249,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         style: Typo.emphasizedBodyTextStyle),
                   ],
                 ),
-                InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        SlideLeftRoute(
-                            page: EditProfilePage(
-                          documentId: currentUser.uid,
-                        )));
-                  },
-                  child: const Text('Edit profil',
-                      style: Typo.emphasizedBodyTextStyle),
-                )
               ],
             ),
           ],
@@ -293,6 +319,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                   shrinkWrap: true,
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     childAspectRatio: 1.2,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
                     crossAxisCount:
                         2, // Sesuaikan jumlah kolom sesuai kebutuhan
                   ),

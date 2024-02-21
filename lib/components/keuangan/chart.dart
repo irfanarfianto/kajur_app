@@ -18,6 +18,9 @@ class SfCartesianChartWidget extends StatelessWidget {
     return SfCartesianChart(
       borderColor: Colors.white,
       primaryXAxis: const CategoryAxis(
+        labelStyle: TextStyle(
+          fontSize: 10,
+        ),
         borderWidth: 0,
         majorGridLines: MajorGridLines(width: 0),
         majorTickLines: MajorTickLines(size: 0),
@@ -26,8 +29,10 @@ class SfCartesianChartWidget extends StatelessWidget {
         axisLine: AxisLine(
           color: Colors.white.withOpacity(.5),
         ),
+        desiredIntervals: 5,
         numberFormat: NumberFormat.compactCurrency(locale: 'id', symbol: ''),
         labelFormat: '{value}',
+        labelStyle: const TextStyle(fontSize: 10),
         majorGridLines: const MajorGridLines(
           width: 1,
           dashArray: <double>[3, 3],

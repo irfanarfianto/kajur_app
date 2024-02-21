@@ -5,7 +5,7 @@ class DescriptionForm extends StatelessWidget {
   final TextEditingController descriptionController;
   final FocusNode descriptionFocusNode = FocusNode();
 
-  DescriptionForm({required this.descriptionController});
+  DescriptionForm({super.key, required this.descriptionController});
 
   @override
   Widget build(BuildContext context) {

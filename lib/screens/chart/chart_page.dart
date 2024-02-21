@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/components/keuangan/chart.dart';
 import 'package:kajur_app/components/keuangan/showmodal_date.dart';
@@ -15,8 +16,8 @@ class ChartPage extends StatefulWidget {
 
 class _ChartPageState extends State<ChartPage> {
   final KeuanganService _service = KeuanganService();
-  final currencyFormat =
-      NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
+  final currencyFormat = NumberFormat.compactCurrency(
+      locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 
   @override
   void initState() {
@@ -71,6 +72,111 @@ class _ChartPageState extends State<ChartPage> {
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
         child: Column(
           children: [
+            const SizedBox(height: 20),
+            GridView.count(
+              crossAxisCount: 2,
+              shrinkWrap: true,
+              childAspectRatio: 1.5,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              padding: const EdgeInsets.all(10),
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Col.secondaryColor,
+                    border:
+                        Border.all(color: const Color(0x309E9E9E), width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Col.greyColor.withOpacity(.10),
+                        offset: const Offset(0, 5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Text('Total Saldo'),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          InkWell(
+                            onTap: null,
+                            child: FaIcon(FontAwesomeIcons.circleExclamation,
+                                color: Col.greyColor, size: 10),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(currencyFormat.format(150000000),
+                          style: Typo.headingTextStyle),
+                      const Text('19/02/2024',
+                          style: Typo.emphasizedBodyTextStyle),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Col.secondaryColor,
+                    border:
+                        Border.all(color: const Color(0x309E9E9E), width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Col.greyColor.withOpacity(.10),
+                        offset: const Offset(0, 5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Pendapatan Bulan ini'),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      Text(currencyFormat.format(150000000),
+                          style: Typo.headingTextStyle),
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Col.secondaryColor,
+                    border:
+                        Border.all(color: const Color(0x309E9E9E), width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Col.greyColor.withOpacity(.10),
+                        offset: const Offset(0, 5),
+                        blurRadius: 10,
+                      ),
+                    ],
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Total Produk'),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Text('20', style: Typo.headingTextStyle),
+                    ],
+                  ),
+                )
+              ],
+            ),
             Skeletonizer(
               enabled:
                   _service.incomeData.isEmpty && _service.expenseData.isEmpty,
