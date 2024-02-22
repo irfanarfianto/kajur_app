@@ -21,7 +21,6 @@ class DetailProduk extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String documentId = document.id;
     Map<String, dynamic> data = document.data() as Map<String, dynamic>;
     return Center(
       child: Padding(
