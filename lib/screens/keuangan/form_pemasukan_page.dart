@@ -215,210 +215,205 @@ class _IncomeFormState extends State<IncomeForm> {
           ),
           body: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: SingleChildScrollView(
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    width: 380,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Col.secondaryColor,
-                      border:
-                          Border.all(color: const Color(0x309E9E9E), width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Col.greyColor.withOpacity(.10),
-                          offset: const Offset(0, 5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Form(
-                      key: _formKey,
-                      autovalidateMode: AutovalidateMode.onUserInteraction,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextFormField(
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                                fontSize: 25,
-                                color: Col.blackColor,
-                                fontWeight: Fw.bold),
-                            controller: _amountController,
-                            decoration: const InputDecoration(
-                              hintText: 'Rp',
-                              enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Col.greyColor, width: 1),
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  )),
-                            ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Nggak boleh kosong yah';
-                              }
-                              return null;
-                            },
-                            keyboardType: TextInputType.none,
-                          ),
-                          const SizedBox(height: 16.0),
-                          TextButton(
-                            style: ButtonStyle(
-                              textStyle: MaterialStateTextStyle.resolveWith(
-                                  (states) => Typo.emphasizedBodyTextStyle),
-                              side: MaterialStateBorderSide.resolveWith(
-                                  (states) => BorderSide(
-                                      color: Col.greyColor.withOpacity(0.2),
-                                      width: 1)),
-                            ),
-                            onPressed: () async {
-                              showModalBottomSheet(
-                                context: context,
-                                enableDrag: true,
-                                isScrollControlled: true,
-                                builder: (BuildContext context) {
-                                  return DescriptionForm(
-                                      descriptionController:
-                                          _descriptionController);
-                                },
-                                constraints: BoxConstraints(
-                                  maxHeight:
-                                      MediaQuery.of(context).size.height * 0.85,
-                                ),
-                              ).then((value) {
-                                setState(() {});
-                              });
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                      _descriptionController.text.isEmpty
-                                          ? 'Tambahkan deskripsi jika perlu'
-                                          : _descriptionController.text,
-                                      overflow: TextOverflow.ellipsis,
-                                      style: TextStyle(
-                                        color: Col.blackColor.withOpacity(0.5),
-                                      )),
-                                ),
-                                const SizedBox(width: 8.0),
-                                Icon(Icons.edit_document,
-                                    color: Col.blackColor.withOpacity(0.5),
-                                    size: 15),
-                              ],
-                            ),
-                          ),
-                        ],
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                const SizedBox(height: 24.0),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  width: 380,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Col.secondaryColor,
+                    border:
+                        Border.all(color: const Color(0x309E9E9E), width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Col.greyColor.withOpacity(.10),
+                        offset: const Offset(0, 5),
+                        blurRadius: 10,
                       ),
-                    ),
+                    ],
                   ),
-                  const SizedBox(height: 16.0),
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    width: 380,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Col.secondaryColor,
-                      border: _categoryNotSelected
-                          ? Border.all(color: Colors.red, width: 1)
-                          : Border.all(
-                              color: const Color(0x309E9E9E), width: 1),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Col.greyColor.withOpacity(.10),
-                          offset: const Offset(0, 5),
-                          blurRadius: 10,
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Form(
+                    key: _formKey,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        CategorySelector(
-                          category: 'Penjualan',
-                          selectedCategory: _selectedCategory,
-                          icon: const Icon(Icons.shopping_bag,
-                              color: Col.greenAccent),
-                          onTap: () {
-                            setState(() {
-                              _selectedCategory = 'Penjualan';
-                              _categoryNotSelected = false;
-                            });
-                          },
-                        ),
-                        CategorySelector(
-                          category: 'Dana',
-                          selectedCategory: _selectedCategory,
-                          icon: Image.asset(
-                            'images/dana.png',
-                            width: 25,
-                            height: 25,
+                        TextFormField(
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                              fontSize: 25,
+                              color: Col.blackColor,
+                              fontWeight: Fw.bold),
+                          controller: _amountController,
+                          decoration: const InputDecoration(
+                            hintText: 'Rp',
+                            enabledBorder: OutlineInputBorder(
+                                borderSide:
+                                    BorderSide(color: Col.greyColor, width: 1),
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(10.0),
+                                )),
                           ),
-                          onTap: () {
-                            setState(() {
-                              _selectedCategory = 'Dana';
-                              _categoryNotSelected = false;
-                            });
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Nggak boleh kosong yah';
+                            }
+                            return null;
                           },
+                          keyboardType: TextInputType.none,
                         ),
-                        CategorySelector(
-                          category: 'Hutang',
-                          selectedCategory: _selectedCategory,
-                          icon: const Icon(
-                            Icons.money_off,
-                            color: Col.orangeAccent,
+                        const SizedBox(height: 16.0),
+                        TextButton(
+                          style: ButtonStyle(
+                            textStyle: MaterialStateTextStyle.resolveWith(
+                                (states) => Typo.emphasizedBodyTextStyle),
+                            side: MaterialStateBorderSide.resolveWith(
+                                (states) => BorderSide(
+                                    color: Col.greyColor.withOpacity(0.2),
+                                    width: 1)),
                           ),
-                          onTap: () {
-                            setState(() {
-                              _selectedCategory = 'Hutang';
-                              _categoryNotSelected = false;
+                          onPressed: () async {
+                            showModalBottomSheet(
+                              context: context,
+                              enableDrag: true,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return DescriptionForm(
+                                    descriptionController:
+                                        _descriptionController);
+                              },
+                              constraints: BoxConstraints(
+                                maxHeight:
+                                    MediaQuery.of(context).size.height * 0.85,
+                              ),
+                            ).then((value) {
+                              setState(() {});
                             });
                           },
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                    _descriptionController.text.isEmpty
+                                        ? 'Tambahkan deskripsi jika perlu'
+                                        : _descriptionController.text,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Col.blackColor.withOpacity(0.5),
+                                    )),
+                              ),
+                              const SizedBox(width: 8.0),
+                              Icon(Icons.edit_document,
+                                  color: Col.blackColor.withOpacity(0.5),
+                                  size: 15),
+                            ],
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10.0),
-                  if (_categoryNotSelected)
-                    const Padding(
-                      padding: EdgeInsets.only(left: 16.0),
-                      child: Text(
-                        'Pilih kategorinya dulu yah',
-                        style: TextStyle(color: Col.redAccent, fontSize: 12),
+                ),
+                const SizedBox(height: 16.0),
+                Container(
+                  padding: const EdgeInsets.all(16.0),
+                  width: 380,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Col.secondaryColor,
+                    border: _categoryNotSelected
+                        ? Border.all(color: Colors.red, width: 1)
+                        : Border.all(color: const Color(0x309E9E9E), width: 1),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Col.greyColor.withOpacity(.10),
+                        offset: const Offset(0, 5),
+                        blurRadius: 10,
                       ),
-                    ),
-                  // numpad
-                  Container(
-                    padding: const EdgeInsets.all(16.0),
-                    width: 380,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Col.secondaryColor,
-                    ),
-                    child: NumPad(
-                      delete: () {
-                        setState(() {
-                          if (_amountController.text.isNotEmpty) {
-                            _amountController.text = _amountController.text
-                                .substring(
-                                    0, _amountController.text.length - 1);
-                          }
-                        });
-                      },
-                      onSubmit: () {
-                        _submitForm();
-                      },
-                      controller: _amountController,
+                    ],
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      CategorySelector(
+                        category: 'Penjualan',
+                        selectedCategory: _selectedCategory,
+                        icon: const Icon(Icons.shopping_bag,
+                            color: Col.greenAccent),
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = 'Penjualan';
+                            _categoryNotSelected = false;
+                          });
+                        },
+                      ),
+                      CategorySelector(
+                        category: 'Dana',
+                        selectedCategory: _selectedCategory,
+                        icon: Image.asset(
+                          'images/dana.png',
+                          width: 25,
+                          height: 25,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = 'Dana';
+                            _categoryNotSelected = false;
+                          });
+                        },
+                      ),
+                      CategorySelector(
+                        category: 'Hutang',
+                        selectedCategory: _selectedCategory,
+                        icon: const Icon(
+                          Icons.money_off,
+                          color: Col.orangeAccent,
+                        ),
+                        onTap: () {
+                          setState(() {
+                            _selectedCategory = 'Hutang';
+                            _categoryNotSelected = false;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 10.0),
+                if (_categoryNotSelected)
+                  const Padding(
+                    padding: EdgeInsets.only(left: 16.0),
+                    child: Text(
+                      'Pilih kategorinya dulu yah',
+                      style: TextStyle(color: Col.redAccent, fontSize: 12),
                     ),
                   ),
-                ],
-              ),
+                Spacer(),
+                Container(
+                  width: 380,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(15),
+                    color: Col.secondaryColor,
+                  ),
+                  child: NumPad(
+                    delete: () {
+                      setState(() {
+                        if (_amountController.text.isNotEmpty) {
+                          _amountController.text = _amountController.text
+                              .substring(0, _amountController.text.length - 1);
+                        }
+                      });
+                    },
+                    onSubmit: () {
+                      _submitForm();
+                    },
+                    controller: _amountController,
+                  ),
+                ),
+              ],
             ),
           ),
         ),

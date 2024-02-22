@@ -46,6 +46,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+        alignment: Alignment.bottomCenter,
         children: [
           Container(
             constraints: const BoxConstraints.expand(),
@@ -64,7 +65,7 @@ class _SplashScreenState extends State<SplashScreen> {
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   return Text(
-                    'Versi ${snapshot.data!.version}',
+                    snapshot.data!.version,
                     style: const TextStyle(
                       color: Col.blackColor,
                       fontWeight: Fw.medium,
