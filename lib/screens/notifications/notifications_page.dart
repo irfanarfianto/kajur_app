@@ -67,7 +67,6 @@ class _NotificationPageState extends State<NotificationPage> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(message['title']),
-                              Text(message['timestamp'].toDate()),
                             ],
                           ),
                         ),

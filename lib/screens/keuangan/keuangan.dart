@@ -8,7 +8,7 @@ import 'package:kajur_app/components/menu%20button/menu.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/keuangan/form_pemasukan_page.dart';
 import 'package:kajur_app/screens/keuangan/form_pengeluaran_page.dart';
-import 'package:kajur_app/services/auth/keuangan/keuangan_services.dart';
+import 'package:kajur_app/services/keuangan/keuangan_services.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 class KeuanganContent extends StatefulWidget {
@@ -29,19 +29,6 @@ class _KeuanganContentState extends State<KeuanganContent> {
     _service.listenToTotalSaldo();
     _userRole = widget.userRole;
     _service.saldoTimestamp = DateTime.now();
-
-    // // Initialize the lists
-    // _service.incomeData = [];
-    // _service.expenseData = [];
-
-    // _service.selectedMonth = DateFormat('MMMM').format(DateTime.now());
-    // _service.selectedYear = DateFormat('yyyy').format(DateTime.now());
-
-    // // Fetch data for income table
-    // _service.fetchIncomeData(_service.selectedMonth, _service.selectedYear);
-
-    // // Fetch data for expense table
-    // _service.fetchExpenseData(_service.selectedMonth, _service.selectedYear);
 
     _service.onDataLoaded = () {
       if (mounted) {

@@ -1,6 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:kajur_app/components/keuangan/daftar_user.dart';
+import 'package:kajur_app/components/produk/detail_produk.dart';
+import 'package:kajur_app/components/produk/update_stock_dialog.dart';
+import 'package:kajur_app/utils/animation/route/slide_up.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/components/produk/kirim_data_produk.dart';
 import 'package:kajur_app/screens/products/details/details_products_page.dart';
@@ -418,14 +422,54 @@ class _ListProdukPageState extends State<ListProdukPage>
                                                 document: document,
                                                 isLowStock: isLowStock,
                                                 onTap: () {
-                                                  Navigator.push(
+                                                  showUpdateStokDialog(
                                                     context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          DetailProdukPage(
-                                                        documentId: documentId,
-                                                      ),
-                                                    ),
+                                                    documentId,
+                                                    data['menu'],
+                                                    data['stok'],
+                                                    document['image'],
+                                                  );
+                                                },
+                                                onLongPress: () {
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    enableDrag: true,
+                                                    backgroundColor:
+                                                        Col.backgroundColor,
+                                                    isScrollControlled: true,
+                                                    builder:
+                                                        (BuildContext context) {
+                                                      return SizedBox(
+                                                        height: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .height *
+                                                            0.2,
+                                                        child: DetailProduk(
+                                                          document: document,
+                                                          imageUrl:
+                                                              data['image'],
+                                                          productName:
+                                                              data['menu'],
+                                                          // description:
+                                                          //     data['deskripsi'],
+                                                          onTapDescription: () {
+                                                            Navigator.pop(
+                                                                context); // Tutup modal
+                                                            Navigator.push(
+                                                              context,
+                                                              SlideUpRoute(
+                                                                page:
+                                                                    DetailProdukPage(
+                                                                  documentId:
+                                                                      documentId,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ),
+                                                      );
+                                                    },
                                                   );
                                                 },
                                               )
@@ -466,14 +510,49 @@ class _ListProdukPageState extends State<ListProdukPage>
                                           document: document,
                                           isHighStock: isHighStock,
                                           onTap: () {
-                                            Navigator.push(
+                                            showUpdateStokDialog(
                                               context,
-                                              MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailProdukPage(
-                                                  documentId: documentId,
-                                                ),
-                                              ),
+                                              documentId,
+                                              data['menu'],
+                                              data['stok'],
+                                              document['image'],
+                                            );
+                                          },
+                                          onLongPress: () {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              enableDrag: true,
+                                              backgroundColor:
+                                                  Col.backgroundColor,
+                                              isScrollControlled: true,
+                                              builder: (BuildContext context) {
+                                                return SizedBox(
+                                                  height: MediaQuery.of(context)
+                                                          .size
+                                                          .height *
+                                                      0.2,
+                                                  child: DetailProduk(
+                                                    document: document,
+                                                    imageUrl: data['image'],
+                                                    productName: data['menu'],
+                                                    // description:
+                                                    //     data['deskripsi'],
+                                                    onTapDescription: () {
+                                                      Navigator.pop(
+                                                          context); // Tutup modal
+                                                      Navigator.push(
+                                                          context,
+                                                          SlideUpRoute(
+                                                            page:
+                                                                DetailProdukPage(
+                                                              documentId:
+                                                                  documentId,
+                                                            ),
+                                                          ));
+                                                    },
+                                                  ),
+                                                );
+                                              },
                                             );
                                           },
                                         )

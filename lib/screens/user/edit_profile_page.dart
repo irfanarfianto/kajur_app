@@ -314,16 +314,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             TextFormField(
                               controller: _whatsappController,
                               decoration: const InputDecoration(
-                                prefix: Text('+62 '),
                                 hintText: 'Nomor WhatsApp',
                               ),
                               keyboardType: TextInputType.phone,
                               validator: (value) {
-                                RegExp whatsappRegExp = RegExp(r'^[0-9]+$');
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your WhatsApp number';
-                                } else if (!whatsappRegExp.hasMatch(value)) {
-                                  return 'Invalid WhatsApp number';
+                                } else {
+                                  // Hilangkan awalan "0" jika ada
+                                  if (value.startsWith('0')) {
+                                    value = value.substring(1);
+                                  }
+                                  // Tambahkan awalan "+62" jika belum ada
+                                  if (!value.startsWith('+62')) {
+                                    _whatsappController.text = '+62$value';
+                                  }
                                 }
                                 return null;
                               },

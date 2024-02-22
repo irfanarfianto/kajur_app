@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/services/auth/produk/produk_services.dart';
+import 'package:kajur_app/services/produk/produk_services.dart';
 import 'package:readmore/readmore.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:kajur_app/utils/design/system.dart';

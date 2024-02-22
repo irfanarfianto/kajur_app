@@ -8,12 +8,14 @@ import 'package:kajur_app/utils/design/system.dart';
 class HighStockProductsCard extends StatelessWidget {
   final DocumentSnapshot document;
   final bool isHighStock;
+  final VoidCallback onLongPress;
   final VoidCallback onTap;
 
   const HighStockProductsCard({
     super.key,
     required this.document,
     required this.isHighStock,
+    required this.onLongPress,
     required this.onTap,
   });
 
@@ -28,6 +30,7 @@ class HighStockProductsCard extends StatelessWidget {
             color: Col.secondaryColor,
             shadowColor: Col.greyColor.withOpacity(0.10),
             child: InkWell(
+              onLongPress: onLongPress,
               onTap: onTap,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
