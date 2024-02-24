@@ -34,6 +34,8 @@ class _AddDataPageState extends State<AddDataPage> {
   bool _isLoading = false;
   bool isInfoSnackbarVisible = false;
   final _formKey = GlobalKey<FormState>();
+  int _currentStep = 0;
+  int _totalSteps = 4;
 
   Future<void> _getImage(ImageSource source) async {
     final pickedFile = await ImagePicker().pickImage(source: source);
@@ -202,114 +204,309 @@ class _AddDataPageState extends State<AddDataPage> {
               title: const Text('Tambah Produk'),
             ),
             body: Scrollbar(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.only(top: 10),
-                  physics: const BouncingScrollPhysics(),
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 10),
-                        Text(
-                          'Tambahkan produk baru',
-                          style: Typo.headingTextStyle,
-                        ),
-                        const SizedBox(height: 10),
-                        Column(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                child: Form(
+                  key: _formKey,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  child: Stepper(
+                    connectorColor: const MaterialStatePropertyAll(
+                      Col.primaryColor,
+                    ),
+                    elevation: 0,
+                    connectorThickness: 1,
+                    controlsBuilder:
+                        (BuildContext context, ControlsDetails details) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          const SizedBox(height: 16),
+                          Row(
+                            children: <Widget>[
+                              if (_currentStep != 0)
+                                Expanded(
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      surfaceTintColor: Col.secondaryColor,
+                                      elevation: 0,
+                                      foregroundColor: Col.blackColor,
+                                      backgroundColor: Col.secondaryColor,
+                                    ),
+                                    onPressed: details.onStepCancel,
+                                    child: const Text('Kembali'),
+                                  ),
+                                ),
+                              if (_currentStep != 0) const SizedBox(width: 16),
+                              Expanded(
+                                child: ElevatedButton(
+                                  onPressed: _currentStep == _totalSteps - 1
+                                      ? () {
+                                          if (_formKey.currentState!
+                                              .validate()) {
+                                            _submitData(context);
+                                          }
+                                        }
+                                      : details.onStepContinue,
+                                  child: Text(_currentStep == _totalSteps - 1
+                                      ? 'Selesai'
+                                      : 'Selanjutnya'),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                    physics: const BouncingScrollPhysics(),
+                    currentStep: _currentStep,
+                    onStepContinue: () {
+                      setState(() {
+                        if (_currentStep < _totalSteps - 1) {
+                          _currentStep += 1;
+                        } else {
+                          _currentStep = 0;
+                        }
+                      });
+                    },
+                    onStepCancel: () {
+                      setState(() {
+                        if (_currentStep > 0) {
+                          _currentStep -= 1;
+                        } else {
+                          _currentStep = 0;
+                        }
+                      });
+                    },
+                    steps: <Step>[
+                      Step(
+                        title: const Text('Detail Produk'),
+                        content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Row(
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
-                                  'Nama Produk',
-                                  style: Typo.emphasizedBodyTextStyle,
+                                const Row(
+                                  children: [
+                                    Text(
+                                      'Nama Produk',
+                                      style: Typo.emphasizedBodyTextStyle,
+                                    ),
+                                    Text(
+                                      '*',
+                                      style: TextStyle(
+                                        color: Col.redAccent,
+                                        fontWeight: Fw.regular,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                                Text(
-                                  '*',
-                                  style: TextStyle(
-                                    color: Col.redAccent,
-                                    fontWeight: Fw.regular,
+                                const SizedBox(height: 8.0),
+                                TextFormField(
+                                  controller: _menuController,
+                                  keyboardType: TextInputType.name,
+                                  textCapitalization: TextCapitalization.words,
+                                  textInputAction: TextInputAction.next,
+                                  style: const TextStyle(color: Col.blackColor),
+                                  decoration: const InputDecoration(
+                                    hintText: 'Nama produk',
+                                    hintStyle: TextStyle(
+                                      color: Col.greyColor,
+                                      fontWeight: FontWeight.normal,
+                                    ),
                                   ),
+                                  maxLength: 500,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter
+                                        .singleLineFormatter,
+                                    TextInputFormatter.withFunction(
+                                        (oldValue, newValue) {
+                                      if (newValue.text.isEmpty) {
+                                        return newValue;
+                                      }
+                                      return TextEditingValue(
+                                        text: newValue.text
+                                            .split(' ')
+                                            .map((word) => word.isNotEmpty
+                                                ? word[0].toUpperCase() +
+                                                    word.substring(1)
+                                                : '')
+                                            .join(' '),
+                                        selection: newValue.selection,
+                                        composing: TextRange.empty,
+                                      );
+                                    }),
+                                  ],
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Tidak boleh kosong';
+                                    }
+                                    return null;
+                                  },
                                 ),
                               ],
                             ),
-                            const SizedBox(height: 8.0),
-                            TextFormField(
-                              controller: _menuController,
-                              keyboardType: TextInputType.name,
-                              textCapitalization: TextCapitalization.words,
-                              textInputAction: TextInputAction.next,
-                              style: const TextStyle(color: Col.blackColor),
-                              decoration: const InputDecoration(
-                                hintText: 'Nama produk',
-                                hintStyle: TextStyle(
-                                  color: Col.greyColor,
-                                  fontWeight: FontWeight.normal,
+                            const SizedBox(
+                              height: 8.0,
+                            ),
+                            Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Row(
+                                    children: [
+                                      Text('Pilih kategori',
+                                          style: Typo.emphasizedBodyTextStyle),
+                                      Text(
+                                        '*',
+                                        style: TextStyle(
+                                          color: Col.redAccent,
+                                          fontWeight: Fw.regular,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  const SizedBox(height: 8.0),
+                                  DropdownButtonFormField2<String>(
+                                    isExpanded: true,
+                                    decoration: const InputDecoration(
+                                      contentPadding:
+                                          EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                    hint: const Text(
+                                      'Pilih kategori',
+                                      style: TextStyle(
+                                        color: Col.greyColor,
+                                        fontWeight: FontWeight.normal,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                    value: _selectedCategory.isNotEmpty
+                                        ? _selectedCategory
+                                        : null,
+                                    style:
+                                        const TextStyle(color: Col.greyColor),
+                                    items: const [
+                                      DropdownMenuItem<String>(
+                                        value: 'Makanan',
+                                        child: Text(
+                                          'Makanan',
+                                          style: TextStyle(
+                                              color: Col.blackColor,
+                                              fontSize: 16),
+                                        ),
+                                      ),
+                                      DropdownMenuItem<String>(
+                                        value: 'Minuman',
+                                        child: Text(
+                                          'Minuman',
+                                          style: TextStyle(
+                                              color: Col.blackColor,
+                                              fontSize: 16),
+                                        ),
+                                      ),
+                                    ],
+                                    dropdownStyleData: DropdownStyleData(
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                          color: Col.backgroundColor,
+                                          border: Border.all(
+                                            color:
+                                                Col.greyColor.withOpacity(.20),
+                                          )),
+                                    ),
+                                    buttonStyleData: const ButtonStyleData(
+                                      padding: EdgeInsets.only(right: 8),
+                                    ),
+                                    menuItemStyleData: const MenuItemStyleData(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 12),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Pilih salah satu kategori';
+                                      }
+                                      return null;
+                                    },
+                                    iconStyleData: const IconStyleData(
+                                      icon: Icon(
+                                        Icons.expand_more_outlined,
+                                        color: Colors.black45,
+                                      ),
+                                      iconSize: 24,
+                                    ),
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _selectedCategory = value ?? '';
+                                      });
+                                    },
+                                  ),
+                                ]),
+                            const SizedBox(
+                              height: 8.0,
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Deskripsi (Opsional)',
+                                  style: Typo.emphasizedBodyTextStyle,
                                 ),
-                              ),
-                              maxLength: 500,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.singleLineFormatter,
-                                TextInputFormatter.withFunction(
-                                    (oldValue, newValue) {
-                                  if (newValue.text.isEmpty) {
-                                    return newValue;
-                                  }
-                                  return TextEditingValue(
-                                    text: newValue.text
-                                        .split(' ')
-                                        .map((word) => word.isNotEmpty
-                                            ? word[0].toUpperCase() +
-                                                word.substring(1)
-                                            : '')
-                                        .join(' '),
-                                    selection: newValue.selection,
-                                    composing: TextRange.empty,
-                                  );
-                                }),
+                                const SizedBox(height: 8.0),
+                                TextFormField(
+                                  controller: _deskripsiController,
+                                  decoration: const InputDecoration(
+                                    hintText: 'Masukan deskripsi produk',
+                                    hintStyle: TextStyle(
+                                      color: Col.greyColor,
+                                      fontWeight: FontWeight.normal,
+                                    ),
+                                    contentPadding: EdgeInsets.symmetric(
+                                        vertical: 10.0, horizontal: 10.0),
+                                  ),
+                                  style: const TextStyle(color: Col.blackColor),
+                                  keyboardType: TextInputType.multiline,
+                                  maxLines: 3,
+                                  maxLength: 1000,
+                                ),
                               ],
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Tidak boleh kosong';
-                                }
-                                return null;
-                              },
                             ),
                           ],
                         ),
-                        const SizedBox(height: 10),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                border: Border.all(
-                                  color: Col.greyColor.withOpacity(.50),
-                                  width: 1,
+                      ),
+                      Step(
+                        title: const Text('Tambahkan Foto Produk'),
+                        content: Container(
+                          height: 200,
+                          width: 200,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              color: Col.greyColor.withOpacity(.50),
+                              width: 1,
+                            ),
+                          ),
+                          child: Stack(
+                            children: [
+                              if (_selectedImage != null)
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.file(
+                                    _selectedImage!,
+                                    height: 200,
+                                    width: double.infinity,
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  if (_selectedImage != null)
-                                    ClipRRect(
-                                      borderRadius: BorderRadius.circular(10),
-                                      child: Image.file(
-                                        _selectedImage!,
-                                        height: 100,
-                                        width: double.infinity,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  Align(
-                                    alignment: Alignment.center,
-                                    child: IconButton(
+                              // Hanya tampilkan jika belum ada gambar yang dipilih
+                              Align(
+                                alignment: Alignment.center,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    IconButton(
                                       onPressed: () {
                                         showDialog(
                                           context: context,
@@ -319,7 +516,6 @@ class _AddDataPageState extends State<AddDataPage> {
                                                   Col.secondaryColor,
                                               title: const Text(
                                                 "Pilih Sumber Gambar",
-                                                textAlign: TextAlign.center,
                                                 style: TextStyle(
                                                   color: Col.blackColor,
                                                   fontSize: 16,
@@ -347,352 +543,252 @@ class _AddDataPageState extends State<AddDataPage> {
                                           },
                                         );
                                       },
-                                      icon: Icon(Icons.add_a_photo,
-                                          size: 30,
-                                          color:
-                                              Col.greyColor.withOpacity(.20)),
+                                      icon: Icon(
+                                        Icons.add_a_photo,
+                                        size: 50,
+                                        color: Col.greyColor.withOpacity(.20),
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                    if (_selectedImage == null)
+                                      const Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            'Upload Foto',
+                                            style: Typo.emphasizedBodyTextStyle,
+                                          ),
+                                          Text(
+                                            '*',
+                                            style: TextStyle(
+                                              color: Col.redAccent,
+                                              fontWeight: Fw.regular,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                  ],
+                                ),
                               ),
-                            ),
-                            const SizedBox(width: 10),
-                            Expanded(
-                              child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Row(
-                                      children: [
-                                        Text('Pilih kategori',
-                                            style:
-                                                Typo.emphasizedBodyTextStyle),
-                                        Text(
-                                          '*',
-                                          style: TextStyle(
-                                            color: Col.redAccent,
-                                            fontWeight: Fw.regular,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8.0),
-                                    DropdownButtonFormField2<String>(
-                                      isExpanded: true,
-                                      decoration: const InputDecoration(
-                                        contentPadding:
-                                            EdgeInsets.symmetric(vertical: 12),
-                                      ),
-                                      hint: const Text(
-                                        'Pilih kategori',
-                                        style: TextStyle(
-                                          color: Col.greyColor,
-                                          fontWeight: FontWeight.normal,
-                                          fontSize: 16,
-                                        ),
-                                      ),
-                                      value: _selectedCategory.isNotEmpty
-                                          ? _selectedCategory
-                                          : null,
-                                      style:
-                                          const TextStyle(color: Col.greyColor),
-                                      items: const [
-                                        DropdownMenuItem<String>(
-                                          value: 'Makanan',
-                                          child: Text(
-                                            'Makanan',
-                                            style: TextStyle(
-                                                color: Col.blackColor,
-                                                fontSize: 16),
-                                          ),
-                                        ),
-                                        DropdownMenuItem<String>(
-                                          value: 'Minuman',
-                                          child: Text(
-                                            'Minuman',
-                                            style: TextStyle(
-                                                color: Col.blackColor,
-                                                fontSize: 16),
-                                          ),
-                                        ),
-                                      ],
-                                      dropdownStyleData: DropdownStyleData(
-                                        decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Col.backgroundColor,
-                                            border: Border.all(
-                                              color: Col.greyColor
-                                                  .withOpacity(.20),
-                                            )),
-                                      ),
-                                      buttonStyleData: const ButtonStyleData(
-                                        padding: EdgeInsets.only(right: 8),
-                                      ),
-                                      menuItemStyleData:
-                                          const MenuItemStyleData(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12),
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Pilih salah satu kategori';
-                                        }
-                                        return null;
-                                      },
-                                      iconStyleData: const IconStyleData(
-                                        icon: Icon(
-                                          Icons.expand_more_outlined,
-                                          color: Colors.black45,
-                                        ),
-                                        iconSize: 24,
-                                      ),
-                                      onChanged: (String? value) {
-                                        setState(() {
-                                          _selectedCategory = value ?? '';
-                                        });
-                                      },
-                                    ),
-                                  ]),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                        const SizedBox(height: 10),
-                        Column(
+                      ),
+                      Step(
+                        title: const Text('Harga Pokok/Beli'),
+                        content: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Deskripsi (Opsional)',
-                              style: Typo.emphasizedBodyTextStyle,
-                            ),
-                            const SizedBox(height: 8.0),
-                            TextFormField(
-                              controller: _deskripsiController,
-                              decoration: const InputDecoration(
-                                hintText: 'Masukan deskripsi produk',
-                                hintStyle: TextStyle(
-                                  color: Col.greyColor,
-                                  fontWeight: FontWeight.normal,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Text('Harga pokok/beli',
+                                              style:
+                                                  Typo.emphasizedBodyTextStyle),
+                                          Text(
+                                            '*',
+                                            style: TextStyle(
+                                              color: Col.redAccent,
+                                              fontWeight: Fw.regular,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      TextFormField(
+                                        style: const TextStyle(
+                                            color: Col.blackColor),
+                                        controller: _hargaPokokController,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Harga pokok/beli',
+                                          hintStyle: TextStyle(
+                                            color: Col.greyColor,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                          CurrencyInputFormatter()
+                                        ],
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Tidak boleh kosong';
+                                          }
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                                contentPadding: EdgeInsets.symmetric(
-                                    vertical: 10.0, horizontal: 10.0),
-                              ),
-                              style: const TextStyle(color: Col.blackColor),
-                              keyboardType: TextInputType.multiline,
-                              maxLines: 3,
-                              maxLength: 1000,
+                                const SizedBox(width: 16.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Text('Jumlah isi satuan',
+                                              style:
+                                                  Typo.emphasizedBodyTextStyle),
+                                          Text(
+                                            '*',
+                                            style: TextStyle(
+                                              color: Col.redAccent,
+                                              fontWeight: Fw.regular,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      TextFormField(
+                                        controller: _jumlahIsiController,
+                                        style: const TextStyle(
+                                            color: Col.blackColor),
+                                        decoration: const InputDecoration(
+                                          hintText: 'Isi',
+                                          hintStyle: TextStyle(
+                                            color: Col.greyColor,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                        ],
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Tidak boleh kosong';
+                                          }
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              ],
                             ),
                           ],
                         ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      ),
+                      Step(
+                        title: const Text('Harga Jual'),
+                        content: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Row(
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('Harga pokok/beli',
-                                          style: Typo.emphasizedBodyTextStyle),
-                                      Text(
-                                        '*',
-                                        style: TextStyle(
-                                          color: Col.redAccent,
-                                          fontWeight: Fw.regular,
+                                      const Row(
+                                        children: [
+                                          Text('Harga jual',
+                                              style:
+                                                  Typo.emphasizedBodyTextStyle),
+                                          Text(
+                                            '*',
+                                            style: TextStyle(
+                                              color: Col.redAccent,
+                                              fontWeight: Fw.regular,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8.0),
+                                      TextFormField(
+                                        style: const TextStyle(
+                                            color: Col.blackColor),
+                                        controller: _hargaJualController,
+                                        decoration: const InputDecoration(
+                                          hintText: 'Harga jual',
+                                          hintStyle: TextStyle(
+                                            color: Col.greyColor,
+                                            fontWeight: FontWeight.normal,
+                                          ),
                                         ),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                          CurrencyInputFormatter()
+                                        ],
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Tidak boleh kosong';
+                                          }
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
                                       ),
                                     ],
                                   ),
-                                  const SizedBox(height: 8.0),
-                                  TextFormField(
-                                    style:
-                                        const TextStyle(color: Col.blackColor),
-                                    controller: _hargaPokokController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Harga pokok/beli',
-                                      hintStyle: TextStyle(
-                                        color: Col.greyColor,
-                                        fontWeight: FontWeight.normal,
+                                ),
+                                const SizedBox(width: 16.0),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      const Row(
+                                        children: [
+                                          Text('Stok yang dijual',
+                                              style:
+                                                  Typo.emphasizedBodyTextStyle),
+                                          Text(
+                                            '*',
+                                            style: TextStyle(
+                                              color: Col.redAccent,
+                                              fontWeight: Fw.regular,
+                                            ),
+                                          ),
+                                        ],
                                       ),
-                                    ),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      CurrencyInputFormatter()
+                                      const SizedBox(height: 8.0),
+                                      TextFormField(
+                                        controller: _stokController,
+                                        style: const TextStyle(
+                                            color: Col.blackColor),
+                                        decoration: const InputDecoration(
+                                          hintText: 'Stok',
+                                          hintStyle: TextStyle(
+                                            color: Col.greyColor,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                        ),
+                                        inputFormatters: [
+                                          FilteringTextInputFormatter
+                                              .digitsOnly,
+                                        ],
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Tidak boleh kosong';
+                                          }
+                                          return null;
+                                        },
+                                        keyboardType: TextInputType.number,
+                                      ),
                                     ],
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Tidak boleh kosong';
-                                      }
-                                      return null;
-                                    },
-                                    keyboardType: TextInputType.number,
                                   ),
-                                ],
-                              ),
+                                )
+                              ],
                             ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Row(
-                                    children: [
-                                      Text('Jumlah isi satuan',
-                                          style: Typo.emphasizedBodyTextStyle),
-                                      Text(
-                                        '*',
-                                        style: TextStyle(
-                                          color: Col.redAccent,
-                                          fontWeight: Fw.regular,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  TextFormField(
-                                    controller: _jumlahIsiController,
-                                    style:
-                                        const TextStyle(color: Col.blackColor),
-                                    decoration: const InputDecoration(
-                                      hintText: 'Isi',
-                                      hintStyle: TextStyle(
-                                        color: Col.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Tidak boleh kosong';
-                                      }
-                                      return null;
-                                    },
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ],
-                              ),
-                            )
                           ],
                         ),
-                        const SizedBox(height: 16.0),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Row(
-                                    children: [
-                                      Text('Harga jual',
-                                          style: Typo.emphasizedBodyTextStyle),
-                                      Text(
-                                        '*',
-                                        style: TextStyle(
-                                          color: Col.redAccent,
-                                          fontWeight: Fw.regular,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  TextFormField(
-                                    style:
-                                        const TextStyle(color: Col.blackColor),
-                                    controller: _hargaJualController,
-                                    decoration: const InputDecoration(
-                                      hintText: 'Harga jual',
-                                      hintStyle: TextStyle(
-                                        color: Col.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      CurrencyInputFormatter()
-                                    ],
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Tidak boleh kosong';
-                                      }
-                                      return null;
-                                    },
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(width: 16.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Row(
-                                    children: [
-                                      Text('Stok yang akan dijual',
-                                          style: Typo.emphasizedBodyTextStyle),
-                                      Text(
-                                        '*',
-                                        style: TextStyle(
-                                          color: Col.redAccent,
-                                          fontWeight: Fw.regular,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 8.0),
-                                  TextFormField(
-                                    controller: _stokController,
-                                    style:
-                                        const TextStyle(color: Col.blackColor),
-                                    decoration: const InputDecoration(
-                                      hintText: 'Stok',
-                                      hintStyle: TextStyle(
-                                        color: Col.greyColor,
-                                        fontWeight: FontWeight.normal,
-                                      ),
-                                    ),
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                    ],
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return 'Tidak boleh kosong';
-                                      }
-                                      return null;
-                                    },
-                                    keyboardType: TextInputType.number,
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-            bottomNavigationBar: BottomAppBar(
-              color: Colors.transparent,
-              elevation: 0,
-              child: ElevatedButton(
-                onPressed: () {
-                  if (_formKey.currentState!.validate()) {
-                    _submitData(context);
-                  }
-                },
-                child: const Center(
-                  child: Text(
-                    "Tambah",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
+                      ),
+                    ],
                   ),
                 ),
               ),
