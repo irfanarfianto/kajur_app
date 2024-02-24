@@ -218,7 +218,7 @@ class _IncomeFormState extends State<IncomeForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24.0),
+                const SizedBox(height: 15.0),
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   width: 380,
@@ -391,7 +391,7 @@ class _IncomeFormState extends State<IncomeForm> {
                       style: TextStyle(color: Col.redAccent, fontSize: 12),
                     ),
                   ),
-                Spacer(),
+                const Spacer(),
                 Container(
                   width: 380,
                   decoration: BoxDecoration(

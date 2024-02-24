@@ -15,6 +15,7 @@ void showUpdateStokDialog(
   String productName,
   int lastStock,
   String imageUrl,
+  VoidCallback onSuccess,
 ) {
   TextEditingController stokController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -155,6 +156,7 @@ void showUpdateStokDialog(
       );
     },
   );
+  onSuccess();
 }
 
 Future<void> _updateStock(

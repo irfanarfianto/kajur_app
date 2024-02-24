@@ -427,6 +427,10 @@ class _ListProdukPageState extends State<ListProdukPage>
                                                     data['menu'],
                                                     data['stok'],
                                                     document['image'],
+                                                    () {
+                                                      // This function is called when the stock update is successful
+                                                      _refreshData(); // Refresh your UI
+                                                    },
                                                   );
                                                 },
                                                 onLongPress: () {
@@ -477,17 +481,19 @@ class _ListProdukPageState extends State<ListProdukPage>
                                     },
                                   ),
                                 ),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                                child: Text(
-                                  'Stok yang aman nih yee 🙌',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                              if (!hasLowStockProducts)
+                                const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Text(
+                                    'Stok yang aman nih yee 🙌',
+                                    style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
-                              ),
                               ListView.builder(
                                 key: UniqueKey(),
                                 shrinkWrap: true,
@@ -515,6 +521,10 @@ class _ListProdukPageState extends State<ListProdukPage>
                                               data['menu'],
                                               data['stok'],
                                               document['image'],
+                                              () {
+                                                // This function is called when the stock update is successful
+                                                _refreshData(); // Refresh your UI
+                                              },
                                             );
                                           },
                                           onLongPress: () {

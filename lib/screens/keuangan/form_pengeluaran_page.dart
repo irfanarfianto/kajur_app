@@ -265,7 +265,7 @@ class _ExpenseFormState extends State<ExpenseForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24.0),
+                const SizedBox(height: 15.0),
                 Container(
                   padding: const EdgeInsets.all(16.0),
                   width: 380,
@@ -453,7 +453,6 @@ class _ExpenseFormState extends State<ExpenseForm> {
                       style: TextStyle(color: Col.redAccent, fontSize: 12),
                     ),
                   ),
-                const SizedBox(height: 16.0),
                 const Spacer(),
                 Container(
                   width: 380,

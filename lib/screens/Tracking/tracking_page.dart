@@ -83,103 +83,30 @@ class _ChartPageState extends State<ChartPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Tracking',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () {
-              _service.fetchIncomeData(
-                _service.selectedMonth,
-                _service.selectedYear,
-              );
-              _service.fetchExpenseData(
-                _service.selectedMonth,
-                _service.selectedYear,
-              );
-            },
-            child: const Icon(Icons.refresh),
+    return ScrollConfiguration(
+      behavior: const ScrollBehavior().copyWith(overscroll: true),
+      child: Scaffold(
+        appBar: AppBar(
+          surfaceTintColor: Colors.transparent,
+          title: const Text(
+            'Tracking',
           ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              childAspectRatio: 1.3,
-              mainAxisSpacing: 10,
-              crossAxisSpacing: 10,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
               children: [
-                Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Col.secondaryColor,
-                    border:
-                        Border.all(color: const Color(0x309E9E9E), width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Col.greyColor.withOpacity(.10),
-                        offset: const Offset(0, 5),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          const Text('Total Saldo'),
-                          const SizedBox(
-                            width: 10,
-                          ),
-                          InkWell(
-                            onTap: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  enableDrag: true,
-                                  isScrollControlled: true,
-                                  builder: (BuildContext context) {
-                                    return SizedBox(
-                                        height:
-                                            MediaQuery.of(context).size.height *
-                                                0.4,
-                                        child: const KeteranganSaldo());
-                                  });
-                            },
-                            child: const FaIcon(
-                                FontAwesomeIcons.circleExclamation,
-                                color: Col.greyColor,
-                                size: 10),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Text(currencyFormat.format(_service.totalSaldo),
-                          style: Typo.headingTextStyle),
-                      Text(
-                          DateFormat('dd/MM/yyyy HH:mm WIB', 'id')
-                              .format(_service.saldoTimestamp),
-                          style: Typo.emphasizedBodyTextStyle.copyWith(
-                            color: Col.greyColor,
-                          )),
-                    ],
-                  ),
-                ),
-                Skeletonizer(
-                  enabled: _service.incomeData.isEmpty &&
-                      _service.expenseData.isEmpty,
-                  child: Skeleton.leaf(
-                    child: Container(
+                const SizedBox(height: 20),
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  childAspectRatio: 1.3,
+                  mainAxisSpacing: 10,
+                  crossAxisSpacing: 10,
+                  children: [
+                    Container(
                       padding: const EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(15),
@@ -197,133 +124,305 @@ class _ChartPageState extends State<ChartPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Pendapatan Bulan ini'),
+                          Row(
+                            children: [
+                              const Text('Total Saldo'),
+                              const SizedBox(
+                                width: 10,
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      enableDrag: true,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext context) {
+                                        return SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.4,
+                                            child: const KeteranganSaldo());
+                                      });
+                                },
+                                child: const FaIcon(
+                                    FontAwesomeIcons.circleExclamation,
+                                    color: Col.greyColor,
+                                    size: 10),
+                              ),
+                            ],
+                          ),
                           const SizedBox(
                             height: 10,
                           ),
+                          Text(currencyFormat.format(_service.totalSaldo),
+                              style: Typo.headingTextStyle),
                           Text(
-                            (_service.totalIncomeMonthly == 0 &&
-                                    _service.totalExpenseMonthly == 0)
-                                ? 'Rp '
-                                : currencyFormat.format(
-                                    _service.totalIncomeMonthly -
-                                        _service.totalExpenseMonthly),
-                            style: TextStyle(
-                              fontSize: 20.0,
-                              color: (_service.totalIncomeMonthly -
-                                          _service.totalExpenseMonthly >=
-                                      0)
-                                  ? Col.greenAccent
-                                  : Col.redAccent,
-                              fontWeight: FontWeight.bold,
-                            ),
+                              DateFormat('dd/MM/yyyy HH:mm WIB', 'id')
+                                  .format(_service.saldoTimestamp),
+                              style: Typo.emphasizedBodyTextStyle.copyWith(
+                                color: Col.greyColor,
+                              )),
+                        ],
+                      ),
+                    ),
+                    Skeletonizer(
+                      enabled: _service.incomeData.isEmpty &&
+                          _service.expenseData.isEmpty,
+                      child: Skeleton.leaf(
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Col.secondaryColor,
+                            border: Border.all(
+                                color: const Color(0x309E9E9E), width: 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Col.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
                           ),
-                          if (_service.totalIncomeMonthly != 0 ||
-                              _service.totalExpenseMonthly != 0)
-                            Row(
-                              children: [
-                                Icon(
-                                  (_service.totalIncomeMonthly -
-                                              _service.totalExpenseMonthly >=
-                                          0)
-                                      ? FontAwesomeIcons.arrowUp
-                                      : FontAwesomeIcons.arrowDown,
-                                  size: 14,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Pendapatan Bulan ini'),
+                              const SizedBox(
+                                height: 10,
+                              ),
+                              Text(
+                                (_service.totalIncomeMonthly == 0 &&
+                                        _service.totalExpenseMonthly == 0)
+                                    ? 'Rp '
+                                    : currencyFormat.format(
+                                        _service.totalIncomeMonthly -
+                                            _service.totalExpenseMonthly),
+                                style: TextStyle(
+                                  fontSize: 20.0,
                                   color: (_service.totalIncomeMonthly -
                                               _service.totalExpenseMonthly >=
                                           0)
                                       ? Col.greenAccent
                                       : Col.redAccent,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                                const SizedBox(width: 5),
-                                Text(
-                                  (_service.totalIncomeMonthly == 0 &&
-                                          _service.totalExpenseMonthly == 0)
-                                      ? ''
-                                      : '${((_service.totalIncomeMonthly - _service.totalExpenseMonthly) / _service.totalIncomeMonthly * 100).toStringAsFixed(2)}%',
-                                  style: TextStyle(
-                                    color: (_service.totalIncomeMonthly -
-                                                _service.totalExpenseMonthly >=
-                                            0)
-                                        ? Col.greenAccent
-                                        : Col.redAccent,
-                                    fontSize: 12,
-                                  ),
+                              ),
+                              if (_service.totalIncomeMonthly != 0 ||
+                                  _service.totalExpenseMonthly != 0)
+                                Row(
+                                  children: [
+                                    Icon(
+                                      (_service.totalIncomeMonthly -
+                                                  _service
+                                                      .totalExpenseMonthly >=
+                                              0)
+                                          ? FontAwesomeIcons.arrowUp
+                                          : FontAwesomeIcons.arrowDown,
+                                      size: 14,
+                                      color: (_service.totalIncomeMonthly -
+                                                  _service
+                                                      .totalExpenseMonthly >=
+                                              0)
+                                          ? Col.greenAccent
+                                          : Col.redAccent,
+                                    ),
+                                    const SizedBox(width: 5),
+                                    Text(
+                                      (_service.totalIncomeMonthly == 0 &&
+                                              _service.totalExpenseMonthly == 0)
+                                          ? ''
+                                          : '${((_service.totalIncomeMonthly - _service.totalExpenseMonthly) / _service.totalIncomeMonthly * 100).toStringAsFixed(2)}%',
+                                      style: TextStyle(
+                                        color: (_service.totalIncomeMonthly -
+                                                    _service
+                                                        .totalExpenseMonthly >=
+                                                0)
+                                            ? Col.greenAccent
+                                            : Col.redAccent,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                        ],
+                            ],
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                Skeletonizer(
-                  enabled: _service.incomeData.isEmpty &&
-                      _service.expenseData.isEmpty,
-                  child: Skeleton.leaf(
-                    child: Container(
-                      padding: const EdgeInsets.all(16.0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(15),
-                        color: Col.secondaryColor,
-                        border: Border.all(
-                            color: const Color(0x309E9E9E), width: 1),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Col.greyColor.withOpacity(.10),
-                            offset: const Offset(0, 5),
-                            blurRadius: 10,
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Total Produk'),
-                          const SizedBox(height: 10),
-                          Text(totalProdukText, style: Typo.headingTextStyle),
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Row(
-                                children: [
-                                  const FaIcon(
-                                    FontAwesomeIcons.burger,
-                                    color: Col.greyColor,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(makananProdukText,
-                                      style:
-                                          Typo.emphasizedBodyTextStyle.copyWith(
-                                        color: Col.greyColor,
-                                      )),
-                                ],
+                    Skeletonizer(
+                      enabled: _service.incomeData.isEmpty &&
+                          _service.expenseData.isEmpty,
+                      child: Skeleton.leaf(
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Col.secondaryColor,
+                            border: Border.all(
+                                color: const Color(0x309E9E9E), width: 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Col.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
                               ),
-                              const SizedBox(width: 10),
-                              const Text('|'),
-                              const SizedBox(width: 10),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Total Produk'),
+                              const SizedBox(height: 10),
+                              Text(totalProdukText,
+                                  style: Typo.headingTextStyle),
                               Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  const FaIcon(
-                                    FontAwesomeIcons.mugHot,
-                                    color: Col.greyColor,
-                                    size: 16,
-                                  ),
-                                  const SizedBox(width: 5),
-                                  Text(minumanProdukText,
-                                      style:
-                                          Typo.emphasizedBodyTextStyle.copyWith(
+                                  Row(
+                                    children: [
+                                      const FaIcon(
+                                        FontAwesomeIcons.burger,
                                         color: Col.greyColor,
-                                      )),
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(makananProdukText,
+                                          style: Typo.emphasizedBodyTextStyle
+                                              .copyWith(
+                                            color: Col.greyColor,
+                                          )),
+                                    ],
+                                  ),
+                                  const SizedBox(width: 10),
+                                  const Text('|'),
+                                  const SizedBox(width: 10),
+                                  Row(
+                                    children: [
+                                      const FaIcon(
+                                        FontAwesomeIcons.mugHot,
+                                        color: Col.greyColor,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 5),
+                                      Text(minumanProdukText,
+                                          style: Typo.emphasizedBodyTextStyle
+                                              .copyWith(
+                                            color: Col.greyColor,
+                                          )),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ],
                           ),
-                        ],
+                        ),
                       ),
                     ),
-                  ),
+                    Skeletonizer(
+                      enabled: _service.incomeData.isEmpty &&
+                          _service.expenseData.isEmpty,
+                      child: Skeleton.leaf(
+                        child: Container(
+                          padding: const EdgeInsets.all(16.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            color: Col.secondaryColor,
+                            border: Border.all(
+                                color: const Color(0x309E9E9E), width: 1),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Col.greyColor.withOpacity(.10),
+                                offset: const Offset(0, 5),
+                                blurRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Pengurus'),
+                              const SizedBox(height: 10),
+                              InkWell(
+                                onTap: () {
+                                  showModalBottomSheet(
+                                      context: context,
+                                      enableDrag: true,
+                                      backgroundColor: Col.backgroundColor,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext context) {
+                                        return SizedBox(
+                                            height: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.5,
+                                            child: ListUser());
+                                      });
+                                },
+                                child: SizedBox(
+                                  width: double.infinity,
+                                  height: 50,
+                                  child: Stack(
+                                    children: [
+                                      for (int i = 0;
+                                          i < userProfiles.length;
+                                          i++)
+                                        if (i < 4)
+                                          Positioned(
+                                            left: i * 20.0,
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    border: Border.all(
+                                                      color: Colors.white,
+                                                      width: 2,
+                                                    ),
+                                                  ),
+                                                  child: CircleAvatar(
+                                                    radius: 20,
+                                                    backgroundColor:
+                                                        Col.greyColor,
+                                                    backgroundImage:
+                                                        userProfiles[i]
+                                                                    ['photoUrl']
+                                                                .isNotEmpty
+                                                            ? NetworkImage(
+                                                                userProfiles[i][
+                                                                    'photoUrl'])
+                                                            : null,
+                                                    child: userProfiles[i]
+                                                                ['photoUrl']
+                                                            .isEmpty
+                                                        ? const Icon(
+                                                            Icons
+                                                                .account_circle,
+                                                            size: 40,
+                                                          )
+                                                        : null,
+                                                  ),
+                                                ),
+                                                if (userProfiles.length > 4)
+                                                  Text(
+                                                      '+${userProfiles.length - 4}'),
+                                              ],
+                                            ),
+                                          ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.02,
                 ),
                 Skeletonizer(
                   enabled: _service.incomeData.isEmpty &&
@@ -347,220 +446,126 @@ class _ChartPageState extends State<ChartPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Pengurus'),
-                          const SizedBox(height: 10),
-                          InkWell(
-                            onTap: () {
-                              showModalBottomSheet(
-                                  context: context,
-                                  enableDrag: true,
-                                  backgroundColor: Col.backgroundColor,
-                                  isScrollControlled: true,
-                                  builder: (BuildContext context) {
-                                    return SizedBox(
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  '${_service.selectedMonth} ${_service.selectedYear}',
+                                  style: Typo.titleTextStyle,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                              IconButton(
+                                onPressed: () {
+                                  showModalBottomSheet(
+                                    context: context,
+                                    enableDrag: true,
+                                    isScrollControlled: true,
+                                    builder: (BuildContext context) {
+                                      return SizedBox(
                                         height:
                                             MediaQuery.of(context).size.height *
-                                                0.5,
-                                        child: ListUser());
-                                  });
-                            },
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 50,
-                              child: Stack(
-                                children: [
-                                  for (int i = 0; i < userProfiles.length; i++)
-                                    if (i < 4)
-                                      Positioned(
-                                        left: i * 20.0,
-                                        child: Row(
-                                          children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                shape: BoxShape.circle,
-                                                border: Border.all(
-                                                  color: Colors.white,
-                                                  width: 2,
-                                                ),
-                                              ),
-                                              child: CircleAvatar(
-                                                radius: 20,
-                                                backgroundColor: Col.greyColor,
-                                                backgroundImage: userProfiles[i]
-                                                            ['photoUrl']
-                                                        .isNotEmpty
-                                                    ? NetworkImage(
-                                                        userProfiles[i]
-                                                            ['photoUrl'])
-                                                    : null,
-                                                child: userProfiles[i]
-                                                            ['photoUrl']
-                                                        .isEmpty
-                                                    ? const Icon(
-                                                        Icons.account_circle,
-                                                        size: 40,
-                                                      )
-                                                    : null,
-                                              ),
-                                            ),
-                                            if (userProfiles.length > 4)
-                                              Text(
-                                                  '+${userProfiles.length - 4}'),
-                                          ],
+                                                0.4,
+                                        child: TimerPicker(
+                                          selectedMonth: _service.selectedMonth,
+                                          selectedYear: _service.selectedYear,
+                                          onMonthChanged: (String newValue) {
+                                            setState(() {
+                                              _service.selectedMonth = newValue;
+                                            });
+                                            _service.fetchIncomeData(
+                                              _service.selectedMonth,
+                                              _service.selectedYear,
+                                            );
+                                            _service.fetchExpenseData(
+                                              _service.selectedMonth,
+                                              _service.selectedYear,
+                                            );
+                                          },
+                                          onYearChanged: (String newValue) {
+                                            setState(() {
+                                              _service.selectedYear = newValue;
+                                            });
+                                            _service.fetchIncomeData(
+                                              _service.selectedMonth,
+                                              _service.selectedYear,
+                                            );
+                                            _service.fetchExpenseData(
+                                              _service.selectedMonth,
+                                              _service.selectedYear,
+                                            );
+                                          },
+                                          onConfirm: () {
+                                            if (mounted) {
+                                              // Lakukan pembaruan logika Anda di sini
+                                            }
+                                            Navigator.of(context).pop();
+                                          },
                                         ),
-                                      ),
+                                      );
+                                    },
+                                  );
+                                },
+                                icon: const Icon(Icons.calendar_month,
+                                    color: Col.greyColor),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          SfCartesianChartWidget(
+                            incomeData: _service.incomeData,
+                            expenseData: _service.expenseData,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Column(
+                                children: [
+                                  Text(
+                                    currencyFormat
+                                        .format(_service.totalIncomeMonthly),
+                                    style: const TextStyle(
+                                      color: Col.primaryColor,
+                                      fontSize: 16,
+                                      fontWeight: Fw.bold,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Pemasukan',
+                                    style: Typo.emphasizedBodyTextStyle,
+                                  ),
                                 ],
                               ),
-                            ),
+                              Column(
+                                children: [
+                                  Text(
+                                    currencyFormat
+                                        .format(_service.totalExpenseMonthly),
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(
+                                      color: Col.orangeAccent,
+                                      fontSize: 16,
+                                      fontWeight: Fw.bold,
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Pengeluaran',
+                                    style: Typo.emphasizedBodyTextStyle,
+                                  ),
+                                ],
+                              ),
+                            ],
                           ),
                         ],
                       ),
                     ),
                   ),
-                )
+                ),
+                const SizedBox(height: 20),
               ],
             ),
-            SizedBox(
-              height: MediaQuery.of(context).size.height * 0.02,
-            ),
-            Skeletonizer(
-              enabled:
-                  _service.incomeData.isEmpty && _service.expenseData.isEmpty,
-              child: Skeleton.leaf(
-                child: Container(
-                  padding: const EdgeInsets.all(16.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(15),
-                    color: Col.secondaryColor,
-                    border:
-                        Border.all(color: const Color(0x309E9E9E), width: 1),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Col.greyColor.withOpacity(.10),
-                        offset: const Offset(0, 5),
-                        blurRadius: 10,
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              '${_service.selectedMonth} ${_service.selectedYear}',
-                              style: Typo.titleTextStyle,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              showModalBottomSheet(
-                                context: context,
-                                enableDrag: true,
-                                isScrollControlled: true,
-                                builder: (BuildContext context) {
-                                  return SizedBox(
-                                    height: MediaQuery.of(context).size.height *
-                                        0.4,
-                                    child: TimerPicker(
-                                      selectedMonth: _service.selectedMonth,
-                                      selectedYear: _service.selectedYear,
-                                      onMonthChanged: (String newValue) {
-                                        setState(() {
-                                          _service.selectedMonth = newValue;
-                                        });
-                                        _service.fetchIncomeData(
-                                          _service.selectedMonth,
-                                          _service.selectedYear,
-                                        );
-                                        _service.fetchExpenseData(
-                                          _service.selectedMonth,
-                                          _service.selectedYear,
-                                        );
-                                      },
-                                      onYearChanged: (String newValue) {
-                                        setState(() {
-                                          _service.selectedYear = newValue;
-                                        });
-                                        _service.fetchIncomeData(
-                                          _service.selectedMonth,
-                                          _service.selectedYear,
-                                        );
-                                        _service.fetchExpenseData(
-                                          _service.selectedMonth,
-                                          _service.selectedYear,
-                                        );
-                                      },
-                                      onConfirm: () {
-                                        if (mounted) {
-                                          // Lakukan pembaruan logika Anda di sini
-                                        }
-                                        Navigator.of(context).pop();
-                                      },
-                                    ),
-                                  );
-                                },
-                              );
-                            },
-                            icon: const Icon(Icons.calendar_month,
-                                color: Col.greyColor),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      SfCartesianChartWidget(
-                        incomeData: _service.incomeData,
-                        expenseData: _service.expenseData,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          Column(
-                            children: [
-                              Text(
-                                currencyFormat
-                                    .format(_service.totalIncomeMonthly),
-                                style: const TextStyle(
-                                  color: Col.primaryColor,
-                                  fontSize: 16,
-                                  fontWeight: Fw.bold,
-                                ),
-                              ),
-                              const Text(
-                                'Pemasukan',
-                                style: Typo.emphasizedBodyTextStyle,
-                              ),
-                            ],
-                          ),
-                          Column(
-                            children: [
-                              Text(
-                                currencyFormat
-                                    .format(_service.totalExpenseMonthly),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(
-                                  color: Col.orangeAccent,
-                                  fontSize: 16,
-                                  fontWeight: Fw.bold,
-                                ),
-                              ),
-                              const Text(
-                                'Pengeluaran',
-                                style: Typo.emphasizedBodyTextStyle,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

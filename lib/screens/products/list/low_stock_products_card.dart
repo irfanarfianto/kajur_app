@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:kajur_app/components/produk/update_stock_dialog.dart';
 import 'package:kajur_app/utils/design/system.dart';
 
 class LowStockProductsCard extends StatelessWidget {
@@ -89,31 +88,31 @@ class LowStockProductsCard extends StatelessWidget {
                             ),
                           ],
                         ),
-                        SizedBox(
-                          width: 30,
-                          height: 40,
-                          child: InkWell(
-                            onTap: () {
-                              showUpdateStokDialog(
-                                context,
-                                documentId,
-                                data['menu'],
-                                data['stok'],
-                                document['image'],
-                              );
-                            },
-                            child: Container(
-                              alignment: Alignment.topCenter,
-                              width: 30,
-                              height: 40,
-                              child: const Icon(
-                                Icons.more_vert,
-                                color: Col.greyColor,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                        )
+                        // SizedBox(
+                        //   width: 30,
+                        //   height: 40,
+                        //   child: InkWell(
+                        //     onTap: () {
+                        //       showUpdateStokDialog(
+                        //         context,
+                        //         documentId,
+                        //         data['menu'],
+                        //         data['stok'],
+                        //         document['image'],
+                        //       );
+                        //     },
+                        //     child: Container(
+                        //       alignment: Alignment.topCenter,
+                        //       width: 30,
+                        //       height: 40,
+                        //       child: const Icon(
+                        //         Icons.more_vert,
+                        //         color: Col.greyColor,
+                        //         size: 18,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // )
                       ],
                     ),
                   ],

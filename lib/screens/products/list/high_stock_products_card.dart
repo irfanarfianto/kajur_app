@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/components/produk/update_stock_dialog.dart';
 import 'package:kajur_app/utils/design/system.dart';
 
 class HighStockProductsCard extends StatelessWidget {
@@ -98,31 +97,31 @@ class HighStockProductsCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    SizedBox(
-                      width: 60,
-                      height: 100,
-                      child: InkWell(
-                        onTap: () {
-                          showUpdateStokDialog(
-                            context,
-                            documentId,
-                            data['menu'],
-                            data['stok'],
-                            document['image'],
-                          );
-                        },
-                        child: Container(
-                          alignment: Alignment.topCenter,
-                          width: 60,
-                          height: 100,
-                          child: const Icon(
-                            Icons.more_vert,
-                            color: Col.greyColor,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                    )
+                    // SizedBox(
+                    //   width: 60,
+                    //   height: 100,
+                    //   child: InkWell(
+                    //     onTap: () {
+                    //       showUpdateStokDialog(
+                    //         context,
+                    //         documentId,
+                    //         data['menu'],
+                    //         data['stok'],
+                    //         document['image'],
+                    //       );
+                    //     },
+                    //     child: Container(
+                    //       alignment: Alignment.topCenter,
+                    //       width: 60,
+                    //       height: 100,
+                    //       child: const Icon(
+                    //         Icons.more_vert,
+                    //         color: Col.greyColor,
+                    //         size: 18,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // )
                   ],
                 ),
               ),
