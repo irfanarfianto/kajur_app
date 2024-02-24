@@ -1,20 +1,85 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:kajur_app/components/comingsoon/comingsoon.dart';
+import 'package:kajur_app/firebase_options.dart';
+import 'package:kajur_app/screens/auth/login_page.dart';
+import 'package:kajur_app/screens/auth/register_page.dart';
+import 'package:kajur_app/screens/home/home_page.dart';
+import 'package:kajur_app/screens/products/list/list_products_page.dart';
+import 'package:kajur_app/screens/products/tambah%20produk/add_products_page.dart';
 import 'package:kajur_app/screens/splash_screen/splash_screen_page.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'firebase_options.dart';
-import 'screens/auth/login_page.dart';
-import 'screens/auth/register_page.dart';
-import 'screens/home/home_page.dart';
-import 'screens/products/tambah produk/add_products_page.dart';
-import 'screens/products/list/list_products_page.dart';
-import 'components/comingsoon/comingsoon.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+
+@pragma('vm:entry-point')
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await setupFlutterNotifications();
+  showFlutterNotification(message);
+  print('Handling a background message ${message.messageId}');
+}
+
+late AndroidNotificationChannel channel;
+
+bool isFlutterLocalNotificationsInitialized = false;
+
+Future<void> setupFlutterNotifications() async {
+  if (isFlutterLocalNotificationsInitialized) {
+    return;
+  }
+  channel = const AndroidNotificationChannel(
+    'high_importance_channel',
+    'High Importance Notifications',
+    description: 'This channel is used for important notifications.',
+    importance: Importance.high,
+  );
+
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+  isFlutterLocalNotificationsInitialized = true;
+}
+
+void showFlutterNotification(RemoteMessage message) {
+  RemoteNotification? notification = message.notification;
+  AndroidNotification? android = message.notification?.android;
+  if (notification != null && android != null && !kIsWeb) {
+    flutterLocalNotificationsPlugin.show(
+      notification.hashCode,
+      notification.title,
+      notification.body,
+      NotificationDetails(
+        android: AndroidNotificationDetails(
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
+          icon: 'launcher_notification',
+        ),
+      ),
+    );
+    navigatorKey.currentState?.pushNamed(MyApp.listProdukRoute);
+  }
+}
+
+late FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   timeago.setLocaleMessages('id', timeago.IdMessages());
@@ -24,11 +89,21 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  await FirebaseAppCheck.instance.activate(
-    webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
-    androidProvider: AndroidProvider.playIntegrity,
-    appleProvider: AppleProvider.appAttest,
-  );
+  if (!kIsWeb) {
+    await setupFlutterNotifications();
+  }
+
+  FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) async {
+    // Menampilkan notifikasi saat aplikasi berjalan di foreground
+    showFlutterNotification(message);
+    print('Handling a foreground message ${message.messageId}');
+
+    // Menavigasi pengguna ke layar tertentu
+  });
+
+  flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   initializeDateFormatting('id', null).then((_) {
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
@@ -50,12 +125,13 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      localizationsDelegates: [
+      navigatorKey: navigatorKey,
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: [
+      supportedLocales: const [
         Locale('en'), // English
         Locale('id'), // Spanish
       ],
