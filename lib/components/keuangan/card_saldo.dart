@@ -97,10 +97,10 @@ class TotalSaldo extends StatelessWidget {
           bottom: -50,
           child: ClipRRect(
             child: Image.asset(
-              'images/man2.png', 
+              'images/man2.png',
               width: 180,
               height: 180,
-              fit: BoxFit.cover, 
+              fit: BoxFit.cover,
             ),
           ),
         ),
