@@ -210,32 +210,40 @@ Widget buildRecentActivityWidget(context) {
                       ),
                       trailing: SizedBox(
                         width: 100,
-                        height: 80,
+                        height: 100,
                         child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                              data['action'] == 'Pengeluaran'
-                                  ? '-${currencyFormat.format(amount)}' // Tambahkan tanda negatif di sini
-                                  : (amount != null
-                                      ? currencyFormat.format(amount)
-                                      : ''),
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: data['action'] == 'Pengeluaran'
-                                    ? Col.redAccent
-                                    : Col.greenAccent,
+                            Expanded(
+                              child: Align(
+                                alignment: Alignment.bottomRight,
+                                child: Text(
+                                  data['action'] == 'Pengeluaran'
+                                      ? '-${currencyFormat.format(amount)}'
+                                      : (amount != null
+                                          ? currencyFormat.format(amount)
+                                          : ''),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: data['action'] == 'Pengeluaran'
+                                        ? Col.redAccent
+                                        : Col.greenAccent,
+                                  ),
+                                ),
                               ),
                             ),
                             if (data['category'] != null)
                               Expanded(
                                 child: Align(
-                                  alignment: Alignment.centerRight,
+                                  alignment: Alignment.bottomRight,
                                   child: CarouselSlider(
                                     disableGesture: true,
                                     items: [
                                       Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
                                         mainAxisAlignment:
                                             MainAxisAlignment.end,
                                         children: [
@@ -244,8 +252,8 @@ Widget buildRecentActivityWidget(context) {
                                             maxLines: 1,
                                             overflow: TextOverflow.ellipsis,
                                             style: const TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
+                                              fontSize: 10,
+                                              color: Colors.grey,
                                             ),
                                           ),
                                           CategoryIcon(
@@ -255,7 +263,7 @@ Widget buildRecentActivityWidget(context) {
                                       ),
                                       if (data['timestamp'] != null)
                                         Text(
-                                          DateFormat(' HH:mm WIB', 'id').format(
+                                          DateFormat('HH:mm WIB', 'id').format(
                                               (data['timestamp'] as Timestamp)
                                                   .toDate()),
                                           textAlign: TextAlign.end,
@@ -268,7 +276,7 @@ Widget buildRecentActivityWidget(context) {
                                     options: CarouselOptions(
                                       viewportFraction: 1,
                                       aspectRatio: 2 / 1.5,
-                                      height: 16,
+                                      height: 12,
                                       autoPlayInterval:
                                           const Duration(seconds: 8),
                                       autoPlay: true,
@@ -282,7 +290,7 @@ Widget buildRecentActivityWidget(context) {
                               Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
-                                  DateFormat(' HH:mm WIB', 'id').format(
+                                  DateFormat('HH:mm WIB', 'id').format(
                                       (data['timestamp'] as Timestamp)
                                           .toDate()),
                                   style: const TextStyle(

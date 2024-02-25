@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
 
@@ -16,7 +15,12 @@ class SfCartesianChartWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SfCartesianChart(
+      margin: const EdgeInsets.all(0),
+      plotAreaBorderWidth: 0,
       borderColor: Colors.white,
+      borderWidth: 0,
+      backgroundColor: Colors.transparent,
+      loadMoreIndicatorBuilder: (context, direction) => SizedBox.shrink(),
       primaryXAxis: const CategoryAxis(
         labelStyle: TextStyle(
           fontSize: 10,
@@ -26,10 +30,11 @@ class SfCartesianChartWidget extends StatelessWidget {
         majorTickLines: MajorTickLines(size: 0),
       ),
       primaryYAxis: NumericAxis(
-        axisLine: AxisLine(
-          color: Colors.white.withOpacity(.5),
+        axisLine: const AxisLine(
+          width: 0,
         ),
         desiredIntervals: 5,
+        edgeLabelPlacement: EdgeLabelPlacement.none,
         numberFormat: NumberFormat.compactCurrency(locale: 'id', symbol: ''),
         labelFormat: '{value}',
         labelStyle: const TextStyle(fontSize: 10),

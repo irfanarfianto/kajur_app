@@ -11,16 +11,17 @@ class TotalSaldo extends StatelessWidget {
   final NumberFormat currencyFormat;
 
   const TotalSaldo({
-    Key? key,
+    super.key,
     required this.service,
     required this.currencyFormat,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         Container(
+          width: double.infinity,
           padding: const EdgeInsets.all(16.0),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(15),
@@ -40,29 +41,9 @@ class TotalSaldo extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Text(
-                    'Total Saldo',
-                    style: TextStyle(fontSize: 18.0, color: Col.whiteColor),
-                  ),
-                  IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                      visualDensity: VisualDensity.compact,
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          SlideLeftRoute(page: const ChartPage()),
-                        );
-                      },
-                      icon: const FaIcon(
-                        FontAwesomeIcons.expand,
-                        color: Col.whiteColor,
-                        size: 20,
-                      ))
-                ],
+              const Text(
+                'Total Saldo',
+                style: TextStyle(fontSize: 18.0, color: Col.whiteColor),
               ),
               const SizedBox(height: 15),
               GestureDetector(
@@ -104,6 +85,24 @@ class TotalSaldo extends StatelessWidget {
             ),
           ),
         ),
+        Positioned(
+            right: 5,
+            top: 5,
+            child: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                visualDensity: VisualDensity.compact,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    SlideLeftRoute(page: const ChartPage()),
+                  );
+                },
+                icon: const FaIcon(
+                  FontAwesomeIcons.expand,
+                  color: Col.whiteColor,
+                  size: 20,
+                ))),
       ],
     );
   }

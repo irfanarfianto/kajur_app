@@ -1,7 +1,9 @@
 import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
-import 'package:kajur_app/components/keuangan/chart.dart';
+import 'package:kajur_app/components/keuangan/chart_expense.dart';
+import 'package:kajur_app/components/keuangan/chart_income_expense.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class KeuanganService {
@@ -20,6 +22,8 @@ class KeuanganService {
   double totalIncomeMonthly = 0;
   double totalExpenseMonthly = 0;
   bool showBalance = false;
+  List<ExpenseChartData> monthlyExpenseData = [];
+  double totalExpenseForMonth = 0;
   final currencyFormat =
       NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 
@@ -163,15 +167,16 @@ class KeuanganService {
 
       // Perbarui cache lokal setelah mendapatkan data baru dari Firestore
       await prefs.setStringList('expenseData_$selectedMonth$selectedYear',
-          ChartData.encodeList(weeklyExpenseData));
+          ChartData.encodeList(expenseData));
       await prefs.setDouble('totalExpenseMonthly_$selectedMonth$selectedYear',
           totalExpenseMonthly);
 
       if (onDataLoaded != null) {
         onDataLoaded!(); // Panggil callback
       }
-    } catch (error) {
-      print('Error fetching expense data: $error');
+    } catch (error, stackTrace) {
+      print(
+          stackTrace); // Cetak stack trace untuk mendapatkan detail lebih lanjut
     }
   }
 

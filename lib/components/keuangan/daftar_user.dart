@@ -82,9 +82,9 @@ class ListUser extends StatelessWidget {
                                             ? NetworkImage(photoUrl)
                                             : null,
                                         child: photoUrl.isEmpty
-                                            ? const Icon(
-                                                Icons.account_circle,
-                                                size: 50,
+                                            ? const FaIcon(
+                                                FontAwesomeIcons.solidUser,
+                                                size: 30,
                                                 color: Colors.white,
                                               )
                                             : null,
@@ -102,7 +102,7 @@ class ListUser extends StatelessWidget {
                                           } else {
                                             showToast(
                                                 message:
-                                                    'No WhatsApp number available');
+                                                    'User belum memasukan nomor whatsapp');
                                           }
                                         },
                                         child: const FaIcon(

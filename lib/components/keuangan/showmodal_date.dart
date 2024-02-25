@@ -66,7 +66,9 @@ class _TimerPickerState extends State<TimerPicker> {
                         height: 100,
                         child: CupertinoPicker(
                           scrollController: FixedExtentScrollController(
-                            initialItem: months.indexOf(widget.selectedMonth),
+                            initialItem: months.contains(widget.selectedMonth)
+                                ? months.indexOf(widget.selectedMonth)
+                                : 0,
                           ),
                           itemExtent: 30,
                           onSelectedItemChanged: (index) {
