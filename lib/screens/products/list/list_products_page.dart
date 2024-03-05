@@ -236,7 +236,7 @@ class _ListProdukPageState extends State<ListProdukPage>
               labelColor: Col.secondaryColor,
               unselectedLabelColor: Col.secondaryColor.withOpacity(0.5),
               indicatorWeight: 2.0,
-              indicatorSize: TabBarIndicatorSize.tab,
+              indicatorSize: TabBarIndicatorSize.label,
               indicatorColor: Col.primaryColor,
               tabs: [
                 for (int i = 0; i < _getNumberOfTabs(); i++)
@@ -371,6 +371,8 @@ class _ListProdukPageState extends State<ListProdukPage>
 
                         bool hasLowStockProducts = sortedProducts
                             .any((product) => (product['stok'] ?? 0) < 5);
+                        bool hasHighStockProducts = sortedProducts
+                            .any((product) => (product['stok'] ?? 0) >= 5);
 
                         return RefreshIndicator(
                           backgroundColor: Col.secondaryColor,
@@ -481,7 +483,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                                     },
                                   ),
                                 ),
-                              if (!hasLowStockProducts)
+                              if (hasHighStockProducts)
                                 const Padding(
                                   padding:
                                       EdgeInsets.symmetric(horizontal: 16.0),

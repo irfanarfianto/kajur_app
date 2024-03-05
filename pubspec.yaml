@@ -47,6 +47,7 @@ dependencies:
   firebase_storage: ^11.5.6
   flutter:
     sdk: flutter
+  flutter_barcode_scanner: ^2.0.0
   flutter_image_compress: ^2.1.0
   flutter_local_notifications: ^16.3.2
   flutter_localization: ^0.2.0
@@ -55,15 +56,18 @@ dependencies:
   flutter_speed_dial: ^7.0.0
   fluttertoast: ^8.2.2
   font_awesome_flutter: ^10.6.0
+  get: ^4.6.6
   google_fonts: ^6.1.0
   google_sign_in: ^6.2.1
   image_picker: ^1.0.6
   intl: 0.18.1
   loading_animation_widget: ^1.2.0+4
+  mobile_scanner: ^4.0.1
   package_info_plus: ^5.0.1
   readmore: ^2.2.0
   share_plus: ^7.2.2
   shared_preferences: ^2.2.2
+  simple_barcode_scanner: ^0.1.0
   skeletonizer: ^1.0.1
   social_share: ^2.3.1
   syncfusion_flutter_charts: ^24.2.4+3

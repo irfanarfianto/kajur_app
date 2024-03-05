@@ -19,6 +19,7 @@ com.test.kajur.app">
         android:name="${applicationName}"
         android:icon="@mipmap/kajur"
         android:enableOnBackInvokedCallback="true">
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -48,5 +49,6 @@ com.test.kajur.app">
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
+        
     </application>
 </manifest>
