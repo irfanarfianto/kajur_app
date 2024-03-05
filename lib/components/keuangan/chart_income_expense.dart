@@ -20,7 +20,7 @@ class SfCartesianChartWidget extends StatelessWidget {
       borderColor: Colors.white,
       borderWidth: 0,
       backgroundColor: Colors.transparent,
-      loadMoreIndicatorBuilder: (context, direction) => SizedBox.shrink(),
+      loadMoreIndicatorBuilder: (context, direction) => const SizedBox.shrink(),
       primaryXAxis: const CategoryAxis(
         labelStyle: TextStyle(
           fontSize: 10,

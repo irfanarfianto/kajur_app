@@ -26,6 +26,7 @@ class _ChartPageState extends State<ChartPage> {
     symbol: 'Rp ',
     decimalDigits: 0,
   );
+  int monthlyActivityCount = 0;
 
   String totalProdukText = '';
   String makananProdukText = '';
@@ -56,6 +57,15 @@ class _ChartPageState extends State<ChartPage> {
       _service.selectedMonth,
       _service.selectedYear,
     );
+
+    _service
+        .fetchMonthlyActivityCount(
+            _service.selectedMonth, _service.selectedYear)
+        .then((count) {
+      setState(() {
+        monthlyActivityCount = count;
+      });
+    });
 
     _service.onDataLoaded = () {
       if (mounted) {
@@ -91,6 +101,12 @@ class _ChartPageState extends State<ChartPage> {
     super.dispose();
   }
 
+  Future<void> _refreshData() async {
+    // Tambahkan logika untuk memuat ulang data di sini
+    // Misalnya, panggil _initializeData untuk mengambil data baru
+    _initializeData();
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScrollConfiguration(
@@ -98,22 +114,112 @@ class _ChartPageState extends State<ChartPage> {
       child: Scaffold(
         appBar: AppBar(
           surfaceTintColor: Colors.transparent,
-          title: const Text('Tracking'),
+          title: const Text('Statistik Bulanan',
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+              )),
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                _buildGridView(),
-                SizedBox(height: MediaQuery.of(context).size.height * 0.02),
-                _buildChartContainer(),
-                const SizedBox(height: 20),
-                _buildChartExpenseContainer(),
-                const SizedBox(height: 20),
-              ],
+          child: RefreshIndicator(
+            displacement: 50,
+            edgeOffset: 15,
+            onRefresh:
+                _refreshData, // Panggil fungsi _refreshData saat pull to refresh
+            child: SingleChildScrollView(
+              physics: const ClampingScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('Ringkasan statistik',
+                              style: Typo.titleTextStyle),
+                          Text(
+                            'Bulan ${_service.selectedMonth} ${_service.selectedYear}',
+                            style: Typo.bodyTextStyle.copyWith(
+                              color: Col.greyColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            showModalBottomSheet(
+                              context: context,
+                              enableDrag: true,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return SizedBox(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.4,
+                                  child: TimerPicker(
+                                    selectedMonth: _service.selectedMonth,
+                                    selectedYear: _service.selectedYear,
+                                    onMonthChanged: (String newValue) {
+                                      setState(() {
+                                        _service.selectedMonth = newValue;
+                                      });
+                                      _service.fetchIncomeData(
+                                        _service.selectedMonth,
+                                        _service.selectedYear,
+                                      );
+                                      _service.fetchExpenseData(
+                                        _service.selectedMonth,
+                                        _service.selectedYear,
+                                      );
+                                    },
+                                    onYearChanged: (String newValue) {
+                                      setState(() {
+                                        _service.selectedYear = newValue;
+                                      });
+                                      _service.fetchIncomeData(
+                                        _service.selectedMonth,
+                                        _service.selectedYear,
+                                      );
+                                      _service.fetchExpenseData(
+                                        _service.selectedMonth,
+                                        _service.selectedYear,
+                                      );
+                                    },
+                                    onConfirm: () {
+                                      if (mounted) {
+                                        // Lakukan pembaruan logika Anda di sini
+                                      }
+                                      Navigator.of(context).pop();
+                                    },
+                                  ),
+                                );
+                              },
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.calendar_month,
+                            color: Col.greyColor,
+                          ))
+                    ],
+                  ),
+                  Divider(
+                    thickness: 1,
+                    color: Col.greyColor.withOpacity(0.5),
+                  ),
+                  const SizedBox(height: 10),
+                  _buildGridView(),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.02),
+                  _buildChartContainer(),
+                  const SizedBox(height: 20),
+                  _buildChartExpenseContainer(),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
           ),
         ),
@@ -125,13 +231,14 @@ class _ChartPageState extends State<ChartPage> {
     return GridView.count(
       crossAxisCount: 2,
       shrinkWrap: true,
-      childAspectRatio: 1.3,
-      mainAxisSpacing: 10,
-      crossAxisSpacing: 10,
+      childAspectRatio: 1.8,
+      mainAxisSpacing: 8,
+      crossAxisSpacing: 8,
       children: [
-        _buildTotalSaldoContainer(),
+        // _buildTotalSaldoContainer(),
         _buildPendapatanBulananContainer(),
         _buildTotalProdukContainer(),
+        _buildAktivitasContainer(),
         _buildPengurusContainer(),
       ],
     );
@@ -217,16 +324,16 @@ class _ChartPageState extends State<ChartPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Pendapatan Bulan ini'),
-              const SizedBox(height: 10),
+              Text('Pendapatan Bersih',
+                  style: Typo.bodyTextStyle.copyWith(fontWeight: Fw.medium)),
               Text(
                 (_service.totalIncomeMonthly == 0 &&
                         _service.totalExpenseMonthly == 0)
-                    ? 'Rp '
+                    ? 'Rp 0'
                     : currencyFormat.format(_service.totalIncomeMonthly -
                         _service.totalExpenseMonthly),
                 style: TextStyle(
-                  fontSize: 20.0,
+                  fontSize: 18.0,
                   color: (_service.totalIncomeMonthly -
                               _service.totalExpenseMonthly >=
                           0)
@@ -237,36 +344,19 @@ class _ChartPageState extends State<ChartPage> {
               ),
               if (_service.totalIncomeMonthly != 0 ||
                   _service.totalExpenseMonthly != 0)
-                Row(
-                  children: [
-                    Icon(
-                      (_service.totalIncomeMonthly -
-                                  _service.totalExpenseMonthly >=
-                              0)
-                          ? FontAwesomeIcons.arrowUp
-                          : FontAwesomeIcons.arrowDown,
-                      size: 14,
-                      color: (_service.totalIncomeMonthly -
-                                  _service.totalExpenseMonthly >=
-                              0)
-                          ? Col.greenAccent
-                          : Col.redAccent,
-                    ),
-                    const SizedBox(width: 5),
-                    Text(
-                      (_service.totalIncomeMonthly == 0)
-                          ? '0.00%'
-                          : '${((_service.totalIncomeMonthly - _service.totalExpenseMonthly) / _service.totalIncomeMonthly * 100).toStringAsFixed(2)}%',
-                      style: TextStyle(
-                        color: (_service.totalIncomeMonthly -
-                                    _service.totalExpenseMonthly >=
-                                0)
-                            ? Col.greenAccent
-                            : Col.redAccent,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+                Text(
+                  (_service.totalIncomeMonthly == 0)
+                      ? '0.00%'
+                      : '${((_service.totalIncomeMonthly - _service.totalExpenseMonthly) / _service.totalIncomeMonthly * 100).toStringAsFixed(2)}%',
+                  style: TextStyle(
+                    color: (_service.totalIncomeMonthly -
+                                _service.totalExpenseMonthly >=
+                            0)
+                        ? Col.greenAccent
+                        : Col.redAccent,
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
             ],
           ),
@@ -296,9 +386,11 @@ class _ChartPageState extends State<ChartPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('Total Produk'),
-              const SizedBox(height: 10),
-              Text(totalProdukText, style: Typo.headingTextStyle),
+              Text('Total Produk',
+                  style: Typo.bodyTextStyle.copyWith(fontWeight: Fw.medium)),
+              Text(totalProdukText,
+                  style: const TextStyle(
+                      fontSize: 18.0, fontWeight: FontWeight.bold)),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -307,34 +399,73 @@ class _ChartPageState extends State<ChartPage> {
                       const FaIcon(
                         FontAwesomeIcons.burger,
                         color: Col.greyColor,
-                        size: 16,
+                        size: 12,
                       ),
                       const SizedBox(width: 5),
                       Text(makananProdukText,
                           style: Typo.emphasizedBodyTextStyle.copyWith(
-                            color: Col.greyColor,
-                          )),
+                              color: Col.greyColor,
+                              fontSize: 12,
+                              fontWeight: Fw.bold)),
                     ],
                   ),
                   const SizedBox(width: 10),
-                  const Text('|'),
+                  Text('|',
+                      style: Typo.emphasizedBodyTextStyle.copyWith(
+                          color: Col.greyColor,
+                          fontSize: 12,
+                          fontWeight: Fw.bold)),
                   const SizedBox(width: 10),
                   Row(
                     children: [
                       const FaIcon(
                         FontAwesomeIcons.mugHot,
                         color: Col.greyColor,
-                        size: 16,
+                        size: 12,
                       ),
                       const SizedBox(width: 5),
                       Text(minumanProdukText,
                           style: Typo.emphasizedBodyTextStyle.copyWith(
-                            color: Col.greyColor,
-                          )),
+                              color: Col.greyColor,
+                              fontSize: 12,
+                              fontWeight: Fw.bold)),
                     ],
                   ),
                 ],
               ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAktivitasContainer() {
+    return Skeletonizer(
+      enabled: _service.incomeData.isEmpty && _service.expenseData.isEmpty,
+      child: Skeleton.leaf(
+        child: Container(
+          padding: const EdgeInsets.all(16.0),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: Col.secondaryColor,
+            border: Border.all(color: const Color(0x309E9E9E), width: 1),
+            boxShadow: [
+              BoxShadow(
+                color: Col.greyColor.withOpacity(.10),
+                offset: const Offset(0, 5),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Total Aktivitas',
+                  style: Typo.bodyTextStyle.copyWith(fontWeight: Fw.medium)),
+              Text(monthlyActivityCount.toString(),
+                  style: const TextStyle(
+                      fontSize: 18.0, fontWeight: FontWeight.bold)),
             ],
           ),
         ),
@@ -364,7 +495,6 @@ class _ChartPageState extends State<ChartPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text('Pengurus'),
-              const SizedBox(height: 10),
               InkWell(
                 onTap: () {
                   showModalBottomSheet(
@@ -382,7 +512,7 @@ class _ChartPageState extends State<ChartPage> {
                 },
                 child: SizedBox(
                   width: double.infinity,
-                  height: 50,
+                  height: 35,
                   child: Stack(
                     children: [
                       for (int i = 0; i < userProfiles.length; i++)
@@ -400,7 +530,7 @@ class _ChartPageState extends State<ChartPage> {
                                     ),
                                   ),
                                   child: CircleAvatar(
-                                    radius: 20,
+                                    radius: 15,
                                     backgroundColor: Col.greyColor,
                                     backgroundImage:
                                         userProfiles[i]['photoUrl'].isNotEmpty
@@ -461,72 +591,14 @@ class _ChartPageState extends State<ChartPage> {
                     style: Typo.titleTextStyle,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  TextButton.icon(
-                    label: Text(
-                      '${_service.selectedMonth} ${_service.selectedYear}',
-                      style: Typo.bodyTextStyle.copyWith(
-                        color: Col.greyColor,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    onPressed: () {
-                      showModalBottomSheet(
-                        context: context,
-                        enableDrag: true,
-                        isScrollControlled: true,
-                        builder: (BuildContext context) {
-                          return SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.4,
-                            child: TimerPicker(
-                              selectedMonth: _service.selectedMonth,
-                              selectedYear: _service.selectedYear,
-                              onMonthChanged: (String newValue) {
-                                setState(() {
-                                  _service.selectedMonth = newValue;
-                                });
-                                _service.fetchIncomeData(
-                                  _service.selectedMonth,
-                                  _service.selectedYear,
-                                );
-                                _service.fetchExpenseData(
-                                  _service.selectedMonth,
-                                  _service.selectedYear,
-                                );
-                              },
-                              onYearChanged: (String newValue) {
-                                setState(() {
-                                  _service.selectedYear = newValue;
-                                });
-                                _service.fetchIncomeData(
-                                  _service.selectedMonth,
-                                  _service.selectedYear,
-                                );
-                                _service.fetchExpenseData(
-                                  _service.selectedMonth,
-                                  _service.selectedYear,
-                                );
-                              },
-                              onConfirm: () {
-                                if (mounted) {
-                                  // Lakukan pembaruan logika Anda di sini
-                                }
-                                Navigator.of(context).pop();
-                              },
-                            ),
-                          );
-                        },
-                      );
-                    },
-                    icon:
-                        const Icon(Icons.calendar_month, color: Col.greyColor),
-                  ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
               SfCartesianChartWidget(
                 incomeData: _service.incomeData,
                 expenseData: _service.expenseData,
               ),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
@@ -590,62 +662,7 @@ class _ChartPageState extends State<ChartPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text('Pengeluaran', style: Typo.titleTextStyle),
-              TextButton.icon(
-                label: Text(
-                  '${_service.selectedMonth} ${_service.selectedYear}',
-                  style: Typo.bodyTextStyle.copyWith(
-                    color: Col.greyColor,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    enableDrag: true,
-                    isScrollControlled: true,
-                    builder: (BuildContext context) {
-                      return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.4,
-                        child: TimerPicker(
-                          selectedMonth: _service.selectedMonth,
-                          selectedYear: _service.selectedYear,
-                          onMonthChanged: (String newValue) {
-                            setState(() {
-                              _service.selectedMonth = newValue;
-                            });
-                            _service.fetchExpenseData(
-                              _service.selectedMonth,
-                              _service.selectedYear,
-                            );
-                          },
-                          onYearChanged: (String newValue) {
-                            setState(() {
-                              _service.selectedYear = newValue;
-                            });
-                            _service.fetchExpenseData(
-                              _service.selectedMonth,
-                              _service.selectedYear,
-                            );
-                          },
-                          onConfirm: () async {
-                            if (mounted) {
-                              setState(() {});
-                            }
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      );
-                    },
-                  );
-                },
-                icon: const Icon(Icons.calendar_month, color: Col.greyColor),
-              ),
-            ],
-          ),
+          // Text('Pengeluaran', style: Typo.titleTextStyle),
           SfDoughnutChartWidget(
             expenseData: _service.monthlyExpenseData,
           ),

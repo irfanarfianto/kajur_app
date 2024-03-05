@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class KeuanganService {
   void Function()? onDataLoaded;
   late double totalSaldo = 0;
+  int monthlyActivityCount = 0;
   List<double> pendapatanPerBulan = [];
   late String timestampString = '';
   late StreamSubscription<DocumentSnapshot> _totalSaldoSubscription;
@@ -196,6 +197,36 @@ class KeuanganService {
 
     if (onDataLoaded != null) {
       onDataLoaded!(); // Panggil callback
+    }
+  }
+
+  Future<int> fetchMonthlyActivityCount(
+      String selectedMonth, String selectedYear) async {
+    try {
+      int selectedMonthIndex = DateFormat('MMMM').parse(selectedMonth).month;
+      int selectedYearInt = int.parse(selectedYear);
+
+      CollectionReference activityLogRef =
+          FirebaseFirestore.instance.collection('activity_log');
+
+      DateTime startDate = DateTime(selectedYearInt, selectedMonthIndex, 1);
+      DateTime endDate = DateTime(selectedYearInt, selectedMonthIndex + 1, 1);
+
+      QuerySnapshot querySnapshot = await activityLogRef
+          .where('timestamp', isGreaterThanOrEqualTo: startDate)
+          .where('timestamp', isLessThan: endDate)
+          .get();
+
+      int monthlyActivityCount = querySnapshot.docs.length;
+
+      if (onDataLoaded != null) {
+        onDataLoaded!(); // Panggil callback
+      }
+
+      return monthlyActivityCount;
+    } catch (error) {
+      print('Error fetching monthly activity count: $error');
+      return 0;
     }
   }
 }
