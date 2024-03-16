@@ -414,8 +414,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
               style: IconButton.styleFrom(
                 backgroundColor: Col.redAccent,
                 shape: const CircleBorder(),
-                padding:
-                    const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
               ),
               onPressed: () {
                 showDialog(
@@ -451,10 +449,6 @@ class _DetailProdukPageState extends State<DetailProdukPage> {
             const SizedBox(width: 8),
             Expanded(
               child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 18),
-                ),
                 onPressed: () async {
                   await Navigator.push(
                     context,

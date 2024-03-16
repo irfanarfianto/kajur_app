@@ -15,7 +15,6 @@ void showUpdateStokDialog(
   String productName,
   int lastStock,
   String imageUrl,
-  VoidCallback onSuccess,
 ) {
   TextEditingController stokController = TextEditingController();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
@@ -49,6 +48,7 @@ void showUpdateStokDialog(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Hero(
                           tag: 'product_image_$documentId',
@@ -156,7 +156,6 @@ void showUpdateStokDialog(
       );
     },
   );
-  onSuccess();
 }
 
 Future<void> _updateStock(
@@ -179,7 +178,6 @@ Future<void> _updateStock(
       'stok': newStock,
       'updatedAt': DateTime.now(),
     });
-    
 
     // Record activity log using the old product data
     await _recordActivityLog(

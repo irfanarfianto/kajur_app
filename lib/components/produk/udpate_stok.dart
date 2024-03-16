@@ -31,9 +31,9 @@ Widget buildUpdateStokWidget(
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('ID Produk:', style: Typo.emphasizedBodyTextStyle),
+          const Text('Kode Barang:', style: Typo.emphasizedBodyTextStyle),
           Text(
-            '${activityData['productId'] ?? '-'}',
+            '${activityData['kodeBarang'] ?? '-'}',
             style: const TextStyle(fontSize: 14, fontWeight: Fw.bold),
           ),
         ],
@@ -90,9 +90,9 @@ Widget buildUpdateStokWidget(
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('ID Produk:', style: Typo.emphasizedBodyTextStyle),
+              const Text('Kode Barang:', style: Typo.emphasizedBodyTextStyle),
               Text(
-                '${activityData['productId'] ?? '-'}',
+                '${activityData['kodeBarang'] ?? '-'}',
                 style: const TextStyle(fontSize: 14, fontWeight: Fw.bold),
               ),
             ],

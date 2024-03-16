@@ -4,7 +4,6 @@ import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:kajur_app/screens/products/tambah%20produk/add_service.dart';
 import 'package:kajur_app/utils/design/system.dart';
@@ -190,45 +189,40 @@ class _AddDataPageState extends State<AddDataPage> {
                                   ),
                                 ),
                                 const SizedBox(height: 8.0),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      flex: 3,
-                                      child: TextFormField(
-                                        controller: _addProductService
-                                            .kodeBarangController,
-                                        keyboardType: TextInputType.name,
-                                        textCapitalization:
-                                            TextCapitalization.words,
-                                        textInputAction: TextInputAction.next,
-                                        style: const TextStyle(
-                                            color: Col.blackColor),
-                                        decoration: const InputDecoration(
-                                          hintText: 'produk123',
-                                          hintStyle: TextStyle(
-                                            color: Col.greyColor,
-                                            fontWeight: FontWeight.normal,
-                                          ),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Tidak boleh kosong';
-                                          }
-                                          return null;
-                                        },
+                                TextFormField(
+                                  controller:
+                                      _addProductService.kodeBarangController,
+                                  keyboardType: TextInputType.name,
+                                  textCapitalization: TextCapitalization.words,
+                                  textInputAction: TextInputAction.next,
+                                  style: const TextStyle(color: Col.blackColor),
+                                  decoration: InputDecoration(
+                                      hintText: 'produk123',
+                                      hintStyle: const TextStyle(
+                                        color: Col.greyColor,
+                                        fontWeight: FontWeight.normal,
                                       ),
-                                    ),
-                                    const SizedBox(width: 8.0),
-                                    IconButton(
-                                        // border
-                                        padding: const EdgeInsets.all(10),
-                                        onPressed: () {
-                                          _addProductService.scanBarcode(
-                                              context); // Panggil fungsi scanBarcode
-                                        },
-                                        icon: const Icon(Icons.qr_code_scanner,
-                                            color: Col.greyColor, size: 30.0)),
-                                  ],
+                                      suffixIcon: IconButton(
+                                          // border
+                                          padding: const EdgeInsets.all(10),
+                                          onPressed: () {
+                                            _addProductService.scanBarcode(
+                                                context); // Panggil fungsi scanBarcode
+                                          },
+                                          icon: const Icon(
+                                              Icons.qr_code_scanner,
+                                              color: Col.greyColor,
+                                              size: 30.0)),
+                                      suffixIconConstraints:
+                                          const BoxConstraints(
+                                        minHeight: 20,
+                                      )),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Tidak boleh kosong';
+                                    }
+                                    return null;
+                                  },
                                 ),
                                 const SizedBox(height: 16.0),
                                 const Row(

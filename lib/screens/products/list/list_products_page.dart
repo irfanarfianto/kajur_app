@@ -1,15 +1,12 @@
-import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:kajur_app/components/produk/detail_produk.dart';
 import 'package:kajur_app/components/produk/update_stock_dialog.dart';
 import 'package:kajur_app/utils/animation/route/slide_up.dart';
 import 'package:kajur_app/utils/design/system.dart';
-import 'package:kajur_app/components/produk/kirim_data_produk.dart';
 import 'package:kajur_app/screens/products/details/details_products_page.dart';
 import 'package:kajur_app/components/produk/sorting_overlay.dart';
-import 'package:kajur_app/screens/products/list/high_stock_products_card.dart';
-import 'package:kajur_app/screens/products/list/low_stock_products_card.dart';
+import 'package:kajur_app/screens/products/list/products_card.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
@@ -19,7 +16,7 @@ enum CategoryFilter {
 }
 
 class ListProdukPage extends StatefulWidget {
-  const ListProdukPage({super.key});
+  const ListProdukPage({Key? key}) : super(key: key);
 
   @override
   _ListProdukPageState createState() => _ListProdukPageState();
@@ -33,6 +30,7 @@ class _ListProdukPageState extends State<ListProdukPage>
   final CategoryFilter _categoryFilter = CategoryFilter.Semua;
   String _searchQuery = '';
   String _sortingCriteria = 'terbaru';
+  List<Map<String, dynamic>> _cartItems = [];
 
   @override
   void initState() {
@@ -91,18 +89,18 @@ class _ListProdukPageState extends State<ListProdukPage>
   List<DocumentSnapshot> _sortProducts(
       List<DocumentSnapshot> products, String sortCriteria) {
     switch (sortCriteria) {
-      case 'terbaru':
+      case 'default':
         products.sort((a, b) {
           var aDate = (a['updatedAt'] as Timestamp).toDate();
           var bDate = (b['updatedAt'] as Timestamp).toDate();
           return bDate.compareTo(aDate);
         });
         break;
-      case 'terlama':
+      case 'baru':
         products.sort((a, b) {
-          var aDate = (a['updatedAt'] as Timestamp).toDate();
-          var bDate = (b['updatedAt'] as Timestamp).toDate();
-          return aDate.compareTo(bDate);
+          var aDate = (a['createdAt'] as Timestamp).toDate();
+          var bDate = (b['createdAt'] as Timestamp).toDate();
+          return bDate.compareTo(aDate);
         });
         break;
       case 'A-Z':
@@ -145,6 +143,15 @@ class _ListProdukPageState extends State<ListProdukPage>
         });
       },
     );
+  }
+
+  void _addToCart(DocumentSnapshot document, Map<String, dynamic> data) {
+    setState(() {
+      _cartItems.add({
+        'document': document,
+        'data': data,
+      });
+    });
   }
 
   @override
@@ -237,7 +244,7 @@ class _ListProdukPageState extends State<ListProdukPage>
               unselectedLabelColor: Col.secondaryColor.withOpacity(0.5),
               indicatorWeight: 2.0,
               indicatorSize: TabBarIndicatorSize.label,
-              indicatorColor: Col.primaryColor,
+              dividerColor: Col.whiteColor.withOpacity(0.1),
               tabs: [
                 for (int i = 0; i < _getNumberOfTabs(); i++)
                   Tab(
@@ -255,7 +262,6 @@ class _ListProdukPageState extends State<ListProdukPage>
           body: Stack(
             children: [
               TabBarView(
-                key: UniqueKey(),
                 children: [
                   for (int i = 0; i < _getNumberOfTabs(); i++)
                     StreamBuilder<QuerySnapshot>(
@@ -369,249 +375,121 @@ class _ListProdukPageState extends State<ListProdukPage>
                         List<DocumentSnapshot> sortedProducts =
                             _sortProducts(categoryProducts, _sortingCriteria);
 
-                        bool hasLowStockProducts = sortedProducts
-                            .any((product) => (product['stok'] ?? 0) < 5);
-                        bool hasHighStockProducts = sortedProducts
-                            .any((product) => (product['stok'] ?? 0) >= 5);
-
                         return RefreshIndicator(
                           backgroundColor: Col.secondaryColor,
                           color: Col.primaryColor,
                           onRefresh: _refreshData,
-                          child: ListView(
-                            key: UniqueKey(),
-                            children: [
-                              const SizedBox(
-                                height: 10,
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 20.0),
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 2,
+                                crossAxisSpacing: 25,
+                                childAspectRatio: 0.72,
                               ),
-                              if (hasLowStockProducts)
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Text(
-                                    'Produk yang Stoknya Dikit Banget 😲',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              if (hasLowStockProducts)
-                                SizedBox(
-                                  height: 245,
-                                  child: ListView.builder(
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: sortedProducts.length,
-                                    itemBuilder:
-                                        (BuildContext context, int index) {
-                                      if (index == 0) {
-                                        return const SizedBox(width: 8);
-                                      } else {
-                                        DocumentSnapshot document =
-                                            sortedProducts[index];
-                                        Map<String, dynamic> data = document
-                                            .data() as Map<String, dynamic>;
-                                        String documentId = document.id;
+                              itemCount: sortedProducts.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                DocumentSnapshot document =
+                                    sortedProducts[index];
+                                Map<String, dynamic> data =
+                                    document.data() as Map<String, dynamic>;
+                                String documentId = document.id;
 
-                                        // Check if stock is less than 5
-                                        bool isLowStock =
-                                            (data['stok'] ?? 0) < 5;
-
-                                        return isLowStock
-                                            ? LowStockProductsCard(
-                                                document: document,
-                                                isLowStock: isLowStock,
-                                                onTap: () {
-                                                  showUpdateStokDialog(
-                                                    context,
-                                                    documentId,
-                                                    data['menu'],
-                                                    data['stok'],
-                                                    document['image'],
-                                                    () {
-                                                      // This function is called when the stock update is successful
-                                                      _refreshData(); // Refresh your UI
-                                                    },
-                                                  );
-                                                },
-                                                onLongPress: () {
-                                                  showModalBottomSheet(
-                                                    context: context,
-                                                    enableDrag: true,
-                                                    backgroundColor:
-                                                        Col.backgroundColor,
-                                                    isScrollControlled: true,
-                                                    builder:
-                                                        (BuildContext context) {
-                                                      return SizedBox(
-                                                        height: MediaQuery.of(
-                                                                    context)
-                                                                .size
-                                                                .height *
-                                                            0.2,
-                                                        child: DetailProduk(
-                                                          document: document,
-                                                          imageUrl:
-                                                              data['image'],
-                                                          productName:
-                                                              data['menu'],
-                                                          // description:
-                                                          //     data['deskripsi'],
-                                                          onTapDescription: () {
-                                                            Navigator.pop(
-                                                                context); // Tutup modal
-                                                            Navigator.push(
-                                                              context,
-                                                              SlideUpRoute(
-                                                                page:
-                                                                    DetailProdukPage(
-                                                                  documentId:
-                                                                      documentId,
-                                                                ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                      );
-                                                    },
-                                                  );
-                                                },
-                                              )
-                                            : const SizedBox();
-                                      }
-                                    },
-                                  ),
-                                ),
-                              if (hasHighStockProducts)
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Text(
-                                    'Stok yang aman nih yee 🙌',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
-                                  ),
-                                ),
-                              ListView.builder(
-                                key: UniqueKey(),
-                                shrinkWrap: true,
-                                padding: const EdgeInsets.all(8.0),
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: sortedProducts.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  DocumentSnapshot document =
-                                      sortedProducts[index];
-                                  Map<String, dynamic> data =
-                                      document.data() as Map<String, dynamic>;
-                                  String documentId = document.id;
-
-                                  // Check if stock is greater than or equal to 5
-                                  bool isHighStock = (data['stok'] ?? 0) >= 5;
-
-                                  return isHighStock
-                                      ? HighStockProductsCard(
-                                          document: document,
-                                          isHighStock: isHighStock,
-                                          onTap: () {
-                                            showUpdateStokDialog(
-                                              context,
-                                              documentId,
-                                              data['menu'],
-                                              data['stok'],
-                                              document['image'],
-                                              () {
-                                                // This function is called when the stock update is successful
-                                                _refreshData(); // Refresh your UI
-                                              },
-                                            );
-                                          },
-                                          onLongPress: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              enableDrag: true,
-                                              backgroundColor:
-                                                  Col.backgroundColor,
-                                              isScrollControlled: true,
-                                              builder: (BuildContext context) {
-                                                return SizedBox(
-                                                  height: MediaQuery.of(context)
-                                                          .size
-                                                          .height *
-                                                      0.2,
-                                                  child: DetailProduk(
-                                                    document: document,
-                                                    imageUrl: data['image'],
-                                                    productName: data['menu'],
-                                                    // description:
-                                                    //     data['deskripsi'],
-                                                    onTapDescription: () {
-                                                      Navigator.pop(
-                                                          context); // Tutup modal
-                                                      Navigator.push(
-                                                          context,
-                                                          SlideUpRoute(
-                                                            page:
-                                                                DetailProdukPage(
-                                                              documentId:
-                                                                  documentId,
-                                                            ),
-                                                          ));
-                                                    },
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                        )
-                                      : const SizedBox(); // Skip if low stock
-                                },
-                              ),
-                            ],
+                                return ProductsCard(
+                                  document: document,
+                                  onTap: () {
+                                    showUpdateStokDialog(
+                                      context,
+                                      documentId,
+                                      data['menu'],
+                                      data['stok'],
+                                      document['image'],
+                                    );
+                                  },
+                                  addCart: () {
+                                    _addToCart(document, data);
+                                  },
+                                  onLongPress: () {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      enableDrag: true,
+                                      backgroundColor: Col.backgroundColor,
+                                      isScrollControlled: true,
+                                      builder: (BuildContext context) {
+                                        return SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.2,
+                                          child: DetailProduk(
+                                            document: document,
+                                            imageUrl: data['image'],
+                                            productName: data['menu'],
+                                            // description:
+                                            //     data['deskripsi'],
+                                            onTapDescription: () {
+                                              Navigator.pop(
+                                                  context); // Tutup modal
+                                              Navigator.push(
+                                                  context,
+                                                  SlideUpRoute(
+                                                    page: DetailProdukPage(
+                                                      documentId: documentId,
+                                                    ),
+                                                  ));
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ),
                         );
                       },
-                    ),
+                    )
                 ],
               ),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  // gradien
-                  decoration: BoxDecoration(
+              if (_cartItems.isNotEmpty)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    decoration: BoxDecoration(
                       gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          stops: const [
-                        0.0,
-                        1.0
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        stops: const [0.0, 1.0],
+                        colors: [
+                          Col.secondaryColor.withOpacity(0.1),
+                          Col.secondaryColor,
+                        ],
+                      ),
+                    ),
+                    height: 50,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.shopping_cart),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Produk yang dipilih (${_cartItems.length} total produk)',
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ],
-                          colors: [
-                        Col.secondaryColor.withOpacity(0.1),
-                        Col.secondaryColor,
-                      ])),
-                  height: 50,
+                    ),
+                  ),
                 ),
-              ),
             ],
-          ),
-          floatingActionButton: FloatingActionButton(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(100),
-            ),
-            child: const Icon(Icons.share),
-            onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const ShareProduk(),
-                  ));
-            },
           ),
         ),
       ),

@@ -83,6 +83,7 @@ class AddProductService {
           int.tryParse(hargaPokokText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
       int jumlahIsi = int.tryParse(jumlahIsiText) ?? 0;
 
+      // Pengecekan jika semua data telah diisi
       if (menu.isNotEmpty &&
           hargaJual > 0 &&
           stok >= 0 &&
@@ -92,48 +93,59 @@ class AddProductService {
           selectedImage != null &&
           stokText == stok.toString() &&
           jumlahIsiText == jumlahIsi.toString()) {
-        int totalProfit =
-            ((hargaJual - (hargaPokok / jumlahIsi)) * jumlahIsi).toInt();
-        int profitSatuan = (hargaJual - (hargaPokok / jumlahIsi)).toInt();
+        // Pengecekan apakah kode barang sudah ada sebelumnya
+        QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+            .collection('kantin')
+            .where('kodeBarang', isEqualTo: kodeBarang)
+            .get();
 
-        String imageUrl = await uploadImage(selectedImage);
+        if (querySnapshot.docs.isEmpty) {
+          int totalProfit =
+              ((hargaJual - (hargaPokok / jumlahIsi)) * jumlahIsi).toInt();
+          int profitSatuan = (hargaJual - (hargaPokok / jumlahIsi)).toInt();
 
-        CollectionReference collectionRef =
-            FirebaseFirestore.instance.collection('kantin');
+          String imageUrl = await uploadImage(selectedImage);
 
-        User? user = FirebaseAuth.instance.currentUser;
-        String? userId = user?.uid;
-        String? userName = user?.displayName ?? 'Unknown User';
+          CollectionReference collectionRef =
+              FirebaseFirestore.instance.collection('kantin');
 
-        DocumentReference docRef = await collectionRef.add({
-          'menu': menu,
-          'hargaJual': hargaJual,
-          'hargaPokok': hargaPokok,
-          'jumlahIsi': jumlahIsi,
-          'kategori': selectedCategory,
-          'image': imageUrl,
-          'deskripsi': deskripsiController.text,
-          'stok': stok,
-          'totalProfit': totalProfit,
-          'profitSatuan': profitSatuan,
-          'createdAt': FieldValue.serverTimestamp(),
-          'updatedAt': FieldValue.serverTimestamp(),
-          'addedBy': userId,
-          'addedByName': userName,
-          'lastEditedBy': userId,
-          'lastEditedByName': userName,
-          'kodeBarang': kodeBarang, // Masukkan barcode ke dalam data
-        });
+          User? user = FirebaseAuth.instance.currentUser;
+          String? userId = user?.uid;
+          String? userName = user?.displayName ?? 'Unknown User';
 
-        await recordActivityLog(
-          action: 'Tambah Produk',
-          productName: menu,
-          productId: docRef.id,
-        );
+          DocumentReference docRef = await collectionRef.add({
+            'menu': menu,
+            'hargaJual': hargaJual,
+            'hargaPokok': hargaPokok,
+            'jumlahIsi': jumlahIsi,
+            'kategori': selectedCategory,
+            'image': imageUrl,
+            'deskripsi': deskripsiController.text,
+            'stok': stok,
+            'totalProfit': totalProfit,
+            'profitSatuan': profitSatuan,
+            'createdAt': FieldValue.serverTimestamp(),
+            'updatedAt': FieldValue.serverTimestamp(),
+            'addedBy': userId,
+            'addedByName': userName,
+            'lastEditedBy': userId,
+            'lastEditedByName': userName,
+            'kodeBarang': kodeBarang,
+          });
 
-        showToast(message: 'Produk berhasil ditambahkan');
-        Navigator.of(context).pop();
-        setLoading(false);
+          await recordActivityLog(
+            action: 'Tambah Produk',
+            productName: menu,
+            productId: docRef.id,
+          );
+
+          showToast(message: 'Produk berhasil ditambahkan');
+          Navigator.of(context).pop();
+          setLoading(false);
+        } else {
+          setLoading(false);
+          showToast(message: 'Kode barang sudah ada');
+        }
       } else {
         setLoading(false);
         showToast(message: 'Produk gagal ditambahkan');

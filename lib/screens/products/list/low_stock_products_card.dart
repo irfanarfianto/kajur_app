@@ -56,8 +56,8 @@ class LowStockProductsCard extends StatelessWidget {
                               color: Col.greyColor.withOpacity(0.50),
                             ),
                           ),
-                          width: 150,
-                          height: 150,
+                          width: 100,
+                          height: 100,
                         ),
                       ),
                     ),
@@ -68,7 +68,7 @@ class LowStockProductsCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(
-                              width: 120,
+                              width: 100,
                               child: Text(
                                 data['menu'],
                                 style: Typo.emphasizedBodyTextStyle,

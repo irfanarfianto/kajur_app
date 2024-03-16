@@ -35,11 +35,11 @@ Widget buildEditProdukWidget(
       Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const Text('ID Produk:', style: Typo.emphasizedBodyTextStyle),
+          const Text('Kode Barang:', style: Typo.emphasizedBodyTextStyle),
           Text(
-            (activityData['productId'] ?? '').length > 20
-                ? '${activityData['productId']?.substring(0, 20) ?? ''}...'
-                : activityData['productId'] ?? '-',
+            (activityData['kodeBarang'] ?? '').length > 20
+                ? '${activityData['kodeBarang']?.substring(0, 20) ?? ''}...'
+                : activityData['kodeBarang'] ?? '-',
             style: const TextStyle(fontSize: 14, fontWeight: Fw.bold),
           ),
         ],
@@ -153,11 +153,11 @@ Widget buildEditProdukWidget(
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('ID Produk:', style: Typo.emphasizedBodyTextStyle),
+              const Text('Kode Barang:', style: Typo.emphasizedBodyTextStyle),
               Text(
-                (activityData['productId'] ?? '').length > 20
-                    ? '${activityData['productId']?.substring(0, 20) ?? ''}...'
-                    : activityData['productId'] ?? '-',
+                (activityData['kodeBarang'] ?? '').length > 20
+                    ? '${activityData['kodeBarang']?.substring(0, 20) ?? ''}...'
+                    : activityData['kodeBarang'] ?? '-',
                 style: const TextStyle(fontSize: 14, fontWeight: Fw.bold),
               ),
             ],

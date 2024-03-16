@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kajur_app/utils/design/system.dart';
 
 class DetailProduk extends StatelessWidget {
@@ -62,11 +63,15 @@ class DetailProduk extends StatelessWidget {
                             data['stok'] == 0 ? Col.redAccent : Col.greyColor,
                       ),
                     ),
+                    const SizedBox(height: 10),
                     Text(
-                      data['deskripsi'],
-                      style: Typo.emphasizedBodyTextStyle,
-                      maxLines: 2,
-                    ),
+                      '*Diperbarui ${DateFormat('dd MMM y HH:mm', 'id_ID').format(data['updatedAt']?.toDate() ?? DateTime.now())}',
+                      style: const TextStyle(
+                        fontSize: 10,
+                        color: Col.greyColor,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    )
                   ],
                 ),
               ],
