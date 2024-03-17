@@ -7,16 +7,15 @@ import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/utils/global/common/toast.dart';
+import 'package:share_plus/share_plus.dart';
 
 class CartItemDetail extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
-  // Added documentId property
 
   const CartItemDetail({
-    Key? key,
+    super.key,
     required this.cartItems,
-    // Required documentId
-  }) : super(key: key);
+  });
 
   @override
   _CartItemDetailState createState() => _CartItemDetailState();
@@ -57,6 +56,49 @@ class _CartItemDetailState extends State<CartItemDetail> {
     }
 
     return {'whatsapp': whatsapp, 'displayName': displayName};
+  }
+
+  void _onShare(BuildContext context) async {
+    // Mendapatkan data pengguna menggunakan fungsi getUserData()
+    Map<String, String> userData = await getUserData();
+
+    // Mendapatkan nilai displayName dari data pengguna
+    String displayName = userData['displayName'] ?? 'Unknown User';
+
+    String sharedText = 'Detail Becer\n';
+
+    // Tambahkan nama pengguna dan nomor WhatsApp
+    sharedText += 'Dibuat oleh: ${userData[displayName] ?? '-'}\n';
+    sharedText += 'Nomor WhatsApp: ${userData['whatsapp'] ?? '-'}\n';
+
+    // Tambahkan waktu saat ini
+    sharedText +=
+        'Waktu: ${DateFormat('dd MMMM yyyy HH:mm:ss', 'id').format(DateTime.now())}\n\n';
+    sharedText += '------------------------------n';
+    // Tambahkan detail produk ke teks yang akan dibagikan
+    for (var item in widget.cartItems) {
+      sharedText +=
+          '${item['data']['menu']} - ${hargaFormat.format(item['data']['hargaPokok'])} \n';
+    }
+
+    // Hitung sub total tanpa uang transport
+    double subtotal = 0;
+    for (var item in widget.cartItems) {
+      subtotal += item['data']['hargaPokok'];
+    }
+
+    sharedText += '------------------------------n';
+
+    // Tambahkan sub total dan total ke teks yang akan dibagikan
+    sharedText += 'Subtotal: ${hargaFormat.format(subtotal)}\n';
+    sharedText +=
+        'Total: ${hargaFormat.format(subtotal + (addTransportFee ? transportFee : 0))}\n';
+
+    try {
+      await Share.share(sharedText, subject: 'Data Keranjang');
+    } catch (e) {
+      print('Error sharing: $e');
+    }
   }
 
   Future<void> _updateHargaPokok(String productId) async {
@@ -477,7 +519,9 @@ class _CartItemDetailState extends State<CartItemDetail> {
                   height: 8,
                 ),
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () {
+                    _onShare(context);
+                  },
                   child: const Text('Catat dan Kirim'),
                 ),
               ],
