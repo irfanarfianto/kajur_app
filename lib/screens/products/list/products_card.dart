@@ -7,7 +7,9 @@ class ProductsCard extends StatefulWidget {
   final DocumentSnapshot document;
   final VoidCallback onLongPress;
   final VoidCallback onTap;
-  final VoidCallback addCart;
+  final VoidCallback? addCart;
+  final VoidCallback? removeCart;
+  final bool isInCart; // Tambahkan properti baru
 
   const ProductsCard({
     super.key,
@@ -15,6 +17,8 @@ class ProductsCard extends StatefulWidget {
     required this.onLongPress,
     required this.onTap,
     required this.addCart,
+    required this.removeCart,
+    required this.isInCart, // Tambahkan properti baru
   });
 
   @override
@@ -72,12 +76,13 @@ class _ProductsCardState extends State<ProductsCard> {
                   child: IconButton(
                     padding: const EdgeInsets.all(5),
                     style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Col.primaryColor),
+                      backgroundColor: MaterialStateProperty.all(
+                          widget.isInCart ? Col.redAccent : Col.primaryColor),
                     ),
-                    onPressed: widget.addCart,
-                    icon: const Icon(
-                      Icons.add_shopping_cart,
+                    onPressed:
+                        widget.isInCart ? widget.removeCart : widget.addCart,
+                    icon: Icon(
+                      widget.isInCart ? Icons.close : Icons.add_shopping_cart,
                       color: Col.whiteColor,
                       size: 18,
                     ),
@@ -87,9 +92,9 @@ class _ProductsCardState extends State<ProductsCard> {
             ),
             const SizedBox(height: 10),
             Text(
+              data['menu'],
               textAlign: TextAlign.start,
               maxLines: 2,
-              data['menu'],
               style: Typo.titleTextStyle,
               overflow: TextOverflow.ellipsis,
             ),

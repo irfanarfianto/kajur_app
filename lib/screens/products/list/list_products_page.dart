@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 import 'package:kajur_app/components/produk/detail_produk.dart';
 import 'package:kajur_app/components/produk/update_stock_dialog.dart';
+import 'package:kajur_app/screens/products/list/details_cart.dart';
 import 'package:kajur_app/utils/animation/route/slide_up.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/products/details/details_products_page.dart';
@@ -29,8 +31,9 @@ class _ListProdukPageState extends State<ListProdukPage>
   late bool _isRefreshing = false;
   final CategoryFilter _categoryFilter = CategoryFilter.Semua;
   String _searchQuery = '';
-  String _sortingCriteria = 'terbaru';
-  List<Map<String, dynamic>> _cartItems = [];
+  String _sortingCriteria = 'default';
+  final List<Map<String, dynamic>> _cartItems = [];
+  bool _isBottomAppBarVisible = false;
 
   @override
   void initState() {
@@ -48,6 +51,7 @@ class _ListProdukPageState extends State<ListProdukPage>
     });
 
     try {
+      // Simulate delay
       await Future.delayed(const Duration(seconds: 2));
     } catch (error) {
       print('Error refreshing data: $error');
@@ -61,13 +65,7 @@ class _ListProdukPageState extends State<ListProdukPage>
   }
 
   CategoryFilter _getCategoryFromIndex(int index) {
-    if (index == 0) {
-      return CategoryFilter.Semua;
-    } else if (index == 1) {
-      return CategoryFilter.Makanan;
-    } else {
-      return CategoryFilter.Minuman;
-    }
+    return CategoryFilter.values[index];
   }
 
   List<DocumentSnapshot> _filterProducts(QuerySnapshot snapshot) {
@@ -89,13 +87,6 @@ class _ListProdukPageState extends State<ListProdukPage>
   List<DocumentSnapshot> _sortProducts(
       List<DocumentSnapshot> products, String sortCriteria) {
     switch (sortCriteria) {
-      case 'default':
-        products.sort((a, b) {
-          var aDate = (a['updatedAt'] as Timestamp).toDate();
-          var bDate = (b['updatedAt'] as Timestamp).toDate();
-          return bDate.compareTo(aDate);
-        });
-        break;
       case 'baru':
         products.sort((a, b) {
           var aDate = (a['createdAt'] as Timestamp).toDate();
@@ -124,6 +115,12 @@ class _ListProdukPageState extends State<ListProdukPage>
         products.sort((a, b) => b['stok'].compareTo(a['stok']));
         break;
       default:
+        // default sorting
+        products.sort((a, b) {
+          var aDate = (a['updatedAt'] as Timestamp).toDate();
+          var bDate = (b['updatedAt'] as Timestamp).toDate();
+          return bDate.compareTo(aDate);
+        });
         break;
     }
     return products;
@@ -150,13 +147,32 @@ class _ListProdukPageState extends State<ListProdukPage>
       _cartItems.add({
         'document': document,
         'data': data,
+        'documentId': document.id,
       });
+      _isBottomAppBarVisible = true;
     });
+  }
+
+  void _removeFromCart(DocumentSnapshot document) {
+    setState(() {
+      _cartItems.removeWhere((item) => item['document'].id == document.id);
+      _isBottomAppBarVisible = _cartItems.isNotEmpty;
+    });
+  }
+
+  double _calculateTotalHargaPokok() {
+    return _cartItems.fold<double>(
+        0.0, (total, item) => total += item['data']['hargaPokok']);
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    double totalHargaPokok = _calculateTotalHargaPokok();
+    String formattedTotalHargaPokok =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0)
+            .format(totalHargaPokok);
+
     return ScrollConfiguration(
       behavior: const ScrollBehavior().copyWith(overscroll: false),
       child: DefaultTabController(
@@ -270,87 +286,15 @@ class _ListProdukPageState extends State<ListProdukPage>
                         if (snapshot.connectionState ==
                                 ConnectionState.waiting ||
                             _isRefreshing) {
-                          return Column(
-                            children: List.generate(
-                              3,
-                              (index) => Skeletonizer(
-                                enabled: true,
-                                child: Card(
-                                  elevation: 0,
-                                  color: Col.secondaryColor,
-                                  shadowColor: Col.greyColor.withOpacity(0.10),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      children: [
-                                        Skeleton.leaf(
-                                          child: SizedBox(
-                                            width: 80,
-                                            height: 80,
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(8),
-                                              child: Container(
-                                                color: Colors.grey[300],
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 16),
-                                        const Expanded(
-                                          flex: 3,
-                                          child: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: [
-                                              Text(
-                                                'Skeleton nama produk',
-                                                style: Typo
-                                                    .emphasizedBodyTextStyle,
-                                                overflow: TextOverflow.ellipsis,
-                                                maxLines: 1,
-                                              ),
-                                              Text(
-                                                'Skeleton stok',
-                                                style: TextStyle(
-                                                  fontSize: 14,
-                                                ),
-                                              ),
-                                              SizedBox(height: 5),
-                                              Text(
-                                                'Skeleton update produkkkkkkkkk',
-                                                style: TextStyle(
-                                                  fontSize: 10,
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
+                          return _buildSkeletonList();
                         }
 
                         if (snapshot.hasError) {
-                          return const Center(
-                            child: Text(
-                              'Error fetching data',
-                              style: TextStyle(color: Col.redAccent),
-                            ),
-                          );
+                          return _buildErrorMessage();
                         }
 
                         if (snapshot.data!.docs.isEmpty) {
-                          return const Center(
-                            child: Text(
-                              'Tidak ada produk',
-                              style: TextStyle(color: Col.greyColor),
-                            ),
-                          );
+                          return _buildNoProductMessage();
                         }
 
                         List<DocumentSnapshot> filteredProducts =
@@ -375,86 +319,12 @@ class _ListProdukPageState extends State<ListProdukPage>
                         List<DocumentSnapshot> sortedProducts =
                             _sortProducts(categoryProducts, _sortingCriteria);
 
-                        return RefreshIndicator(
-                          backgroundColor: Col.secondaryColor,
-                          color: Col.primaryColor,
-                          onRefresh: _refreshData,
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 20.0),
-                            child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                crossAxisSpacing: 25,
-                                childAspectRatio: 0.72,
-                              ),
-                              itemCount: sortedProducts.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                DocumentSnapshot document =
-                                    sortedProducts[index];
-                                Map<String, dynamic> data =
-                                    document.data() as Map<String, dynamic>;
-                                String documentId = document.id;
-
-                                return ProductsCard(
-                                  document: document,
-                                  onTap: () {
-                                    showUpdateStokDialog(
-                                      context,
-                                      documentId,
-                                      data['menu'],
-                                      data['stok'],
-                                      document['image'],
-                                    );
-                                  },
-                                  addCart: () {
-                                    _addToCart(document, data);
-                                  },
-                                  onLongPress: () {
-                                    showModalBottomSheet(
-                                      context: context,
-                                      enableDrag: true,
-                                      backgroundColor: Col.backgroundColor,
-                                      isScrollControlled: true,
-                                      builder: (BuildContext context) {
-                                        return SizedBox(
-                                          height: MediaQuery.of(context)
-                                                  .size
-                                                  .height *
-                                              0.2,
-                                          child: DetailProduk(
-                                            document: document,
-                                            imageUrl: data['image'],
-                                            productName: data['menu'],
-                                            // description:
-                                            //     data['deskripsi'],
-                                            onTapDescription: () {
-                                              Navigator.pop(
-                                                  context); // Tutup modal
-                                              Navigator.push(
-                                                  context,
-                                                  SlideUpRoute(
-                                                    page: DetailProdukPage(
-                                                      documentId: documentId,
-                                                    ),
-                                                  ));
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    );
-                                  },
-                                );
-                              },
-                            ),
-                          ),
-                        );
+                        return _buildProductList(sortedProducts);
                       },
                     )
                 ],
               ),
-              if (_cartItems.isNotEmpty)
+              if (_cartItems.isEmpty)
                 Positioned(
                   bottom: 0,
                   left: 0,
@@ -472,23 +342,226 @@ class _ListProdukPageState extends State<ListProdukPage>
                       ),
                     ),
                     height: 50,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                ),
+            ],
+          ),
+          bottomNavigationBar: _buildBottomAppBar(formattedTotalHargaPokok),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSkeletonList() {
+    return Column(
+      children: List.generate(
+        3,
+        (index) => Skeletonizer(
+          enabled: true,
+          child: Card(
+            elevation: 0,
+            color: Col.secondaryColor,
+            shadowColor: Col.greyColor.withOpacity(0.10),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Skeleton.leaf(
+                    child: SizedBox(
+                      width: 80,
+                      height: 80,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Container(
+                          color: Colors.grey[300],
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  const Expanded(
+                    flex: 3,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const Icon(Icons.shopping_cart),
-                        const SizedBox(width: 8),
                         Text(
-                          'Produk yang dipilih (${_cartItems.length} total produk)',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          'Skeleton nama produk',
+                          style: Typo.emphasizedBodyTextStyle,
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
+                        ),
+                        Text(
+                          'Skeleton stok',
+                          style: TextStyle(
+                            fontSize: 14,
                           ),
                         ),
+                        SizedBox(height: 5),
+                        Text(
+                          'Skeleton update produkkkkkkkkk',
+                          style: TextStyle(
+                            fontSize: 10,
+                          ),
+                        )
                       ],
                     ),
                   ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorMessage() {
+    return const Center(
+      child: Text(
+        'Error fetching data',
+        style: TextStyle(color: Col.redAccent),
+      ),
+    );
+  }
+
+  Widget _buildNoProductMessage() {
+    return const Center(
+      child: Text(
+        'Tidak ada produk',
+        style: TextStyle(color: Col.greyColor),
+      ),
+    );
+  }
+
+  Widget _buildProductList(List<DocumentSnapshot> sortedProducts) {
+    return RefreshIndicator(
+      backgroundColor: Col.secondaryColor,
+      color: Col.primaryColor,
+      onRefresh: _refreshData,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 25,
+            childAspectRatio: 0.72,
+          ),
+          itemCount: sortedProducts.length,
+          itemBuilder: (BuildContext context, int index) {
+            DocumentSnapshot document = sortedProducts[index];
+            Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+            String documentId = document.id;
+
+            bool isInCart =
+                _cartItems.any((item) => item['document'].id == document.id);
+
+            return ProductsCard(
+              document: document,
+              onTap: () {
+                showUpdateStokDialog(
+                  context,
+                  documentId,
+                  data['menu'],
+                  data['stok'],
+                  document['image'],
+                );
+              },
+              addCart: () {
+                _addToCart(document, data);
+              },
+              removeCart: () {
+                _removeFromCart(document);
+              },
+              isInCart: isInCart,
+              onLongPress: () {
+                showModalBottomSheet(
+                  context: context,
+                  enableDrag: true,
+                  backgroundColor: Col.backgroundColor,
+                  isScrollControlled: true,
+                  builder: (BuildContext context) {
+                    return SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.2,
+                      child: DetailProduk(
+                        document: document,
+                        imageUrl: data['image'],
+                        productName: data['menu'],
+                        onTapDescription: () {
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            SlideUpRoute(
+                              page: DetailProdukPage(
+                                documentId: documentId,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBottomAppBar(String formattedTotalHargaPokok) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      height:
+          _isBottomAppBarVisible ? 70 : 0, // Adjust height based on visibility
+      child: BottomAppBar(
+        elevation: 1,
+        color: Col.secondaryColor,
+        height: 70,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(5),
+            ),
+          ),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => CartItemDetail(
+                  cartItems: _cartItems,
                 ),
+              ),
+            );
+          },
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SizedBox(
+                width: 210,
+                child: Row(
+                  children: [
+                    Text('Keranjang ',
+                        style: Typo.bodyTextStyle
+                            .copyWith(fontWeight: Fw.bold, fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Text('•',
+                        style: Typo.bodyTextStyle
+                            .copyWith(fontWeight: Fw.bold, fontSize: 14)),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${_cartItems.length} Produk terpilih',
+                      style: Typo.bodyTextStyle.copyWith(fontSize: 14),
+                    ),
+                  ],
+                ),
+              ),
+              Text(
+                formattedTotalHargaPokok,
+                style: Typo.bodyTextStyle
+                    .copyWith(fontWeight: Fw.bold, fontSize: 14),
+              ),
             ],
           ),
         ),
