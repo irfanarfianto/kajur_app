@@ -1,12 +1,14 @@
-import 'package:animated_snack_bar/animated_snack_bar.dart';
 import 'package:dotted_dashed_line/dotted_dashed_line.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // Import Firebase Firestore
+import 'package:kajur_app/screens/products/list/cart_provider.dart';
+import 'package:kajur_app/screens/products/list/update_cart.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/utils/global/common/toast.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class CartItemDetail extends StatefulWidget {
@@ -25,7 +27,6 @@ class _CartItemDetailState extends State<CartItemDetail> {
   late Future<Map<String, String>> _userDataFuture;
   bool addTransportFee = false;
   double transportFee = 0;
-  final TextEditingController _hargaPokokController = TextEditingController();
 
   @override
   void initState() {
@@ -59,40 +60,42 @@ class _CartItemDetailState extends State<CartItemDetail> {
   }
 
   void _onShare(BuildContext context) async {
-    // Mendapatkan data pengguna menggunakan fungsi getUserData()
     Map<String, String> userData = await getUserData();
 
-    // Mendapatkan nilai displayName dari data pengguna
     String displayName = userData['displayName'] ?? 'Unknown User';
 
     String sharedText = 'Detail Becer\n';
 
-    // Tambahkan nama pengguna dan nomor WhatsApp
     sharedText += 'Dibuat oleh: ${userData[displayName] ?? '-'}\n';
     sharedText += 'Nomor WhatsApp: ${userData['whatsapp'] ?? '-'}\n';
 
     // Tambahkan waktu saat ini
     sharedText +=
         'Waktu: ${DateFormat('dd MMMM yyyy HH:mm:ss', 'id').format(DateTime.now())}\n\n';
-    sharedText += '------------------------------n';
-    // Tambahkan detail produk ke teks yang akan dibagikan
+    sharedText += '------------------------------\n';
+
     for (var item in widget.cartItems) {
       sharedText +=
           '${item['data']['menu']} - ${hargaFormat.format(item['data']['hargaPokok'])} \n';
     }
 
-    // Hitung sub total tanpa uang transport
+    if (addTransportFee) {
+      sharedText += 'Biaya Transportasi: ${hargaFormat.format(transportFee)}\n';
+    }
+    sharedText += '------------------------------\n';
     double subtotal = 0;
     for (var item in widget.cartItems) {
       subtotal += item['data']['hargaPokok'];
     }
 
-    sharedText += '------------------------------n';
-
-    // Tambahkan sub total dan total ke teks yang akan dibagikan
     sharedText += 'Subtotal: ${hargaFormat.format(subtotal)}\n';
+    sharedText += 'Jumlah produk: ${widget.cartItems.length}\n';
+    sharedText += '==============================\n';
+
     sharedText +=
-        'Total: ${hargaFormat.format(subtotal + (addTransportFee ? transportFee : 0))}\n';
+        'Total: ${hargaFormat.format(subtotal + (addTransportFee ? transportFee : 0))}\n\n';
+
+    sharedText += '© ${DateTime.now().year} Kantin Kejujuran';
 
     try {
       await Share.share(sharedText, subject: 'Data Keranjang');
@@ -101,62 +104,16 @@ class _CartItemDetailState extends State<CartItemDetail> {
     }
   }
 
-  Future<void> _updateHargaPokok(String productId) async {
-    try {
-      if (_hargaPokokController.text.isEmpty) {
-        AnimatedSnackBar.material(
-          'Harga pokok tidak boleh kosong',
-          type: AnimatedSnackBarType.info,
-        ).show(context);
-        return;
-      }
+  void _hapusProduk(String productId) {
+    setState(() {
+      widget.cartItems.removeWhere((item) => item['document'].id == productId);
+    });
+    showToast(message: 'Produk berhasil dihapus');
+  }
 
-      String hargaPokokText = _hargaPokokController.text;
-      int newHargaPokok =
-          int.tryParse(hargaPokokText.replaceAll(RegExp(r'[^0-9]'), '')) ?? 0;
-
-      // Validasi input
-      if (newHargaPokok >= 0) {
-        User? user = FirebaseAuth.instance.currentUser;
-        String? userId = user?.uid;
-        String? userName = user?.displayName ?? 'Unknown User';
-
-        // Mendapatkan detail produk sebelum diperbarui
-        DocumentSnapshot oldProductSnapshot = await FirebaseFirestore.instance
-            .collection('kantin')
-            .doc(productId) // Use productId
-            .get();
-        Map<String, dynamic> oldProductData =
-            oldProductSnapshot.data() as Map<String, dynamic>;
-
-        // Setelah semua validasi, tentukan waktu pembaruan
-        DateTime updatedAt = DateTime.now();
-
-        // Hitung ulang profit setiap satuan berdasarkan harga pokok yang baru
-        num newProfitSatuan = (oldProductData['hargaJual'] - newHargaPokok) /
-            oldProductData['jumlahIsi'];
-        num newTotalProfit = newProfitSatuan * oldProductData['jumlahIsi'];
-
-        // Update harga pokok di produk
-        await FirebaseFirestore.instance
-            .collection('kantin')
-            .doc(productId) // Use productId
-            .update({
-          'hargaPokok': newHargaPokok,
-          'totalProfit': newTotalProfit,
-          'profitSatuan': newProfitSatuan,
-          'updatedAt': updatedAt, // Tetapkan waktu pembaruan di sini juga
-          'lastEditedBy': userId,
-          'lastEditedByName': userName,
-        });
-
-        showToast(message: 'Harga pokok berhasil diperbarui');
-
-        Navigator.pop(context);
-      } else {
-        showToast(message: 'Mohon isi harga pokok dengan angka positif');
-      }
-    } catch (e) {}
+  void _updateProduk(String productId, int newQuantity) {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.updateCartItemQuantity(productId, newQuantity);
   }
 
   @override
@@ -175,20 +132,10 @@ class _CartItemDetailState extends State<CartItemDetail> {
           );
         }
 
-        String whatsapp = snapshot.data?['whatsapp'] ?? '';
-        String displayName = snapshot.data?['displayName'] ?? '';
-
-        double totalHarga = 0;
-
+        double subtotal = 0;
         for (var item in widget.cartItems) {
-          totalHarga += item['data']['hargaPokok'];
+          subtotal += item['jumlah'] * item['data']['hargaPokok'];
         }
-
-        if (addTransportFee) {
-          totalHarga += transportFee;
-        }
-
-        double subtotal = totalHarga - transportFee;
 
         return Scaffold(
           appBar: AppBar(
@@ -223,41 +170,20 @@ class _CartItemDetailState extends State<CartItemDetail> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const SizedBox(height: 20),
-                    Text(
-                      'Dibuat oleh: $displayName',
-                      style: Typo.emphasizedBodyTextStyle,
-                    ),
-                    if (whatsapp.isNotEmpty)
-                      Text(
-                        'Whatsapp: $whatsapp',
-                        style: Typo.emphasizedBodyTextStyle,
-                      ),
-                    const SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text('Nama Produk', style: Typo.titleTextStyle),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Text('Tambah Produk',
-                                  style: Typo.emphasizedBodyTextStyle.copyWith(
-                                    color: Col.primaryColor,
-                                    fontWeight: Fw.bold,
-                                  )),
-                            ),
-                            Text('Harga Pokok',
-                                style: Typo.emphasizedBodyTextStyle.copyWith(
-                                  color: Col.greyColor,
-                                  fontSize: 12,
-                                )),
-                          ],
+                        InkWell(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Text('Tambah Produk',
+                              style: Typo.emphasizedBodyTextStyle.copyWith(
+                                color: Col.primaryColor,
+                                fontWeight: Fw.bold,
+                              )),
                         ),
                       ],
                     ),
@@ -282,68 +208,104 @@ class _CartItemDetailState extends State<CartItemDetail> {
                     itemCount: widget.cartItems.length,
                     itemBuilder: (context, index) {
                       var item = widget.cartItems[index];
+
                       return Column(
                         children: [
                           ListTile(
                             contentPadding:
                                 const EdgeInsets.symmetric(horizontal: 20),
-                            title: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                            title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                  item['data']['menu'],
-                                  style: Typo.titleTextStyle,
-                                ),
-                                InkWell(
-                                    onTap: () {
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          TextEditingController controller =
-                                              TextEditingController(
-                                            text: item['data']['hargaPokok']
-                                                .toString(),
-                                          );
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      width: 150,
+                                      child: Text(
+                                        item['data']['menu'],
+                                        style: Typo.titleTextStyle,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            TextEditingController
+                                                priceController =
+                                                TextEditingController(
+                                              text: item['data']['hargaPokok']
+                                                  .toString(),
+                                            );
 
-                                          return AlertDialog(
-                                            title: const Text(
-                                                'Update Harga Pokok'),
-                                            content: TextField(
-                                              controller: controller,
-                                              keyboardType:
-                                                  TextInputType.number,
-                                            ),
-                                            actions: [
-                                              TextButton(
-                                                onPressed: () {
+                                            TextEditingController
+                                                quantityController =
+                                                TextEditingController(
+                                              text: item['jumlah'].toString(),
+                                            );
+
+                                            return AlertDialog(
+                                              title: const Text('Edit'),
+                                              content: UpdateCart(
+                                                productName: item['data']
+                                                    ['menu'],
+                                                priceController:
+                                                    priceController,
+                                                quantityController:
+                                                    quantityController,
+                                                onUpdate:
+                                                    (newPrice, newQuantity) {
+                                                  setState(() {
+                                                    _updateProduk(
+                                                        item['document'].id,
+                                                        // double.parse(newPrice),
+                                                        int.parse(newQuantity));
+                                                  });
+                                                },
+                                                onDelete: () {
                                                   Navigator.pop(context);
+                                                  _hapusProduk(
+                                                      item['document'].id);
                                                 },
-                                                child: const Text('Batal'),
                                               ),
-                                              TextButton(
-                                                onPressed: () {
-                                                  // _updateHargaPokok(
-                                                  //     item['documentId']
-                                                  //         .toString());
-                                                },
-                                                child: const Text('Simpan'),
-                                              ),
-                                            ],
-                                          );
-                                        },
-                                      );
-                                    },
-                                    child: Text('Edit',
+                                            );
+                                          },
+                                        );
+                                      },
+                                      child: Text(
+                                        'Edit',
                                         style: Typo.emphasizedBodyTextStyle
                                             .copyWith(
-                                                color: Col.primaryColor,
-                                                fontWeight: Fw.bold,
-                                                fontSize: 12))),
+                                          color: Col.primaryColor,
+                                          fontWeight: Fw.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      hargaFormat.format(item['jumlah'] *
+                                          item['data']['hargaPokok']),
+                                      style: Typo.bodyTextStyle,
+                                    ),
+                                    Text(
+                                        '${item['jumlah']}x ${hargaFormat.format(item['data']['hargaPokok'])}',
+                                        style: Typo.emphasizedBodyTextStyle
+                                            .copyWith(
+                                          color: Col.greyColor,
+                                          fontSize: 12,
+                                        )),
+                                  ],
+                                ),
                               ],
-                            ),
-                            trailing: Text(
-                              hargaFormat.format(item['data']['hargaPokok']),
-                              style: Typo.bodyTextStyle,
                             ),
                           ),
                           DottedDashedLine(
@@ -503,8 +465,9 @@ class _CartItemDetailState extends State<CartItemDetail> {
                     Column(
                       children: [
                         Text(
-                          hargaFormat.format(totalHarga),
-                          style: Typo.titleTextStyle,
+                          hargaFormat.format(
+                              subtotal + (addTransportFee ? transportFee : 0)),
+                          style: Typo.emphasizedBodyTextStyle,
                         ),
                         Text(
                           'Total produk ${widget.cartItems.length}',

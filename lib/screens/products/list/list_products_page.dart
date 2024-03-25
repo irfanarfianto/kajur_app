@@ -3,12 +3,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 import 'package:kajur_app/components/produk/detail_produk.dart';
 import 'package:kajur_app/components/produk/update_stock_dialog.dart';
+import 'package:kajur_app/screens/products/list/cart_provider.dart';
 import 'package:kajur_app/screens/products/list/details_cart.dart';
 import 'package:kajur_app/utils/animation/route/slide_up.dart';
 import 'package:kajur_app/utils/design/system.dart';
 import 'package:kajur_app/screens/products/details/details_products_page.dart';
 import 'package:kajur_app/components/produk/sorting_overlay.dart';
 import 'package:kajur_app/screens/products/list/products_card.dart';
+import 'package:provider/provider.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 enum CategoryFilter {
@@ -33,7 +35,7 @@ class _ListProdukPageState extends State<ListProdukPage>
   String _searchQuery = '';
   String _sortingCriteria = 'default';
   final List<Map<String, dynamic>> _cartItems = [];
-  bool _isBottomAppBarVisible = false;
+  final bool _isBottomAppBarVisible = false;
 
   @override
   void initState() {
@@ -143,26 +145,24 @@ class _ListProdukPageState extends State<ListProdukPage>
   }
 
   void _addToCart(DocumentSnapshot document, Map<String, dynamic> data) {
-    setState(() {
-      _cartItems.add({
-        'document': document,
-        'data': data,
-        'documentId': document.id,
-      });
-      _isBottomAppBarVisible = true;
-    });
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addToCart(CartItem(
+      productId: document.id,
+      productName: data['menu'],
+      price: data['hargaPokok'],
+    ));
   }
 
   void _removeFromCart(DocumentSnapshot document) {
-    setState(() {
-      _cartItems.removeWhere((item) => item['document'].id == document.id);
-      _isBottomAppBarVisible = _cartItems.isNotEmpty;
-    });
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.removeFromCart(document.id);
   }
 
   double _calculateTotalHargaPokok() {
     return _cartItems.fold<double>(
-        0.0, (total, item) => total += item['data']['hargaPokok']);
+        0.0,
+        (total, item) => total +=
+            (item['data']['hargaPokok'] as int) * (item['jumlah'] as int));
   }
 
   @override
@@ -454,6 +454,10 @@ class _ListProdukPageState extends State<ListProdukPage>
 
             bool isInCart =
                 _cartItems.any((item) => item['document'].id == document.id);
+            int quantity = isInCart
+                ? _cartItems.firstWhere(
+                    (item) => item['document'].id == document.id)['jumlah']
+                : 0;
 
             return ProductsCard(
               document: document,
@@ -469,6 +473,7 @@ class _ListProdukPageState extends State<ListProdukPage>
               addCart: () {
                 _addToCart(document, data);
               },
+              quantity: quantity,
               removeCart: () {
                 _removeFromCart(document);
               },
@@ -510,6 +515,9 @@ class _ListProdukPageState extends State<ListProdukPage>
   }
 
   Widget _buildBottomAppBar(String formattedTotalHargaPokok) {
+    int totalSelectedProducts = _cartItems.fold<int>(
+        0, (total, item) => total += item['jumlah'] as int);
+
     return AnimatedContainer(
       duration: const Duration(milliseconds: 300),
       height:
@@ -551,7 +559,7 @@ class _ListProdukPageState extends State<ListProdukPage>
                             .copyWith(fontWeight: Fw.bold, fontSize: 14)),
                     const SizedBox(width: 8),
                     Text(
-                      '${_cartItems.length} Produk terpilih',
+                      '$totalSelectedProducts Produk terpilih',
                       style: Typo.bodyTextStyle.copyWith(fontSize: 14),
                     ),
                   ],

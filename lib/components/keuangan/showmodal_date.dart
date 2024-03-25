@@ -8,14 +8,14 @@ class TimerPicker extends StatefulWidget {
   final Function(String) onYearChanged;
   final Function() onConfirm;
 
-  TimerPicker({
-    Key? key,
+  const TimerPicker({
+    super.key,
     required this.selectedMonth,
     required this.selectedYear,
     required this.onMonthChanged,
     required this.onYearChanged,
     required this.onConfirm,
-  }) : super(key: key);
+  });
 
   @override
   _TimerPickerState createState() => _TimerPickerState();

@@ -9,7 +9,8 @@ class ProductsCard extends StatefulWidget {
   final VoidCallback onTap;
   final VoidCallback? addCart;
   final VoidCallback? removeCart;
-  final bool isInCart; // Tambahkan properti baru
+  final bool isInCart;
+  final int quantity;
 
   const ProductsCard({
     super.key,
@@ -18,7 +19,8 @@ class ProductsCard extends StatefulWidget {
     required this.onTap,
     required this.addCart,
     required this.removeCart,
-    required this.isInCart, // Tambahkan properti baru
+    required this.isInCart,
+    required this.quantity,
   });
 
   @override
@@ -71,20 +73,55 @@ class _ProductsCardState extends State<ProductsCard> {
                   ),
                 ),
                 Positioned(
-                  bottom: 5,
-                  right: 5,
-                  child: IconButton(
-                    padding: const EdgeInsets.all(5),
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                          widget.isInCart ? Col.redAccent : Col.primaryColor),
-                    ),
-                    onPressed:
-                        widget.isInCart ? widget.removeCart : widget.addCart,
-                    icon: Icon(
-                      widget.isInCart ? Icons.close : Icons.add_shopping_cart,
+                  bottom: 10,
+                  right: 10,
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(100),
                       color: Col.whiteColor,
-                      size: 18,
+                      border: Border.all(color: Col.primaryColor, width: 0.5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        if (widget.isInCart)
+                          InkWell(
+                            onTap: widget.removeCart,
+                            child: const Icon(
+                              Icons.remove,
+                              color: Col.primaryColor,
+                              size: 15,
+                            ),
+                          ),
+                        if (widget.isInCart)
+                          SizedBox(
+                              width: 30,
+                              height: 15,
+                              child: Text(
+                                '${widget.quantity}',
+                                textAlign: TextAlign.center,
+                                style: Typo.bodyTextStyle.copyWith(
+                                  color: Col.greyColor,
+                                  fontWeight: Fw.bold,
+                                  fontSize: 12,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              )),
+                        InkWell(
+                          onTap: widget.addCart,
+                          child: Icon(
+                            widget.isInCart
+                                ? Icons.add
+                                : Icons.add_shopping_cart,
+                            color: Col.primaryColor,
+                            size: 15,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

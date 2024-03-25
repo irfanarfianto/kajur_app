@@ -7,9 +7,9 @@ class SfDoughnutChartWidget extends StatelessWidget {
   final List<ExpenseChartData> expenseData;
 
   const SfDoughnutChartWidget({
-    Key? key,
+    super.key,
     required this.expenseData,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

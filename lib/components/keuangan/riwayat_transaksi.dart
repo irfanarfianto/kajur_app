@@ -14,7 +14,7 @@ class TransactionHistory extends StatelessWidget {
   final currencyFormat =
       NumberFormat.currency(locale: 'id', symbol: 'Rp ', decimalDigits: 0);
 
-  TransactionHistory({Key? key});
+  TransactionHistory({super.key});
 
   @override
   Widget build(BuildContext context) {
